@@ -1,0 +1,659 @@
+% $Header: /cvsroot/latex-beamer/latex-beamer/solutions/generic-talks/generic-ornate-15min-45min.en.tex,v 1.4 2004/10/07 20:53:08 tantau Exp $
+
+\documentclass{beamer}
+
+% This file is a solution template for:
+
+% - Giving a talk on some subject.
+% - The talk is between 15min and 45min long.
+% - Style is ornate.
+
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice.
+
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  % or ...
+
+  %\setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+\usepackage[slovene]{babel}
+\usepackage[cp1250]{inputenc}
+%\usepackage[pdftex]{graphicx}
+%\usepackage{color}
+%\usepackage{float}
+%\usepackage{eurosym}
+
+\usepackage{amsfonts}
+\usepackage{amsmath,amsthm}
+
+%\usepackage[english]{babel}
+% or whatever
+
+%\usepackage[latin1]{inputenc}
+% or whatever
+
+%\usepackage{beamerthemeshadow}
+\usepackage{times}
+%\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+\newcommand{\bx}{\mathbf{x}}
+\DeclareMathOperator{\Gl}{Gl}
+\DeclareMathOperator{\adj}{adj}
+%\newcommand{\Gl}{{\mathrm {GL}}\,}
+%\newizrek{proposition}[izrek]{Proposition}
+
+
+\def\NN{\mathbb{N}}
+\def\RR{\mathbb{R}}
+\def\CC{\mathbb{C}}
+\def\AA{\mathbb{A}}
+\def\FF{\mathbb{F}}
+\def\PP{\mathbb{P}}
+\def\ZZ{\mathbb{Z}}
+
+% finanèni instrumenti
+\newcommand{\PV}{\mathrm{PV}}
+\newcommand{\ZCB}{\mathrm{ZCB}}
+\newcommand{\CB}{\mathrm{CB}}
+\newcommand{\FL}{\mathrm{FL}}
+\newcommand{\FW}{\mathrm{FW}}
+\newcommand{\FX}{\mathrm{FX}}
+\newcommand{\F}{\mathrm{F}}
+\newcommand{\IF}{\mathrm{IF}}
+\newcommand{\FRA}{\mathrm{FRA}}
+\newcommand{\SWAP}{\mathrm{SWAP}}
+\newcommand{\CAP}{\mathrm{CAP}}
+\newcommand{\FLOOR}{\mathrm{FLOOR}}
+\newcommand{\A}{\mathrm{A}}
+
+% Valute, brez in s presledkom
+%\newcommand{\EUR}{\mathrm{EUR}}
+\newcommand{\EURp}{\ \mathrm{EUR}}
+\newcommand{\USD}{\mathrm{USD}}  \newcommand{\USDp}{\ \mathrm{USD}}
+\newcommand{\CHF}{\mathrm{CHF}}  \newcommand{\CHFp}{\ \mathrm{CHF}}
+\newcommand{\HRK}{\mathrm{HRK}}  \newcommand{\HRKp}{\ \mathrm{HRK}}
+\newcommand{\GBP}{\mathrm{GBP}}  \newcommand{\GBPp}{\ \mathrm{GBP}}
+\newcommand{\SEK}{\mathrm{SEK}}  \newcommand{\SEKp}{\ \mathrm{SEK}}
+\newcommand{\JPY}{\mathrm{JPY}}  \newcommand{\JPYp}{\ \mathrm{JPY}}
+\newcommand{\AUD}{\mathrm{AUD}}  \newcommand{\AUDp}{\ \mathrm{AUD}}
+
+\newcommand{\ds}{\displaystyle}
+\newcommand{\ts}{\textstyle}
+\newcommand{\presledek}{\vspace{3mm}}
+\newcommand{\ph}{\phantom{1}} % pomoè pri poravnavi teksta v slikah TikZ
+
+\newcommand{\cS}{{\mathcal S}}
+\newcommand{\cM}{{\mathcal M}}
+\newcommand{\cF}{{\mathcal F}}
+\newcommand{\cT}{{\mathcal T}}
+\newcommand{\cG}{{\mathcal G}}
+\newcommand{\cH}{{\mathcal H}}
+\newcommand{\cD}{{\mathcal D}}
+\newcommand{\cI}{{\mathcal I}}
+\newcommand{\tr}{{\rm tr \,}}
+\def\GL{\operatorname{GL}}
+\def\M{\operatorname{M}}
+\def\adj{\operatorname{adj}}
+\def\Id{\operatorname{Id}}
+
+\newtheorem{izrek}{Izrek}
+\newtheorem{trditev}[izrek]{Trditev}
+\newtheorem{posledica}[izrek]{Posledica}
+\newtheorem{definicija}[izrek]{Definicija}
+\newtheorem{naloga}[izrek]{Naloga}
+\newtheorem{resitev}[izrek]{Naloga}
+
+\title[Arbitra\v za, terminski posli in opcije] % (optional, use only with long paper titles)
+{Arbitra\v za, terminski posli in opcije}
+
+%\subtitle
+%{Presentation Subtitle} % (optional)
+
+\author[T. Ko\v sir, K. Pugelj, A. Toman] % (optional, use only with lots of authors)
+{\textbf{Toma\v z Ko\v sir}, \emph{Fakulteta za matematiko in fiziko, Univerza v Ljubljani}, \\ \textbf{Klara Pugelj}, \emph{Gimnazija Viè, Ljubljana}, in \\
+\textbf{Ale\v s Toman}, \emph{Ekonomska fakulteta, Univerza v Ljubljani.}
+}
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[] % (optional, but mostly needed)
+{
+%  \inst{1}%
+
+%  \and
+%  \inst{2}%
+%  Department of Theoretical Philosophy\\
+%  University of Elsewhere
+}
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[15. november 2013] % (optional)
+{\emph{Strokovno sreèanje in 65. Obèni zbor DMFA},\\ Bled, 15. - 16. november 2013}
+
+\subject{Talks}
+% This is only inserted into the PDF information catalog. Can be left
+% out.
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+%\AtBeginSubsection[]
+%{
+%  \begin{frame}<beamer>
+%    \frametitle{Outline}
+%    \tableofcontents[currentsection,currentsubsection]
+%  \end{frame}
+%}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command:
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Vsebina}
+  \tableofcontents[pausesections]
+  % You might wish to add the option [pausesections]
+\end{frame}
+
+
+% Since this a solution template for a generic talk, very little can
+% be said about how it should be structured. However, the talk length
+% of between 15min and 45min and the theme suggest that you stick to
+% the following rules:
+
+% - Exactly two or three sections (other than the summary).
+% - At *most* three subsections per section.
+% - Talk about 30s to 2min per frame. So there should be between about
+%   15 and 30 frames, all told.
+
+%\section{Uvod}
+
+%\begin{frame}
+%\begin{enumerate}
+%  \item {Uvod}
+%\end{enumerate}
+%\end{frame}
+
+
+\section{Zakon ene cene in arbitražna strategija}
+
+
+
+\begin{frame}
+  \frametitle{Zakon ene cene}
+\begin{itemize}
+\item \textbf{Zakon ene cene} pravi, da imata dve naložbi oz. investiciji enako zaèetno vrednost, èe so vsi denarni tokovi v prihodnosti enaki za obe naložbi. \pause
+
+\item Na primer: Kuponska obveznica in veè brezkuponskih obveznic z zapadlostmi ob izplaèilu kuponov in nominalnimi vrednostmi enakimi kuponom. \pause
+\item Dobimo formulo o vrednotenju kuponske obveznice.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Arbitražna priložnost}
+\begin{itemize}
+\item \textbf{Arbitražna priložnost} je naložba, ki ima zaèetno vrednost enako $0$ v prihodnosti pa imamo samo nenegativne denarne tokove in vsaj v enem primeru pozitiven denarni tok.
+\pause
+\item V finanènem žargonu reèemo, da imamo zastonj kosilo. Predpostavka o neobstoju arbitraže je potem predpostavka, da ni zastonja kosila.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Zgled - stavnici}
+\begin{itemize}
+\item Imamo dve stavnici, ki sprejemata stave za izid tekme v košarki med moštvoma $K$ in $L$.
+\item Stavnica A sprejema stave v razmerju $5:5$ in stavnica B  v razmerju $6:4$. \pause
+\item    Stavnica A za 5 plaèanih enot v primeru zmage izbranega moštva izplaèa 10 enot, v primeru njegovega poraza pa 0 enot. \pause
+\item Stavnica B za 6 vplaèanih enot na zmago moštva $K$ izplaèa 10 enot v primeru zmage tega moštva in 0 enot v primeru poraza.
+V primeru stave na moštvo $L$ pa za 4 vplaèane enote izplaèa 10 enot v primeru zmage tega moštva in 0 v primeru poraza.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Stavnica - nadaljevanje}
+Naslednja strategija je arbitražna: \pause
+
+\begin{itemize}
+\item Dijak si od oèeta izposodi 9 denarnih enot in mu obljubi, da jih bo po tekmi vrnil. \pause
+
+\item Nato vplaèa 5 denarnih enot na zmago moštva $K$ v stavnici A in 4 denarne enote na zmago moštva $L$ v stavnici B.
+
+\pause
+\item Po tekmi bo v primeru zmage moštva $K$ dobil izplaèilo 10 enot iz stavnice A in 0 iz stavnice B. \pause
+\item V primeru zmage moštva $L$ pa bo dobil 10 denarnih enot iz stavnice B in 0 iz A. \pause
+
+\item V vsakem primeru bo lahko oèetu vrnil 9 enot, 1 enota pa bo njegova brez vloženih sredstev.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zgled - devizni teèaji}
+Menjalnici A v New Yorku in B v Londonu sta 19. julija 2002 objavili naslednje menjalne teèaje:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  menjalnica A & nakupni & prodajni \\ \hline
+  1,0000 EUR & 1,0202 USD & 1,0284 USD \\ \hline
+  1,0000 GBP & 1,5718 USD & 1,5844 USD \\
+  \hline
+\end{tabular}
+
+\begin{tabular}{|c|c|c|}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  menjalnica B & nakupni & prodajni \\ \hline
+  1,0000 EUR & 0,6324 GBP & 0,6401 GBP \\ \hline
+  1,0000 USD & 0,6299 GBP & 0,6375 GBP \\
+  \hline
+\end{tabular}
+\end{center}
+Npr. menjalnica A kupi 1 EUR za 1,0202 USD in ga proda za 1,0284 USD.
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Devizni teèaji - nadaljevanje}
+
+Arbitražna strategija:
+\begin{itemize}
+\item Za zelo kratek èas si izposodimo 100 USD. \pause
+\item V A kupimo funte,
+\item nato v B za funte kupimo evre, \pause
+\item konèno evre v A zamenjamo za dolarja. \pause
+\item Velja
+$$\frac{100}{1,5844}\cdot\frac{1}{0,6401}\cdot 1,0202=100,59.$$\pause
+\item Vrnemo dolarje in nam ostane $59$ centov.
+\end{itemize}
+\end{frame}
+
+
+\section{Terminski posli}
+
+\begin{frame}
+  \frametitle{Opis}
+\textbf{Terminski posel} je dogovor med dvema strankama, s katerim se dogovorita o \emph{ceni}, po kateri bo ena stranka drugi prodala doloèeno blago ali vrednostni papir na doloèen dan v prihodnosti.
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Zgled - nakup avtomobila}
+\begin{itemize}
+\item Kadar kupujemo nov avto, lahko poteèe nekaj tednov od podpisa pogodbe do plaèila in dobave avtomobila. \pause
+\item Recimo, da ste ob podpisu pogodbe doloèili ceno 10.000~EUR.  \pause
+\item V èasu, ko èakate na dobavo, proizvajalec zaradi podražitve surovin zviša ceno na 11.000 EUR. Vas to moti? \pause Ne.
+ \pause
+\item Drugaèe velja za trgovca. Vam mora prodati avto za 10.000~EUR, èeprav je njegova cena 11.000~EUR. \pause
+
+\item Èe se proizvajalec avtomobila odloèi, da zniža ceno avtomobila na 9.500~EUR ste na slabšem vi. \pause Plaèati morate 10.000~EUR, èeprav se je avtomobil medtem že pocenil.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zgled - Pekarna d.d.}
+\begin{itemize}
+\item Ste lastnik ene delnice Pekarne d.d. Trenutna cena delnice je 100 EUR. \pause
+
+\item Želite skleniti terminski posel za prodajo delnice èez eno leto. \pause
+Kaj s tem izgubite? \pause
+
+\item Èe delnico takoj prodate in denar naložite na banko, boste èez eno leto imeli EUR 100 plus obresti. \pause
+\item Èe je obrestna mera $5\%$, boste imeli 105 EUR. \pause
+Izroèitvena cena mora biti 105 EUR. \pause
+
+\item Kaj pa èe veste, da bo Pekarna d.d. izplaèala dividendo v višini 3 EUR tik pred iztekom enega leta? \pause
+
+Potem mora biti izroèitvena cena $$100+5-3=102\ \text{EUR}.$$
+\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{Matematièni opis}
+\begin{itemize}
+\item $K$ - izroèitvena cena,
+\item $T$ - èas izroèitve,
+\item $S_t$ - cena osnovnega premoženja v èasu $t\in[0,T]$,
+\item $F_t$ - izroèitvena cena za terminsko pogodbo sklenjeno v èasu $t$, $F_0=K$,
+\item $R$ - netvegana (efektivna) obrestna mera, ki je na voljo na trgu za vse zapadlosti. \pause
+\item èe ni dividend: $K=S_0(1+R)^{T}$, \pause
+\item èe ni dividend: $F_t=S_t(1+R)^{T-t}$, \pause
+\item znana dividenda $I_t$ v èasu $t$: $K=S_0(1+R)^{T}-I_t(1+R)^{T-t}$, \pause
+\item znana dividenda $I_{t'}$, $t'>t$: $F_t=S_t(1+R)^{T-t}-I_{t'}(1+R)^{T-t'}$.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Vrednost terminske pogodbe za kupca}
+\begin{itemize}
+\item Èe je cena osnovnega premoženja v èasu $T$ veèja kot izroèitvena cena, smo s tem zaslužili oz. prihranili. \pause
+\item Èe pa je cena osnovnega premoženja v èasu $T$ manjša kot izroèitvena cena, imamo izgubo. \pause
+$$V_T=S_T-K \pause =S_T-F_0.$$ \pause
+\item Vrednost terminskega posla (sklenjenega v èasu $0$) je v èasu $t$ enaka razliki med izroèitveno ceno, ki velja v èasu $t$ in izroèitveno ceno v èasu $0$;
+ker pa se ti dve vrednosti nanašata na èas $T$, ju moramo diskontirati. \pause
+Ta vrednost je tudi enaka razliki med trenutno (tržno) vrednostjo osnovnega premoženja in diskontirano izroèitveno ceno:\pause
+$$V_t=(F_t-K)\cdot (1+R)^{-(T-t)}=S_t-K(1+R)^{-(T-t)}.$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zgledi}
+\begin{itemize}
+\item V zgledu o nakupu avtomobila je vrednost terminske pogodbe ob nakupu avta v primeru podražitve na 11.000~EUR enaka $V_T=1.000$~EUR. V primeru pocenitve na 9.500~EUR pa je ta vrednost enaka $V_T=-500$~EUR. \pause
+
+\item V zgledu terminskega posla na delnico Pekarne d.d. predpostavimo najprej, da je cena delnice èez eno leto enaka $S_1=110$~EUR. Tedaj je vrednost terminskega posla enaka $$V_1=S_1-K=110-102=8\ \rm{EUR}.$$ \pause
+\item Èe bi bila cena delnice èez eno leto enaka $99$~EUR, pa bi bila vrednost terminskega posla enaka
+    $$V_1=S_1-K=99-102=-3\ \rm{EUR}.$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zgledi - nadaljevanje}
+\begin{itemize}
+\item Poraèunajmo še vrednost našega posla po 6 mesecih v primerih, da je $S_{0,5}=110$~EUR, oziroma $S_{0,5}=99$~EUR. Spomnimo, da delnica Pekarne d.d. izplaèa dividendo v višini 3 EUR v èasu $t=1$. \pause
+\item Imamo $K=102$~EUR in $I_1=3$~EUR. Izroèitvena cena za terminske pogodbe sklenjene v èasu $t=0,5$ je enaka $$F_{0,5}=S_{0,5}(1+R)^{0,5 }-I_1.$$ \pause
+\item Vrednost prvotnega terminskega posla pa je $$V_{0,5}=(F_{0,5}-K)(1+R)^{-0,5}.$$
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zgledi - nadaljevanje 2}
+\begin{itemize}
+
+\item Pri efektivni obrestni meri $R=5\%$ dobimo naslednje vrednosti:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+  \hline
+  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+  $S_{0,5}$ & $F_{0,5}$ & $V_{0,5}$ \\ \hline
+  $99$ EUR & $98,44$ EUR & $-3,47$ EUR \\ \hline
+  $110$ EUR & $109,72$ EUR & $7,53$ EUR \\
+  \hline
+\end{tabular}
+\end{center}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Naloga 1}
+\begin{naloga}
+Naj bo osnovno premoženje za terminske pogodbe unèa zlata. Predpostavimo tudi, da lastnik zlata nima nobenih stroškov s skladišèenjem. Trenutna cena za unèo zlata je 950~EUR in  netvegana obrestna mera je $R=3\%$. Denimo, da na trgu lahko sklenemo terminsko pogodbo za nakup ene unèe zlata èez tri mesece z izroèitveno ceno 955~EUR.
+\begin{enumerate}
+\item Ali ta izroèitvena cena omogoèa arbitražno priložnost?
+\item Èe arbitraža obstaja, opišite, kako si investitor, ki ima v lasti unèo zlata, na trgu zagotovi arbitražno priložnost.
+\end{enumerate}
+\end{naloga}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Rešitev 1}
+Podano imamo:
+\begin{itemize}
+\item $S_0=950$
+\item $R=3\%$
+\item $T=0,25$
+\item $K=955$
+\end{itemize}
+\begin{enumerate}
+\item Ker je
+$$S_0(1+R)^T=957,05\neq 955=K,$$
+obstaja arbitražna priložnost. \pause
+\item Investitor uporabi naslednjo strategijo v èasu $0$:
+\begin{itemize}
+\item Proda zlato po tržni ceni.
+ \item Naloži dobljen denar po netvegani obrestni meri.
+  \item Sklene terminski posel za nakup zlata.
+\end{itemize}
+ \end{enumerate}
+\end{frame}
+
+\begin{frame}
+\frametitle{Rešitev 1 - nadaljevanje}
+  Èez tri mesece naredi naslednje:
+\begin{itemize}
+\item Dvigne naloženo vsoto, ki znaša 957,05~EUR.
+\item Za 955~EUR kupi zlato, kot mu omogoèa sklenjen terminski posel.
+ \item Zlato vrne v svoje skladišèe.
+\end{itemize}
+ V èasu $0$ ni imel nobenih stroškov, v èasu $T$ pa je imel dohodek v višini 2,05~EUR.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Devizni terminski posel}
+\begin{itemize}
+\item $d$ - domaèa valuta (evro, dolar, frank, itd.),
+\item $f$ - tuja valuta,
+\item $S_t$ - trenutni devizni teèaj ene enote tuje valute $f$ v enotah domaèe valute $d$ v èasu $t$, $t\in [0,T]$:
+ $$1\cdot f=S_t\cdot d$$ \pause
+\item Npr. $f=$~USD, $d=$~EUR, $S_t=1,3166$. To pomeni:
+ $$1 \mbox{ USD} =1,3166 \mbox{ EUR}, $$
+ $$100 \mbox{ USD}=131,66 \mbox{ EUR}.$$ \pause
+
+\item V terminskem poslu se obe strani dogovorita, da bo v èasu $T$ uporabljen teèaj $K$ za nominalno vsoto $N$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Devizni terminski posel 2}
+\begin{itemize}
+\item Dolga stran bo kupila $N\cdot f$ in zato plaèala $NK\cdot d$. \pause
+\item Teèaj $K$ imenujemo \textbf{izroèitveni teèaj}. \pause
+\item Vrednost dolge strani ob èasu $T$:
+$$V_T=(S_T - K)\cdot N.$$ \pause
+\item Vrednost za eno enoto domaèe valute :
+$$V_T^1=S_T - K.$$
+\item $R_f$ - netvegana (efektivna) obrestna mera za tujo valuto,
+\item $R_d$ - netvegana (efektivna) obrestna mera za domaèo valuto. \pause
+\item Potem mora veljati
+$$K=S_0\cdot \left(\frac{1+R_d} {1+R_f}\right)^{T}.$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Devizni terminski posel 3}
+\begin{itemize}
+\item $F_t$ - izroèitveni teèaj za terminski posel sklenjen v èasu $t$, $F_0=K$. \pause
+\item  Veljati mora:
+$$F_t=S_t\left(\frac{1+R_d} {1+R_f}\right)^{T-t}.$$ \pause
+\item Vrednost deviznega terminskega posla na eno enoto domaèe valute v èasu $t\in[0,T]$ znaša
+$$V_t^1=F_t (1+R_d)^{-(T-t)}-K (1+R_d)^{-(T-t)}$$
+$$=S_t\cdot (1+R_f)^{-(T-t)}-K\cdot (1+R_d)^{-(T-t)}.$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Naloga 2}
+\begin{naloga}
+\label{naloga 3.14.}
+Priznana švicarska zlatarna je iz analize preteklega poslovanja ugotovila, da se prodaja zlatnine izrazito poveèa v predprazniènem obdobju, to je èez 3 mesece. Zlatarna veèino zlata, ki ga potrebuje v proizvodnji, kupi na ameriškem trgu.
+
+Na trgu sta na voljo naslednji netvegani (efektivni) obrestni meri:
+$$R^\CHF= 0,70\% \ \ R^\USD = 0,83\% .$$
+Trenutni menjalni teèaj med švicarski frankom in ameriškim dolarjem pa je 0,8174 CHF za 1 USD.
+\end{naloga}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Naloga 2 - nadaljevanje}
+\begin{naloga}
+\begin{enumerate}
+\item Cena unèe zlata danes znaša 1835,00 USD. Zlatarna želi s finanèno institucijo v Ameriki skleniti terminski posel za nakup 100 unè zlata èez 3 mesece. Kakšno ceno unèe zlata (v USD) si lahko zagotovi zlatarna?\label{zlato}
+
+\item Zlatarna bo izdelke prodajala na švicarskem trgu. Ker morajo njihove cene oblikovati vnaprej, se bojijo še valutnega tveganja. Zato se s finanèno institucijo dogovori za nakup ustrezne kolièine dolarjev na dan roènosti terminskega posla iz (\ref{zlato}) po vnaprej dogovorjenem menjalnem teèaju. Koliko frankov bo zlatarna plaèala za 100 unè zlata?
+
+%\item Mesec dni kasneje cena unèe zlata znaša 1890,00 USD, menjalni teèaj je 0,7985 CHF za 1 USD, obrestni meri pa sta
+%$$R^\CHF= 0,67\% \ \ R^\USD=0,88\% .$$
+%Izraèunajte vrednosti sklenjenih terminskih poslov za zlatarno.
+\end{enumerate}
+\end{naloga}
+\end{frame}
+
+\begin{frame}
+\frametitle{Rešitev 2}
+\begin{enumerate}
+\item
+\begin{itemize}
+
+\item Oznaèimo: $S_0=1835,00$ USD, $T=\frac{1}{4}$.
+\item Izroèitveno ceno za unèo zlata izraèunamo po formuli
+\begin{align*}
+	K=S_0\cdot (1+R^\USD)^T,
+\end{align*}
+Dobimo $K=1835\cdot 1,0083^{0,25}=1838,80$~USD.
+\item Za 100 unè zlata bo zlatarna morala plaèati $100\cdot K=183\,880$~USD. \pause
+\end{itemize}
+\item Doloèimo še menjalni teèaj za terminski posel med USD in CHF v trenutku $T$.
+
+Danes velja $1\ USD=S_0\ CHF$, torej $S_0=0,8174$.
+Menjalni teèaj doloèimo po formuli
+\begin{align*}
+	\ts K = S_0\cdot \left(\frac{1+R^\CHF}{1+R^\USD}\right)^T =
+	0,8174\cdot\left(\frac{1,007}{1,0083}\right)^{0,25} = 0,8171.
+\end{align*}
+
+Za 100 unè zlata bo zlatarna plaèala $183\ 902,37\cdot 0,8171=150\ 248,35$~CHF.
+\end{enumerate}
+\end{frame}
+
+\section{Opcije}
+
+\begin{frame}
+  \frametitle{Opcije}
+\begin{itemize}
+\item \textbf{Opcija} je pogodbeno razmerje med kupcem in prodajalcem, ki daje lastniku pravico, a ne obveznost, da kupi ali proda doloèeno kolièino osnovnega premoženja po vnaprej dogovorjeni pogodbeni ceni.\pause
+\item Loèimo nakupne in prodajne opcije. \pause
+\item Ob sklenitvi opcijske pogodbe mora kupec plaèati \textbf{premijo}. \pause
+\item Opcija je torej pogodba  o nakupu/prodaji osnovnega premoženja po doloèeni \textbf{izvršilni ceni} $K$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Izvršitev opcije}
+\begin{itemize}
+\item Sprejem odloèitve za nakup/prodajo osnovnega instrumenta imenujemo \textbf{izvršitev opcije}.
+    \item Glede na to, kdaj je možna izvršitev opcije, loèimo veè vrst opcij. \pause
+    \item \textbf{Evropska opcija} daje pravico izvršitve samo ob \textbf{zapadlosti} $T$. \pause
+    \item \textbf{Ameriška opcija}  daje pravico izvršitve kadarkoli do zapadlosti. \pause
+    \item Druge vrste s skupnim imenom imenujemo \textbf{eksotiène opcije}.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Zgled}
+\begin{itemize}
+\item Kupite opcijo za nakup 1 delnice Allianza in zanjo plaèate premijo 3,60~EUR.
+\item Kot lastnik opcije imate pravico, da èez eno leto kupite delnico Allianza po ceni 180~EUR. \pause
+\item Èez eno leto (prviè): Delniški trgi  dobro razvili, teèaj delnice Allianz je 225~EUR. Ali opcijo izkoristite? \pause
+\item Seveda. \pause Izvršite opcije, kupite delnico za 180~EUR, jo prodate za 225~EUR. Razlika zmanjšana za premijo je vaš dobièek: 41,4~EUR. \pause
+\item Èez eno leto (drugiè): Teèaj delnice Allianza je pod 180 EUR, izvršitev opcije ni smiselna. \pause Vaša izguba je 3,60~EUR.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Opcije - matematièni opis}
+\begin{itemize}
+\item  $S_t$ - cena osnovnega premoženja v èasu $t\in [0, T]$,
+\item $C_T$ - vrednost evropske nakupne opcije ob zapadlosti,
+ \item $P_T$ vrednost evropske prodajne opcije ob zapadlosti, \pause \item Velja:
+$$C_T =max\{S_T-K,0\} \mbox{ in}$$
+$$P_T =max\{K-S_T,0\}.$$ \pause
+\item  $c_0$ - premija za nakupno opcijo v èasu $0$,
+\item $p_0$ - premija za prodajno opcijo v èasu $0$, \pause
+\item $c_t$  - premija evropske nakupne opcije z izvršilno ceno $K$ in zapadlostjo $T$ sklenjene v èasu $t$,
+\item $p_t$ - premija evropske prodajne opcije izvršilno ceno $K$ in zapadlostjo $T$ sklenjene v èasu $t$.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Opcije - matematièni opis 2}
+\begin{itemize}
+\item Ker na trgu ni arbitraže, veljajo tudi naslednje neenakosti:
+$$max\{S_t-K\cdot (1+R)^{-(T-t)}, 0\}\leq c_t\leq S_t$$
+$$max\{K\cdot (1+R)^{-(T-t)}-S_t, 0\}\leq p_t\leq K\cdot (1+R)^{-(T-t)}.$$ \pause
+\item Za vse $t\in [0,T]$ mora veljati
+$$p_t+S_t=c_t+K\cdot (1+R)^{-(T-t)}.$$
+To je \textbf{evropska  nakupno - prodajna enakost}.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Naloga 3}
+\begin{naloga}Delnica nekega podjetja je danes vredna $S_0=55\EURp$ in v naslednje pol leta ne bo izplaèala dividend. Netvegana obrestna mera za pol leta znaša $5,25\%$.
+      \begin{enumerate}
+        \item Kaj lahko poveš o premiji evropske nakupne opcije, napisane na delnico podjetja, z zapadlostojo 6 mesecev in izvršilno ceno $K=56$~EUR?
+
+        \item Recimo, da je premija opcije iz toèke 1) enaka $c_0=0,8$~EUR. Kaj lahko poveš o premiji evropske prodajne  opcije z isto izvršilno ceno in zapadlostjo?
+      \end{enumerate}
+\end{naloga}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Rešitev 3}
+Podano imamo:
+\begin{itemize}
+\item $S_0=55$
+\item $R=5,25\%$
+\item $T=0,5$
+\item $K=56$
+\end{itemize}
+\begin{enumerate}
+\item Za $c_0$ mora veljati $max\{S_0-K\cdot (1+R)^{-T}, 0\}\leq c_0\leq S_0.$ Torej imamo
+$$0,41\le c_0\le 55.$$
+\item Iz evropske nakupno - prodajne enakosti sledi $p_0=c_0+K (1+R)^{-T}-S_0$. Ker je $c_0=0,8$, je
+$$p_0=0,8-0,41=0,39.$$
+\end{enumerate}
+\end{frame}
+
+
+\end{document}
+
