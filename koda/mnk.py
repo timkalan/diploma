@@ -7,10 +7,11 @@ igrati "križce in krožce" oz. posplošeno m,n,k-igro. (m * n plošča,
 # za hitrejše matrike
 import numpy as np
 import pickle
+import os
 # import numba as nb
 
-VRSTICE = 3
-STOLPCI = 3
+VRSTICE = 6
+STOLPCI = 6
 V_VRSTO = 3
 # GRAVITACIJA = False
 
@@ -20,6 +21,18 @@ KROZCI = -1
 NAGRADA_ZMAGA = 1
 NAGRADA_REMI = 0
 NAGRADA_PORAZ = -1
+
+
+# Funkcije pomagači
+def ponovitve(seznam, simbol, st_ponovitev=V_VRSTO):
+    i = 0
+    while i < len(seznam):
+        if seznam[i] == simbol:
+            if [seznam[i]] * st_ponovitev == seznam[i:i+st_ponovitev]:
+                return simbol
+                break
+        i += 1
+
 
 
 class Okolje:
@@ -119,34 +132,34 @@ class Okolje:
         """
         Preveri, če imamo zmagovalca in vrne njegovo številko. 
         V primeru remija vrne 0. Prav tako pove okolju, da je
-        igre (epizode) konec.
+        igre (epizode) konec. Z uporabo funkcije pomagača deluje 
+        za poljubno velike plošče, kjer je m == n.
         """
         # vrstice
         for i in range(VRSTICE):
-            if sum(self.plosca[i, :]) == V_VRSTO:
-                self.konec == True
+            if ponovitve(list(self.plosca[i, :]), 1):
+                self.konec = True
                 return 1
-            if sum(self.plosca[i, :]) == - V_VRSTO:
-                self.konec == True
+            if ponovitve(list(self.plosca[i, :]), -1):
+                self.konec = True
                 return -1
-
+                
         # stolpci
         for i in range(STOLPCI):
-            if sum(self.plosca[:, i]) == V_VRSTO:
-                self.konec == True
+            if ponovitve(list(self.plosca[:, i]), 1):
+                self.konec = True
                 return 1
-            if sum(self.plosca[:, i]) == - V_VRSTO:
-                self.konec == True
+            if ponovitve(list(self.plosca[:, i]), -1):
+                self.konec = True
                 return -1
 
         # diagonale
-        # preveri obe diagonalni vsoti
-        vsota1 = sum([self.plosca[i, i] for i in range(STOLPCI)])
-        vsota2 = sum([self.plosca[i, STOLPCI - i - 1] for i in range(STOLPCI)])
-        if vsota1 == V_VRSTO or vsota2 == V_VRSTO:
+        diag1 = [self.plosca[i, i] for i in range(STOLPCI)]
+        diag2 = [self.plosca[i, STOLPCI - i - 1] for i in range(STOLPCI)]
+        if ponovitve(list(diag1), 1) or ponovitve(list(diag2), 1):
             self.konec = True
             return 1
-        elif vsota1 == - V_VRSTO or vsota2 == - V_VRSTO:
+        if ponovitve(list(diag1), -1) or ponovitve(list(diag2), -1):
             self.konec = True
             return -1
             
@@ -187,8 +200,8 @@ class Okolje:
         počaka razsodbo o koncu
         """
         for i in range(epizode):
-            #if i % 10 == 0:
-            print(f'Epizoda {i+1}')
+            if i % 100 == 0:
+                print(f'Epizoda {i+1}')
             
             while not self.konec:
                 # 1. igralec
@@ -228,6 +241,9 @@ class Okolje:
 
     
     def igraj_clovek(self):
+        """
+        Metoda za igranje agent - človek.
+        """
         while not self.konec:
             pozicije = self.legalne_pozicije()
             p1_akcija = p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
@@ -263,6 +279,9 @@ class Okolje:
                     break
 
 
+    def igraj_nakljucen(self):
+        pass
+
 
 
 class Agent:
@@ -286,6 +305,8 @@ class Agent:
         self.epsilon = epsilon
         self.gama = gama
         self.alfa = alfa
+
+        # začnemo s prazno - izogib prevelikim tabelam
         self.vrednosti_stanj = {}   # stanje -> vrednost
 
     
@@ -301,7 +322,7 @@ class Agent:
             akcija = pozicije[indeks]
 
         else:
-            najvecja_vrednost = -1000
+            najvecja_vrednost = -1
             for pozicija in pozicije:
                 naslednje_stanje = stanje.copy()
                 naslednje_stanje[pozicija] = simbol
@@ -361,7 +382,9 @@ class Agent:
         """
         Shrani slovar vrednosti stanj za kasnejšo uporabo.
         """
-        f = open('strategije/strategija_' + str(self.ime), 'wb')
+        #if not os.path.exists('strategije/strategija_' + str(self.ime)):
+        #    os.makedirs('strategije/strategija_' + str(self.ime))
+        f = open('koda/strategije/strategija_' + str(self.ime), 'wb')
         pickle.dump(self.vrednosti_stanj, f)
         f.close()
     
@@ -412,22 +435,50 @@ class Clovek():
     def ponastavi(self):
         pass
 
-    
 
+
+class NakljucniIgralec():
+    """
+    Igralec, ki se vede naključno. Uporaben za namene testiranja.
+    """
+    pass
+
+
+class MinimaxIgralec():
+    """
+    Igralec, ki s pomočjo algoritma Minimax poišče popolno strategijo. 
+    Uporaben za namene testiranja.
+    """
+    pass
+
+    
 
 
 if __name__ == '__main__':
     # trening
-    p1 = Agent('p1')
-    p2 = Agent('p2')
-
-    igra = Okolje(p1, p2)
-    print('Treniram...')
-    igra.treniraj(10000)
+#    p1 = Agent('p1')
+#    p2 = Agent('p2')
+#
+#    igra = Okolje(p1, p2)
+#    print('Treniram...')
+#    igra.treniraj(5000)
+#    p1.shrani_strategijo()
 
     #igraj
     p1 = Agent('agent', epsilon=0)
+    p1.nalozi_strategijo('koda/strategije/strategija_p1')
     p2 = Clovek('Tim')
 
     igra = Okolje(p1, p2)
     igra.igraj_clovek()
+
+
+
+
+    # TODO: vsi passi so nekaj
+    # TODO: Zmagovalec, ki deluje na m != n
+    # TODO: vse dobro dokumentiraj
+    # TODO: implementiraj gravitacijo
+    # TODO: implementiraj boljše algoritme
+    # TODO: implementiraj nevronske mreže
+    # TODO: refaktorizacija
