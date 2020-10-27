@@ -10,8 +10,8 @@ import pickle
 import os
 # import numba as nb
 
-VRSTICE = 6
-STOLPCI = 6
+VRSTICE = 3
+STOLPCI = 3
 V_VRSTO = 3
 # GRAVITACIJA = False
 
@@ -25,6 +25,10 @@ NAGRADA_PORAZ = -1
 
 # Funkcije pomagači
 def ponovitve(seznam, simbol, st_ponovitev=V_VRSTO):
+    """
+    Funkcija v seznamu poišče, če se simbol kje ponovi st_ponovitev-krat.
+    Uporabljeno pri metodi zmagovalec, da je bila posplošena na nxn plošče.
+    """
     i = 0
     while i < len(seznam):
         if seznam[i] == simbol:
@@ -64,15 +68,17 @@ class Okolje:
         """
         Funkcija za izris plošče na terminal.
         """
-        natis = ''
+        natis = '\n' + f'{"-" * (STOLPCI * 4 + 1)}' + '\n'
         for i in range(VRSTICE):
             for j in range(STOLPCI):
-                if self.plosca[i, j] == -1:
-                    natis += '|' + str(self.plosca[i, j])
+                if self.plosca[i, j] == KROZCI:
+                    natis += '| ' + 'O' + ' '
                 # za lepši izris dodamo presledek
+                elif self.plosca[i, j] == KRIZCI:
+                    natis += '| ' + 'X' + ' '
                 else:
-                    natis += '| ' + str(self.plosca[i, j])
-            natis += '|' + '\n'
+                    natis += '| ' + ' ' + ' '
+            natis += '|' + '\n' + f'{"-" * (STOLPCI * 4 + 1)}' + '\n'
         return natis
 
 
@@ -122,8 +128,9 @@ class Okolje:
         """
         if pozicija in self.legalne_pozicije():
             self.plosca[pozicija] = self.simbol
+            
             # zamenjamo igralca po vsaki potezi
-            self.simbol = 1 if self.simbol == -1 else -1
+            self.simbol = KRIZCI if self.simbol == KROZCI else KROZCI
         else:
             print('To ni legalna pozicija!')
 
@@ -154,14 +161,36 @@ class Okolje:
                 return -1
 
         # diagonale
-        diag1 = [self.plosca[i, i] for i in range(STOLPCI)]
-        diag2 = [self.plosca[i, STOLPCI - i - 1] for i in range(STOLPCI)]
-        if ponovitve(list(diag1), 1) or ponovitve(list(diag2), 1):
-            self.konec = True
-            return 1
-        if ponovitve(list(diag1), -1) or ponovitve(list(diag2), -1):
-            self.konec = True
-            return -1
+        if (V_VRSTO <= VRSTICE) or (V_VRSTO <= STOLPCI):
+            diag1 = [self.plosca[j, j] for j in range(min(VRSTICE, STOLPCI))]
+            diag2 = [np.flip(self.plosca, axis=1)[j, j] for 
+                    j in range(min(VRSTICE, STOLPCI))]
+
+            for i in range(max(VRSTICE, STOLPCI)):
+                # to ni prilagojeno za m != n
+                # razdelimo na naddiagonale, poddiagonale in diagonale
+                poddiag1 = [self.plosca[min(VRSTICE, STOLPCI) - i + j, j] for 
+                            j in range(min(i, min(VRSTICE, STOLPCI)))]
+                naddiag1 = [self.plosca[j, min(VRSTICE, STOLPCI) - i + j] for 
+                            j in range(min(i, min(VRSTICE, STOLPCI)))]
+
+                # zrcalimo ploščo čez x os in ponovimo
+                poddiag2 = [np.flip(self.plosca, axis=1)[min(VRSTICE, STOLPCI) - i + j, j] for 
+                            j in range(min(i, min(VRSTICE, STOLPCI)))]
+                naddiag2 = [np.flip(self.plosca, axis=1)[j, min(VRSTICE, STOLPCI) - i + j] for 
+                            j in range(min(i, min(VRSTICE, STOLPCI)))]
+
+                if (ponovitve(list(diag1), 1) or ponovitve(list(naddiag1), 1) 
+                    or ponovitve(list(poddiag1), 1) or ponovitve(list(diag2), 1) 
+                    or ponovitve(list(naddiag2), 1) or ponovitve(list(poddiag2), 1)):
+                    self.konec = True
+                    return 1
+
+                if (ponovitve(list(diag1), -1) or ponovitve(list(naddiag1), -1) 
+                    or ponovitve(list(poddiag1), -1) or ponovitve(list(diag2), -1) 
+                    or ponovitve(list(naddiag2), -1) or ponovitve(list(poddiag2), -1)):
+                    self.konec = True
+                    return -1
             
         # izenačenje
         if len(self.legalne_pozicije()) == 0:
@@ -240,7 +269,7 @@ class Okolje:
                         break
 
     
-    def igraj_clovek(self):
+    def igraj_clovek(self, naravno=True):
         """
         Metoda za igranje agent - človek.
         """
@@ -264,7 +293,7 @@ class Okolje:
 
             else:
                 pozicije = self.legalne_pozicije()
-                p2_akcija = self.p2.izberi_akcijo(pozicije)
+                p2_akcija = self.p2.izberi_akcijo(pozicije, naravno=naravno)
                 self.igraj(p2_akcija)
                 print(self)
 
@@ -279,7 +308,11 @@ class Okolje:
                     break
 
 
-    def igraj_nakljucen(self):
+    def igraj_nakljucen(self, zacne=1):
+        pass
+
+
+    def igraj_splosni(self, p1, p2):
         pass
 
 
@@ -366,7 +399,9 @@ class Agent:
             if self.vrednosti_stanj.get(stanje) is None:
                 self.vrednosti_stanj[stanje] = 0
 
-            self.vrednosti_stanj[stanje] += self.alfa * (self.gama * nagrada - self.vrednosti_stanj[stanje])
+            self.vrednosti_stanj[stanje] += self.alfa * (
+                self.gama * nagrada - self.vrednosti_stanj[stanje])
+
             nagrada = self.vrednosti_stanj[stanje]
 
 
@@ -408,15 +443,20 @@ class Clovek():
         self.ime = ime
 
 
-    def izberi_akcijo(self, legalne):
+    def izberi_akcijo(self, legalne, naravno=True):
         """
         Dovoli človeku, da izbere akcijo, ki jo poda kot
         dve številki. Nato preverimo, če je akcija legalna
         in jo igramo.
         """
         while True:
-            vrstica = int(input('Izberi vrstico: '))
-            stolpec = int(input('Izberi stolpec: '))
+            if naravno:
+                vrstica = int(input('Izberi vrstico: ')) - 1
+                stolpec = int(input('Izberi stolpec: ')) - 1
+
+            else:
+                vrstica = int(input('Izberi vrstico: '))
+                stolpec = int(input('Izberi stolpec: '))
 
             akcija = (vrstica, stolpec)
             if akcija in legalne:
@@ -437,14 +477,15 @@ class Clovek():
 
 
 
-class NakljucniIgralec():
+class Nakljucni():
     """
     Igralec, ki se vede naključno. Uporaben za namene testiranja.
     """
     pass
 
 
-class MinimaxIgralec():
+
+class Minimax():
     """
     Igralec, ki s pomočjo algoritma Minimax poišče popolno strategijo. 
     Uporaben za namene testiranja.
@@ -456,13 +497,13 @@ class MinimaxIgralec():
 
 if __name__ == '__main__':
     # trening
-#    p1 = Agent('p1')
-#    p2 = Agent('p2')
-#
-#    igra = Okolje(p1, p2)
-#    print('Treniram...')
-#    igra.treniraj(5000)
-#    p1.shrani_strategijo()
+    p1 = Agent('p1', epsilon=0.05)
+    p2 = Agent('p2', epsilon=0.1)
+
+    igra = Okolje(p1, p2)
+    print('Treniram...')
+    igra.treniraj(10000)
+    p1.shrani_strategijo()
 
     #igraj
     p1 = Agent('agent', epsilon=0)
@@ -470,15 +511,21 @@ if __name__ == '__main__':
     p2 = Clovek('Tim')
 
     igra = Okolje(p1, p2)
-    igra.igraj_clovek()
+    igra.igraj_clovek(naravno=True)
 
 
 
 
-    # TODO: vsi passi so nekaj
-    # TODO: Zmagovalec, ki deluje na m != n
-    # TODO: vse dobro dokumentiraj
-    # TODO: implementiraj gravitacijo
-    # TODO: implementiraj boljše algoritme
-    # TODO: implementiraj nevronske mreže
-    # TODO: refaktorizacija
+# TODO: poglej, če si povsod uporabil globalne konstante
+# TODO: igraj_clovek, da lahko začne poljubni
+# TODO: boljši shrani in naloži funkciji
+# TODO: implementiraj nek timer (mogoče je lahko dekorator)
+# TODO: "vsi" passi so nekaj
+# TODO: Zmagovalec, ki deluje na m != n
+# TODO: vse dobro dokumentiraj
+# TODO: implementiraj gravitacijo
+# TODO: implementiraj boljše algoritme
+# TODO: implementiraj nevronske mreže
+# TODO: refaktorizacija
+# TODO: da lahko spreminjaš alfa, epsilon, ... v main
+# TODO: boljši main: da lahko izbiraš, če se policy nalaga

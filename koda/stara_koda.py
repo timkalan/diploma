@@ -50,3 +50,19 @@ def zmagovalec2(self):
     # ni konec
     self.konec = False
     return None
+
+
+def __str__(self):
+    """
+    Funkcija za izris plošče na terminal.
+    """
+    natis = ''
+    for i in range(VRSTICE):
+        for j in range(STOLPCI):
+            if self.plosca[i, j] == -1:
+                natis += '|' + str(self.plosca[i, j])
+            # za lepši izris dodamo presledek
+            else:
+                natis += '| ' + str(self.plosca[i, j])
+        natis += '|' + '\n'
+    return natis
