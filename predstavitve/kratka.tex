@@ -1,10 +1,10 @@
-\documentclass[14pt]{beamer}
+\documentclass[14pt]{beamer}    % 14pt je nenujen
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[slovene]{babel}
-\usepackage{pgfpages} % privat zapiski
+\usepackage{pgfpages}           % privat zapiski
 \usepackage{amsfonts}
-\usepackage{amsmath,amsthm} % pravilen izpis v "math mode"
+\usepackage{amsmath,amsthm}     % pravilen izpis v "math mode"
 \usepackage{hyperref}
 \hypersetup{hidelinks}
 
@@ -23,7 +23,7 @@
 \institute[FMF]{Fakulteta za matematiko in fiziko}
 \title{
     Spodbujevano učenje pri igranju namiznih iger \\ 
-    \large (angl. \textit{Using reinforcement learning to play board games})}
+    \large (angl. \textit{Reinforcement learning in board games})}
 \date{\today} 
 
 
@@ -34,12 +34,81 @@
     \titlepage
 \end{frame}
 
+
 \begin{frame}
-    \frametitle{RL}
+    \frametitle{Strojno učenje}
     \begin{itemize}
-        \item Veja strojnega učenja
-        \item 
+        \item Nadzorovano učenje
+        \item Nenadzorovano učenje
+        \item \textbf{Spodbujevano učenje}
     \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Motivacija: instrumentalno pogojevanje}
+    \begin{itemize}
+        \item Tu bo slika
+        \item Lepa psihološko motivirana podlaga
+        \item \textbf{Nagrade in kazni} 
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Spodbujevano učenje}
+    \begin{itemize}
+        \item \textbf{Okolje, agent, nagrada, (model)}
+        \item Pomemben je čas
+        \item Ne poznamo ">pravilnih"> akcij
+        \item Raziskovanje in izkoriščanje
+        \item Vrednostna funkcija
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Primer: Križci in krožci 1}
+    \begin{itemize}
+        \item tu slika tistega loopa
+        \item \textbf{Stanje:} Kje je prazno, kje ">X"< in kje ">O"<
+        \item \textbf{Agent:} Program, ki se odloča, kako igrati
+        \item \textbf{Okolje:} Agentu sporoča nagrade in stanje
+        \item \textbf{Nagrada:} Pozitivna za zmago, negativna za poraz
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Primer: Križci in krožci 2}
+    \begin{itemize}
+        \item Agent igra igre, posodablja svoje vrednosti stanj glede na odgovor okolja
+        \item Kako naj to stori?
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Primer: Križci in krožci 3}
+    \begin{itemize}
+        \item Enostavna ideja:                                  \pause
+        %
+        $$
+        V(s) \leftarrow V(s) + \alpha * [\gamma * V(s') - V(s)]
+        $$
+        %
+                                                                \pause
+        \item \textit{s} je trenutno stanje                     \pause
+        \item \textit{V} je vrednostna funkcija                 \pause
+        \item $\alpha$ je velikost koraka (hitrost učenja)      \pause
+        \item $\gamma$ je diskontni faktor (pomemben je čas)    \pause
+        \item \textit{s'} je stanje, ki sledi \textit{s}        
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Demonstracija: Križci in krožci}
+    Morda kakšna slika/grafikon
 \end{frame}
 
 
