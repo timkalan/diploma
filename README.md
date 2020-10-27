@@ -1,2 +1,6 @@
-# Uporaba spodbujevanega učenja pri igranju namiznih iger
-Repozitorij za delo diplomskega seminarja na FM v letu 2020/21
+# Spodbujevano učenj pri igranju namiznih iger
+Pri diplomskem seminarju se bom posvetil zgornji temi (*angl.* Reinforcement learning
+in board games). 
+
+V tem repozitoriju lahko najdete obe predstavitvi (ko bosta narejeni), dejansko delo
+in pa vso kodo, ki jo bom napisal tekom dela. 
