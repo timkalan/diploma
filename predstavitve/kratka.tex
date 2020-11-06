@@ -1,4 +1,4 @@
-\documentclass[14pt]{beamer}    % 14pt je nenujen
+\documentclass{beamer}    % 14pt je nenujen
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[slovene]{babel}
@@ -6,6 +6,8 @@
 \usepackage{amsfonts}
 \usepackage{amsmath,amsthm}     % pravilen izpis v "math mode"
 \usepackage{hyperref}
+\usepackage{graphicx}           % za slike
+
 \hypersetup{hidelinks}
 
 \setbeameroption{hide notes}                        % samo prosojnice
@@ -48,10 +50,14 @@
 \begin{frame}
     \frametitle{Motivacija: instrumentalno pogojevanje}
     \begin{itemize}
-        \item Tu bo slika
+        \item Tu bo slika 
+        (http://www.edugyan.in/2017/03/edward-lee-thorndike-theory-of-learning.html, 
+        https://en.wikipedia.org/wiki/Reinforcement)
         \item Lepa psihološko motivirana podlaga
         \item \textbf{Nagrade in kazni} 
     \end{itemize}
+    \includegraphics[scale=0.6]{slike/macka.jpg}
+    \includegraphics[scale=0.5]{slike/miska.jpg}
 \end{frame}
 
 
@@ -64,6 +70,26 @@
         \item Raziskovanje in izkoriščanje
         \item Vrednostna funkcija
     \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Kje je to uporabno?}
+    \begin{itemize}
+        \item Naučiti robota hoje
+        \item Upravljati s portfeljem
+        \item Igrati namizne igre
+        \item Igrati katerekoli igre
+        \item ...
+    \end{itemize}
+    Torej res praktično karkoli, kjer lahko cilj modeliramo kot numerične
+    nagrade, ne poznamo pa optimalnih akcij za dostop do teh nagrad.
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Problem}
+    Reward hypothesis
 \end{frame}
 
 
@@ -94,7 +120,7 @@
         \item Enostavna ideja:                                  \pause
         %
         $$
-        V(s) \leftarrow V(s) + \alpha * [\gamma * V(s') - V(s)]
+        V(s) \leftarrow V(s) + \alpha [R + \gamma V(s') - V(s)]
         $$
         %
                                                                 \pause
@@ -105,6 +131,29 @@
         \item \textit{s'} je stanje, ki sledi \textit{s}        
     \end{itemize}
 \end{frame}
+
+
+\begin{frame}
+    \frametitle{Bistvo}
+    %
+    $$
+    \text{nova ocena} \leftarrow \text{stara ocena} + \text{korak} 
+    [\text{cilj/tarča} - \text{stara ocena}]
+    $$
+    %
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Kako lahko to posplošimo}
+    \begin{itemize}
+        \item Koliko stanj imamo?
+        \item Do kje lahko pridemo?
+        \item Kdaj odpove?
+        \item Kaj je rešitev?
+    \end{itemize}
+\end{frame}
+
 
 \begin{frame}
     \frametitle{Demonstracija: Križci in krožci}
