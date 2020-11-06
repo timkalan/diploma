@@ -308,8 +308,115 @@ class Okolje:
                     break
 
 
-    def igraj_nakljucen(self, zacne=1):
-        pass
+    def igraj_nakljucni(self, st_iger=1000):
+        """
+        Metoda za igranje agent - naključni igralec.
+        """
+        rezultati = {
+            'zmage': 0,
+            'izenačenja': 0,
+            'porazi': 0
+            }
+
+        for i in range(st_iger):
+            if i % 100 == 0:
+                print(f'Igra {i+1}')
+
+            while not self.konec:
+                # 1. igralec
+                pozicije = self.legalne_pozicije()
+                p1_akcija = p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
+                self.igraj(p1_akcija)
+                stanje = self.pridobi_stanje()
+                self.p1.dodaj_stanje(stanje)
+
+                zmaga = self.zmagovalec()
+                if zmaga is not None:
+                    # zmagal je prvi ali remi
+                    if zmaga == 1:
+                        rezultati['zmage'] += 1
+
+                    else: 
+                        rezultati['izenačenja'] += 1
+
+                    self.ponastavi()
+                    break
+
+                else:
+                    # 2. igralec
+                    pozicije = self.legalne_pozicije()
+                    p2_akcija = p2.izberi_akcijo(pozicije)
+                    self.igraj(p2_akcija)
+
+                    zmaga = self.zmagovalec()
+                    if zmaga is not None:
+                        # zmagal je drugi ali remi
+                        if zmaga == -1:
+                            rezultati['porazi'] += 1
+
+                        else: 
+                            rezultati['izenačenja'] += 1
+
+                        self.ponastavi()
+                        break
+        print(rezultati)
+
+
+    def igraj_sebi(self, st_iger=1000):
+        """
+        Metoda za igranje agent - agent.
+        """
+        rezultati = {
+            'zmage': 0,
+            'izenačenja': 0,
+            'porazi': 0
+            }
+
+        for i in range(st_iger):
+            if i % 100 == 0:
+                print(f'Igra {i+1}')
+            
+            while not self.konec:
+                # 1. igralec
+                pozicije = self.legalne_pozicije()
+                p1_akcija = p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
+                self.igraj(p1_akcija)
+                stanje = self.pridobi_stanje()
+                self.p1.dodaj_stanje(stanje)
+
+                zmaga = self.zmagovalec()
+                if zmaga is not None:
+                    # zmagal je prvi ali remi
+                    if zmaga == 1:
+                        rezultati['zmage'] += 1
+
+                    else: 
+                        rezultati['izenačenja'] += 1
+
+                    self.ponastavi()
+                    break
+
+                else:
+                    # 2. igralec
+                    pozicije = self.legalne_pozicije()
+                    p2_akcija = p2.izberi_akcijo(pozicije, self.plosca, self.simbol)
+                    self.igraj(p2_akcija)
+                    stanje = self.pridobi_stanje()
+                    self.p2.dodaj_stanje(stanje)
+
+                    zmaga = self.zmagovalec()
+                    if zmaga is not None:
+                        # zmagal je drugi ali remi
+                        if zmaga == -1:
+                            rezultati['porazi'] += 1
+
+                        else: 
+                            rezultati['izenačenja'] += 1
+
+                        self.ponastavi()
+                        break
+        print(rezultati)
+
 
 
     def igraj_splosni(self, p1, p2):
@@ -417,8 +524,6 @@ class Agent:
         """
         Shrani slovar vrednosti stanj za kasnejšo uporabo.
         """
-        #if not os.path.exists('strategije/strategija_' + str(self.ime)):
-        #    os.makedirs('strategije/strategija_' + str(self.ime))
         f = open('koda/strategije/strategija_' + str(self.ime), 'wb')
         pickle.dump(self.vrednosti_stanj, f)
         f.close()
@@ -479,9 +584,20 @@ class Clovek():
 
 class Nakljucni():
     """
-    Igralec, ki se vede naključno. Uporaben za namene testiranja.
+    Igralec, ki se vede naključno. Uporaben za namene testiranja in treniranja.
     """
-    pass
+
+    def __init__(self, ime):
+        self.ime = ime
+
+
+    def izberi_akcijo(self, pozicije):
+        """
+        Enostavno pridobi seznam vseh legalnih pozicij in izbere naključno.
+        """
+        indeks =  np.random.choice(len(pozicije))
+        akcija = pozicije[indeks]
+        return akcija
 
 
 
@@ -497,21 +613,21 @@ class Minimax():
 
 if __name__ == '__main__':
     # trening
-    p1 = Agent('p1', epsilon=0.05)
-    p2 = Agent('p2', epsilon=0.1)
-
-    igra = Okolje(p1, p2)
-    print('Treniram...')
-    igra.treniraj(10000)
-    p1.shrani_strategijo()
+#    p1 = Agent('p1', epsilon=0.01)
+#    p2 = Agent('p2', epsilon=0.1)
+#
+#    igra = Okolje(p1, p2)
+#    print('Treniram...')
+#    igra.treniraj(3000)
+#    p1.shrani_strategijo()
 
     #igraj
-    p1 = Agent('agent', epsilon=0)
+    p1 = Agent('agent1', epsilon=0)
     p1.nalozi_strategijo('koda/strategije/strategija_p1')
     p2 = Clovek('Tim')
 
     igra = Okolje(p1, p2)
-    igra.igraj_clovek(naravno=True)
+    igra.igraj_clovek()
 
 
 
