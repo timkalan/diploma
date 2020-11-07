@@ -5,10 +5,13 @@
 \usepackage{pgfpages}           % privat zapiski
 \usepackage{amsfonts}
 \usepackage{amsmath,amsthm}     % pravilen izpis v "math mode"
-\usepackage{hyperref}
+%\usepackage{hyperref}
 \usepackage{graphicx}           % za slike
+%
 
-\hypersetup{hidelinks}
+%\hypersetup{hidelinks}
+
+\setbeamertemplate{theorems}[ams style]             % numbered da brez bold 
 
 \setbeameroption{hide notes}                        % samo prosojnice
 %\setbeameroption{show only notes}                   % samo zapiski
@@ -20,6 +23,13 @@
 \setbeamertemplate{navigation symbols}{} % izklop navigacije
 \setbeamertemplate{footline}[frame number]{} % oštevilčenje
 \setbeamertemplate{note page}{\pagecolor{yellow!5}\insertnote}
+
+\newtheorem{izrek}{Izrek}
+\newtheorem{trditev}[izrek]{Trditev}
+\newtheorem{posledica}[izrek]{Posledica}
+\newtheorem{definicija}[izrek]{Definicija}
+\newtheorem{naloga}[izrek]{Naloga}
+\newtheorem{resitev}[izrek]{Naloga}
 
 \author{Tim Kalan}
 \institute[FMF]{Fakulteta za matematiko in fiziko}
@@ -40,8 +50,8 @@
 \begin{frame}
     \frametitle{Strojno učenje}
     \begin{itemize}
-        \item Nadzorovano učenje
-        \item Nenadzorovano učenje
+        \item Nadzorovano učenje \textit{(npr. prepoznavanje števk)}
+        \item Nenadzorovano učenje \textit{(npr. razvrščanje)}
         \item \textbf{Spodbujevano učenje}
     \end{itemize}
 \end{frame}
@@ -56,13 +66,16 @@
         \item Lepa psihološko motivirana podlaga
         \item \textbf{Nagrade in kazni} 
     \end{itemize}
-    \includegraphics[scale=0.6]{slike/macka.jpg}
-    \includegraphics[scale=0.5]{slike/miska.jpg}
+
+    \begin{figure}[b]
+        \includegraphics[scale=0.6]{slike/macka.jpg}
+        \includegraphics[scale=0.5]{slike/miska.jpg}
+    \end{figure}
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{Spodbujevano učenje}
+    \frametitle{Spodbujevano učenje - osnovni koncepti}
     \begin{itemize}
         \item \textbf{Okolje, agent, nagrada, (model)}
         \item Pomemben je čas
@@ -89,14 +102,23 @@
 
 \begin{frame}
     \frametitle{Problem}
-    Reward hypothesis
+    \begin{definicija}[Hipoteza o nagradi]
+        Vse cilje je mogoče opisati kot maksimizacijo neke kumulativne numerične 
+        nagrade.
+    \end{definicija}
+
+    \medskip
+
+    \begin{itemize}
+        \item To ni nujno res
+    \end{itemize}
 \end{frame}
 
 
 \begin{frame}
     \frametitle{Primer: Križci in krožci 1}
     \begin{itemize}
-        \item tu slika tistega loopa
+        \item tu slika tistega loopa %(https://sl.wikipedia.org/wiki/Spodbujevano_učenje)
         \item \textbf{Stanje:} Kje je prazno, kje ">X"< in kje ">O"<
         \item \textbf{Agent:} Program, ki se odloča, kako igrati
         \item \textbf{Okolje:} Agentu sporoča nagrade in stanje
@@ -141,6 +163,57 @@
     [\text{cilj/tarča} - \text{stara ocena}]
     $$
     %
+    \medskip
+    \begin{itemize}
+        \item Tako ocenimo dano strategijo
+        \item Kako pa strategijo dejansko spremenimo?
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Formalizacija: Markovski proces odločanja 1}
+    \begin{definicija}[Markovska veriga]
+        Skučajni proces $(S_t)_{t=0}^T$ na končnem verjetnostnem prostoru 
+        $(\Omega, P)$ je \textbf{Markovska veriga}, če velja 
+        $$
+        P(S_{t+1} = s_{t+1}|S_{t} = s_{t}, ..., S_0 = s_0) = P(S_{t+1} = s_{t+1}|S_{t} = s_{t})
+        $$
+    \end{definicija}
+    \pause
+    \medskip
+    \begin{itemize}
+        \item Prihodnost je neodvisna od preteklosti, če poznamo sedanjost
+        \pause
+        \item Definiramo $p_{ss'} := P(S_{t+1} = s'|S_{t} = s)$ in to združimo v matriko
+                $\mathcal{P} := [p_{ss'}]_{s,s'\in \mathcal{S} }$, kjer je $\mathcal{S}$ 
+                množica stanj
+    \end{itemize}
+    
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Formalizacija: Markovski proces odločanja 2}
+    \begin{definicija}[Markovski proces]
+        \textbf{Markovski proces} je par $(\mathcal{S}, \mathcal{P})$, kjer je
+        \begin{itemize}
+            \item $\mathcal{S}$ je (končna) množica stanj
+            \item $\mathcal{P}$ je prehodna matrika
+        \end{itemize}
+    \end{definicija}
+    \pause
+    \begin{definicija}[Markovski proces odločanja]
+        \textbf{Markovski proces odločanja} je nabor 
+        $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, kjer je
+        \begin{itemize}
+            \item $\mathcal{S}$ je (končna) množica stanj
+            \item $\mathcal{A}$ je (končna) množiza akcij oz. dejanj
+            \item $\mathcal{P}$ je prehodna matrika, kjer $p_{ss'}^a = P(S_{t+1} = s'|S_{t} = s, A_t = a)$
+            \item $\mathcal{R}$ je nagradna funkcija (tist E neki)
+            \item $\gamma \in [0, 1]$ je diskontni faktor
+        \end{itemize}
+    \end{definicija}
 \end{frame}
 
 
@@ -155,10 +228,20 @@
 \end{frame}
 
 
+%\begin{frame}
+%    \bibliography{kratka}{}
+%    \bibliographystyle{plain}
+%\end{frame}
+
+
 \begin{frame}
     \frametitle{Demonstracija: Križci in krožci}
     Morda kakšna slika/grafikon
 \end{frame}
+
+
+% TODO: mentor 
+% TODO: nagrade
 
 
 \end{document}
