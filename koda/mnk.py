@@ -11,7 +11,7 @@ import os
 # import numba as nb
 
 VRSTICE = 3
-STOLPCI = 3
+STOLPCI = 4
 V_VRSTO = 3
 # GRAVITACIJA = False
 
@@ -136,49 +136,50 @@ class Okolje:
 
 
     def zmagovalec(self):
-        """
-        Preveri, če imamo zmagovalca in vrne njegovo številko. 
-        V primeru remija vrne 0. Prav tako pove okolju, da je
-        igre (epizode) konec. Z uporabo funkcije pomagača deluje 
-        za poljubno velike plošče, kjer je m == n.
-        """
-        # vrstice
-        for i in range(VRSTICE):
-            if ponovitve(list(self.plosca[i, :]), 1):
-                self.konec = True
-                return 1
-            if ponovitve(list(self.plosca[i, :]), -1):
-                self.konec = True
-                return -1
-                
-        # stolpci
-        for i in range(STOLPCI):
-            if ponovitve(list(self.plosca[:, i]), 1):
-                self.konec = True
-                return 1
-            if ponovitve(list(self.plosca[:, i]), -1):
-                self.konec = True
-                return -1
+        pregled = min(VRSTICE, STOLPCI)
+        razlika = VRSTICE - STOLPCI if VRSTICE >= STOLPCI else STOLPCI - VRSTICE
+        plosca = self.plosca if VRSTICE >= STOLPCI else np.transpose(self.plosca)
 
-        # diagonale
-        if (V_VRSTO <= VRSTICE) or (V_VRSTO <= STOLPCI):
-            diag1 = [self.plosca[j, j] for j in range(min(VRSTICE, STOLPCI))]
-            diag2 = [np.flip(self.plosca, axis=1)[j, j] for 
-                    j in range(min(VRSTICE, STOLPCI))]
+        if V_VRSTO > pregled:
+            print("Ne bo zmage!")
+            raise Exception 
 
-            for i in range(max(VRSTICE, STOLPCI)):
+        for k in range(razlika+1):
+            for i in range(pregled):
+                # vrstice
+                if ponovitve(list(plosca[i+k, :]), 1):
+                    self.konec = True
+                    return 1
+                if ponovitve(list(plosca[i+k, :]), -1):
+                    self.konec = True
+                    return -1
+
+                # stolpci
+                if ponovitve(list(plosca[:, i]), 1):
+                    self.konec = True
+                    return 1
+                if ponovitve(list(plosca[:, i]), -1):
+                    self.konec = True
+                    return -1
+
+            
+            diag1 = [plosca[j+k, j] for j in range(pregled)]
+            diag2 = [np.flip(plosca, axis=1)[j+k, j] for 
+                    j in range(pregled)]
+
+            for i in range(pregled):
                 # to ni prilagojeno za m != n
                 # razdelimo na naddiagonale, poddiagonale in diagonale
-                poddiag1 = [self.plosca[min(VRSTICE, STOLPCI) - i + j, j] for 
-                            j in range(min(i, min(VRSTICE, STOLPCI)))]
-                naddiag1 = [self.plosca[j, min(VRSTICE, STOLPCI) - i + j] for 
-                            j in range(min(i, min(VRSTICE, STOLPCI)))]
+                poddiag1 = [plosca[pregled - i + j+k, j] for 
+                            j in range(i)]
+                naddiag1 = [plosca[j+k, pregled - i + j] for 
+                            j in range(i)]
 
                 # zrcalimo ploščo čez x os in ponovimo
-                poddiag2 = [np.flip(self.plosca, axis=1)[min(VRSTICE, STOLPCI) - i + j, j] for 
-                            j in range(min(i, min(VRSTICE, STOLPCI)))]
-                naddiag2 = [np.flip(self.plosca, axis=1)[j, min(VRSTICE, STOLPCI) - i + j] for 
-                            j in range(min(i, min(VRSTICE, STOLPCI)))]
+                poddiag2 = [np.flip(plosca, axis=1)[pregled - i + j+k, j] for 
+                            j in range(i)]
+                naddiag2 = [np.flip(plosca, axis=1)[j+k, pregled - i + j] for 
+                            j in range(i)]
 
                 if (ponovitve(list(diag1), 1) or ponovitve(list(naddiag1), 1) 
                     or ponovitve(list(poddiag1), 1) or ponovitve(list(diag2), 1) 
@@ -200,7 +201,7 @@ class Okolje:
         # ni konec
         self.konec = False
         return None
-
+        
 
     def daj_nagrado(self):
         """
@@ -431,7 +432,7 @@ class Agent:
     shraniti strategijo.
     """
 
-    def __init__(self, ime, epsilon=0.3, gama=0.9, alfa=0.2):
+    def __init__(self, ime, epsilon=0.3, gama=1, alfa=0.2):
         """
         Agent mora beležiti vsa raziskana stanja v epizodi in 
         posodabljati vrednosti teh stanj. 
@@ -613,13 +614,13 @@ class Minimax():
 
 if __name__ == '__main__':
     # trening
-#    p1 = Agent('p1', epsilon=0.01)
-#    p2 = Agent('p2', epsilon=0.1)
-#
-#    igra = Okolje(p1, p2)
-#    print('Treniram...')
-#    igra.treniraj(3000)
-#    p1.shrani_strategijo()
+    p1 = Agent('p1', epsilon=0.01)
+    p2 = Agent('p2', epsilon=0.1)
+
+    igra = Okolje(p1, p2)
+    print('Treniram...')
+    igra.treniraj(3000)
+    p1.shrani_strategijo()
 
     #igraj
     p1 = Agent('agent1', epsilon=0)
@@ -645,3 +646,5 @@ if __name__ == '__main__':
 # TODO: refaktorizacija
 # TODO: da lahko spreminjaš alfa, epsilon, ... v main
 # TODO: boljši main: da lahko izbiraš, če se policy nalaga
+# TODO: online vs offline učenje
+# TODO: treniraj proti drugim vrstam nasprotnika
