@@ -7,7 +7,7 @@
 \usepackage{amsmath,amsthm}     % pravilen izpis v "math mode"
 %\usepackage{hyperref}
 \usepackage{graphicx}           % za slike
-%
+\usepackage{tikz}
 
 %\hypersetup{hidelinks}
 
@@ -19,6 +19,8 @@
 
 \usepackage{palatino}
 \usefonttheme{serif}
+
+%\usecolortheme{beetle} %ali beetle morda ali seagull 
 
 \setbeamertemplate{navigation symbols}{} % izklop navigacije
 \setbeamertemplate{footline}[frame number]{} % oštevilčenje
@@ -58,7 +60,7 @@
 
 
 \begin{frame}
-    \frametitle{Motivacija: instrumentalno pogojevanje}
+    \frametitle{Motivacija: Instrumentalno pogojevanje}
     \begin{itemize}
         \item Tu bo slika 
         (http://www.edugyan.in/2017/03/edward-lee-thorndike-theory-of-learning.html, 
@@ -68,9 +70,23 @@
     \end{itemize}
 
     \begin{figure}[b]
-        \includegraphics[scale=0.6]{slike/macka.jpg}
+        \includegraphics[scale=0.47]{slike/macka.jpg}
         \includegraphics[scale=0.5]{slike/miska.jpg}
     \end{figure}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Motivacija: Zakaj namizne igre?}
+    \begin{itemize}
+        \item Aplikacija abstraktnega mišljenja
+        \pause
+        \item Spremljajo človeštvo že zelo dolgo
+        \pause
+        \item ">Modelirajo"< resnično življenje
+        \pause
+        \item Uporabno mesto za testiranje algoritmov
+    \end{itemize}
 \end{frame}
 
 
@@ -79,10 +95,14 @@
     \begin{itemize}
         \item \textbf{Okolje, agent, nagrada, (model)}
         \item Pomemben je čas
-        \item Ne poznamo ">pravilnih"> akcij
+        \item Ne poznamo ">pravilnih"< akcij
         \item Raziskovanje in izkoriščanje
         \item Vrednostna funkcija
     \end{itemize}
+
+    \begin{figure}
+        \includegraphics[scale=0.5]{slike/RLloop.png}
+    \end{figure}
 \end{frame}
 
 
@@ -139,18 +159,25 @@
 \begin{frame}
     \frametitle{Primer: Križci in krožci 3}
     \begin{itemize}
-        \item Enostavna ideja:                                  \pause
+        \item Enostavna ideja:                                  
+        \pause
         %
         $$
-        V(s) \leftarrow V(s) + \alpha [R + \gamma V(s') - V(s)]
+        V(s) \leftarrow V(s) + \alpha [R(s') + \gamma V(s') - V(s)]
         $$
-        %
-                                                                \pause
-        \item \textit{s} je trenutno stanje                     \pause
-        \item \textit{V} je vrednostna funkcija                 \pause
-        \item $\alpha$ je velikost koraka (hitrost učenja)      \pause
-        \item $\gamma$ je diskontni faktor (pomemben je čas)    \pause
-        \item \textit{s'} je stanje, ki sledi \textit{s}        
+        %                                       
+        \pause
+        \item $s$ je trenutno stanje                     
+        \pause
+        \item $V$ je vrednostna funkcija                 
+        \pause
+        \item $\alpha$ je velikost koraka (hitrost učenja) 
+        \pause
+        \item $R$ je nagrada   
+        \pause
+        \item $\gamma$ je diskontni faktor (pomemben je čas)    
+        \pause
+        \item $s'$ je stanje, ki sledi \textit{s}        
     \end{itemize}
 \end{frame}
 
@@ -175,9 +202,9 @@
     \frametitle{Formalizacija: Markovski proces odločanja 1}
     \begin{definicija}[Markovska veriga]
         Skučajni proces $(S_t)_{t=0}^T$ na končnem verjetnostnem prostoru 
-        $(\Omega, P)$ je \textbf{Markovska veriga}, če velja 
+        $(\Omega, P)$ je \textbf{Markovska veriga}, če velja Markovska lastnost
         $$
-        P(S_{t+1} = s_{t+1}|S_{t} = s_{t}, ..., S_0 = s_0) = P(S_{t+1} = s_{t+1}|S_{t} = s_{t})
+        P(S_{t+1} = s_{t+1} | S_{t} = s_{t}, ..., S_0 = s_0) = P(S_{t+1} = s_{t+1} | S_{t} = s_{t})
         $$
     \end{definicija}
     \pause
@@ -185,7 +212,7 @@
     \begin{itemize}
         \item Prihodnost je neodvisna od preteklosti, če poznamo sedanjost
         \pause
-        \item Definiramo $p_{ss'} := P(S_{t+1} = s'|S_{t} = s)$ in to združimo v matriko
+        \item Definiramo $p_{ss'} := P(S_{t+1} = s' | S_{t} = s)$ in to združimo v matriko
                 $\mathcal{P} := [p_{ss'}]_{s,s'\in \mathcal{S} }$, kjer je $\mathcal{S}$ 
                 množica stanj
     \end{itemize}
@@ -195,22 +222,22 @@
 
 \begin{frame}
     \frametitle{Formalizacija: Markovski proces odločanja 2}
-    \begin{definicija}[Markovski proces]
-        \textbf{Markovski proces} je par $(\mathcal{S}, \mathcal{P})$, kjer je
-        \begin{itemize}
-            \item $\mathcal{S}$ je (končna) množica stanj
-            \item $\mathcal{P}$ je prehodna matrika
-        \end{itemize}
-    \end{definicija}
-    \pause
+    %\begin{definicija}[Markovski proces]
+    %    \textbf{Markovski proces} je par $(\mathcal{S}, \mathcal{P})$, kjer je
+    %    \begin{itemize}
+    %        \item $\mathcal{S}$ je (končna) množica stanj
+    %        \item $\mathcal{P}$ je prehodna matrika
+    %    \end{itemize}
+    %\end{definicija}
+    %\pause
     \begin{definicija}[Markovski proces odločanja]
         \textbf{Markovski proces odločanja} je nabor 
         $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, kjer je
         \begin{itemize}
             \item $\mathcal{S}$ je (končna) množica stanj
             \item $\mathcal{A}$ je (končna) množiza akcij oz. dejanj
-            \item $\mathcal{P}$ je prehodna matrika, kjer $p_{ss'}^a = P(S_{t+1} = s'|S_{t} = s, A_t = a)$
-            \item $\mathcal{R}$ je nagradna funkcija (tist E neki)
+            \item $\mathcal{P}$ je prehodna matrika, kjer $p_{ss'}^a = P(S_{t+1} = s' | S_{t} = s, A_t = a)$
+            \item $\mathcal{R}$ je nagradna funkcija $\mathcal{R}_s^a = E[R_{t+1} | S_{t} = s, A_t = a]$
             \item $\gamma \in [0, 1]$ je diskontni faktor
         \end{itemize}
     \end{definicija}
@@ -239,6 +266,27 @@
     Morda kakšna slika/grafikon
 \end{frame}
 
+
+\begin{frame}
+    \tikzstyle{block} = [rectangle, draw, 
+    text width=5em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex]
+\begin{tikzpicture}[node distance = 6em, auto, thick]
+    \node [block] (Agent) {Agent};
+    \node [block, below of=Agent] (Okolje) {Okolje};
+        \path [line] (Agent.0) --++ (4em,0em) |- node [near start]{Akcija $a_t$} (Okolje.0);
+        \path [line] (Okolje.190) --++ (-5em,0em) |- node [near start] {Novo stanje  $s_{t+1}$} (Agent.170);
+        \path [line] (Okolje.170) --++ (-4.25em,0em) |- node [near start, right] {Nagrada $r_{t+1}$} (Agent.190);
+\end{tikzpicture}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Ideje}
+    \begin{itemize}
+        \item Formalizacija, V, Q, pi, ...
+    \end{itemize}
+\end{frame}
 
 % TODO: mentor 
 % TODO: nagrade
