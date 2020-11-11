@@ -430,3 +430,6 @@ TSWLatexianTemp*
 
 # mac datoteke
 .DS_Store
+
+# VSC nastavitve
+.vscode
