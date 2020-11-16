@@ -4,14 +4,12 @@ igrati "križce in krožce" oz. posplošeno m,n,k-igro. (m * n plošča,
 želimo k simbolov v vrsto).
 """
 
-# za hitrejše matrike
 import numpy as np
 import pickle
 import os
-# import numba as nb
 
 VRSTICE = 3
-STOLPCI = 4
+STOLPCI = 3
 V_VRSTO = 3
 # GRAVITACIJA = False
 
@@ -113,10 +111,10 @@ class Okolje:
                 if self.plosca[i, j] == 0:
                     # pozicijo shranimo kot nabor
                     pozicije.append((i, j))
-        return  pozicije
+        return pozicije
 
 
-    # mogoče prepiši v naravne indekse?
+    # prepiši s try except
     def igraj(self, pozicija):
         """
         Preveri, če je pozicija na seznamu legalnih, in če je, nanjo vpiše 
@@ -137,7 +135,7 @@ class Okolje:
 
     def zmagovalec(self):
         pregled = min(VRSTICE, STOLPCI)
-        razlika = VRSTICE - STOLPCI if VRSTICE >= STOLPCI else STOLPCI - VRSTICE
+        razlika = abs(VRSTICE - STOLPCI)
         plosca = self.plosca if VRSTICE >= STOLPCI else np.transpose(self.plosca)
 
         if V_VRSTO > pregled:
@@ -236,7 +234,7 @@ class Okolje:
             while not self.konec:
                 # 1. igralec
                 pozicije = self.legalne_pozicije()
-                p1_akcija = p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
+                p1_akcija = self.p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
                 self.igraj(p1_akcija)
                 stanje = self.pridobi_stanje()
                 self.p1.dodaj_stanje(stanje)
@@ -254,7 +252,7 @@ class Okolje:
                 else:
                     # 2. igralec
                     pozicije = self.legalne_pozicije()
-                    p2_akcija = p2.izberi_akcijo(pozicije, self.plosca, self.simbol)
+                    p2_akcija = self.p2.izberi_akcijo(pozicije, self.plosca, self.simbol)
                     self.igraj(p2_akcija)
                     stanje = self.pridobi_stanje()
                     self.p2.dodaj_stanje(stanje)
@@ -276,7 +274,7 @@ class Okolje:
         """
         while not self.konec:
             pozicije = self.legalne_pozicije()
-            p1_akcija = p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
+            p1_akcija = self.p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
             self.igraj(p1_akcija)
             print(self)
             stanje = self.pridobi_stanje()
@@ -326,7 +324,7 @@ class Okolje:
             while not self.konec:
                 # 1. igralec
                 pozicije = self.legalne_pozicije()
-                p1_akcija = p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
+                p1_akcija = self.p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
                 self.igraj(p1_akcija)
                 stanje = self.pridobi_stanje()
                 self.p1.dodaj_stanje(stanje)
@@ -346,7 +344,7 @@ class Okolje:
                 else:
                     # 2. igralec
                     pozicije = self.legalne_pozicije()
-                    p2_akcija = p2.izberi_akcijo(pozicije)
+                    p2_akcija = self.p2.izberi_akcijo(pozicije)
                     self.igraj(p2_akcija)
 
                     zmaga = self.zmagovalec()
@@ -380,7 +378,7 @@ class Okolje:
             while not self.konec:
                 # 1. igralec
                 pozicije = self.legalne_pozicije()
-                p1_akcija = p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
+                p1_akcija = self.p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
                 self.igraj(p1_akcija)
                 stanje = self.pridobi_stanje()
                 self.p1.dodaj_stanje(stanje)
@@ -540,7 +538,7 @@ class Agent:
 
 
 
-class Clovek():
+class Clovek:
     """
     Predstavlja človeškega igralca v igri.
     """
@@ -568,22 +566,9 @@ class Clovek():
             if akcija in legalne:
                 return akcija
 
-    
-    # Spodaj so provizorične funkcije, da program deluje
-    def dodaj_stanje(self, stanje):
-        pass
 
 
-    def nagradi(self, nagrada):
-        pass
-
-
-    def ponastavi(self):
-        pass
-
-
-
-class Nakljucni():
+class Nakljucni:
     """
     Igralec, ki se vede naključno. Uporaben za namene testiranja in treniranja.
     """
@@ -601,44 +586,73 @@ class Nakljucni():
         return akcija
 
 
-
-class Minimax():
-    """
-    Igralec, ki s pomočjo algoritma Minimax poišče popolno strategijo. 
-    Uporaben za namene testiranja.
-    """
+# ideja:
+class MonteCarlo(Agent):
     pass
+
+class TD(Agent):
+    pass
+
+
+#class Minimax():
+#    """
+#    Igralec, ki s pomočjo algoritma Minimax poišče popolno strategijo. 
+#    Uporaben za namene testiranja.
+#    """
+#    pass
 
     
 
+def main(p1=Agent('p1', epsilon=0.01), 
+         p2=Agent('p2', epsilon=0.1), 
+         trening=True,
+         epizode=2000,
+         nalozi=False, 
+         shrani=True, 
+         nasprotnik=Clovek('Tim'), 
+         zacne=True):
 
-if __name__ == '__main__':
-    # trening
-    p1 = Agent('p1', epsilon=0.01)
-    p2 = Agent('p2', epsilon=0.1)
+    """
+    p1 = Agent
+    p2 = nasprotnik za namene treninga
+    trening = treniramo ali samo igramo
+    epizode = število iger, ki se odigrajo med treningom
+    nasprotnik = tip igralca za igrati proti
+    zacne = True, če začne agent in False sicer
+    """
+    if trening:
+        igra = Okolje(p1, p2)
+        print('Treniram...')
 
-    igra = Okolje(p1, p2)
-    print('Treniram...')
-    igra.treniraj(3000)
-    p1.shrani_strategijo()
+        if nalozi:
+            p1.nalozi_strategijo('koda/strategije/strategija_p1')
+
+        igra.treniraj(epizode)
+
+        if shrani:
+            p1.shrani_strategijo()
 
     #igraj
-    p1 = Agent('agent1', epsilon=0)
+    p1.epsilon = 0
     p1.nalozi_strategijo('koda/strategije/strategija_p1')
-    p2 = Clovek('Tim')
+    p2 = nasprotnik
 
     igra = Okolje(p1, p2)
     igra.igraj_clovek()
 
 
+if __name__ == '__main__':
+    main()
 
+
+
+# TODO: zmagovalec za m != n ne dela! -> mogoče zdaj dela?
 
 # TODO: poglej, če si povsod uporabil globalne konstante
-# TODO: igraj_clovek, da lahko začne poljubni
+# TODO: igraj_clovek, da lahko začne poljubni - ideja: funkcija poteza za vse mozne igralce
 # TODO: boljši shrani in naloži funkciji
 # TODO: implementiraj nek timer (mogoče je lahko dekorator)
 # TODO: "vsi" passi so nekaj
-# TODO: Zmagovalec, ki deluje na m != n
 # TODO: vse dobro dokumentiraj
 # TODO: implementiraj gravitacijo
 # TODO: implementiraj boljše algoritme
