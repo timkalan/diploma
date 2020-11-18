@@ -10,6 +10,7 @@
 \usepackage{tikz}
 \usepackage{multicol}
 \usepackage{ulem}
+\usepackage{bibentry}
 
 %\hypersetup{hidelinks}
 
@@ -36,7 +37,7 @@
 \newtheorem{resitev}[izrek]{Naloga}
 
 \author{Tim Kalan \\ \medskip
-        \footnotesize Mentor: prof.~dr. Marjetka Knez}
+        \footnotesize Mentor: izred.~prof.~dr. Marjetka Knez}
 \institute[FMF]{Fakulteta za matematiko in fiziko}
 \title{
     Spodbujevano učenje pri igranju namiznih iger \\ 
@@ -82,11 +83,8 @@
     \frametitle{Motivacija: Zakaj namizne igre?}
     \begin{itemize}
         \item Aplikacija abstraktnega mišljenja
-        \pause
         \item Spremljajo človeštvo že zelo dolgo
-        \pause
-        \item ">Modelirajo"< resnično življenje
-        \pause
+        \item ">Modelirajo"< resnično življenje 
         \item Uporabno mesto za testiranje algoritmov
     \end{itemize}
 \end{frame}
@@ -244,17 +242,64 @@
     \medskip
 
     \begin{itemize}
-        \item Ponavadi izberemo ">najboljšo"< akcijo
+        \item ">Ponavadi"< izberemo ">najboljšo"< akcijo
         \item Z verjetnostjo $\epsilon$ izberemo naključno akcijo
     \end{itemize}
+
+    \begin{figure}
+        \includegraphics[scale=0.23]{slike/policy-iteration.png}
+    \end{figure}
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{MCMCMCMCMCMCMCMCMCMCMC}
+    \frametitle{Alternativa: Monte Carlo spodbujevano učenje 1}
+    \begin{definicija}
+        \begin{itemize}
+            \item Agentova \textbf{strategija} je takšna preslikava $\pi: S \rightarrow A$
+                    da velja 
+                    \begin{align*}
+                    a &= \pi(s) \\
+                    \pi(a | s) &= P(A_t = a | S_t = S) 
+                    \end{align*}
 
-    
+            \item Naj bodo $R_{t+1}, ...,R_T$ nagrade, ji jih bomo prejeli od trenutka 
+                    $t$ do konca epizode. \textbf{Povračilo} $G_t$ definiramo kot
+                    $$
+                    G_t = R_{t+1} + \gamma R_{t+2} + ... + \gamma^{T-1} R_T
+                    $$
 
+            \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
+                    stanja} glede na dano strategijo $v_\pi(s)$ je
+                    $$
+                    v_\pi(s) = \mathbb{E} [G_t | S_t = s]
+                    $$
+        \end{itemize}
+    \end{definicija}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Alternativa: Monte Carlo spodbujevano učenje 2}
+    \begin{itemize}
+        \item Ob obisku stanja $s$: 
+        \begin{align*}
+            N(s) &\leftarrow N(s) + 1 \\
+            S(s) &\leftarrow S(s) + G_t
+        \end{align*}
+        \item Po koncu učenja: 
+        $$
+        V(s) \leftarrow S(s) / N(s)
+        $$
+       \item Pomni: Računanje povprečja zaporedja $(X_i)_{i \in \mathbb{N}}$
+       $$
+       \mu_k = \frac{1}{k} \sum_{j=1}^k X_j = \mu_{k-1} + \frac{1}{k} (X_k - \mu_{k-1})
+       $$
+       \item Inkrementalni Monte Carlo:
+       $$
+       V(s) \leftarrow V(s) + \alpha (G_t - V(S_t))
+       $$
+    \end{itemize}
 \end{frame}
 
 
@@ -311,6 +356,11 @@
         \item Koliko stanj imamo?
         \item Do kje lahko pridemo?
         \item Kaj je rešitev?
+        \medskip 
+        \medskip
+        \medskip
+        \item Monte Carlo metode ponavadi nastopijo, ko nekaj aproksimiramo, 
+                kako je s tem v našem primeru?
     \end{itemize}
 \end{frame}
 
@@ -319,26 +369,19 @@
     \frametitle{Ideje za naprej}
     \begin{itemize}
         \item Drugi algoritmi
+        \item Problem časovne dodelitve zaslug
         \item Večje igre - nevronske mreže
         \item Različni tipi učenja 
     \end{itemize}
 \end{frame}
 
 
-%\begin{frame}
-%    \bibliography{kratka}{}
-%    \bibliographystyle{plain}
-%\end{frame}
-
-
 \begin{frame}
-    \frametitle{Demonstracija: Križci in krožci}
-    Morda kakšna slika/grafikon
+    \frametitle{Literatura}
 \end{frame}
 
-
-
 % TODO: nagrade
+
 
 
 \end{document}
