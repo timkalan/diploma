@@ -82,10 +82,10 @@
 \begin{frame}
     \frametitle{Motivacija: Zakaj namizne igre?}
     \begin{itemize}
-        \item Aplikacija abstraktnega mišljenja
-        \item Spremljajo človeštvo že zelo dolgo
-        \item ">Modelirajo"< resnično življenje 
-        \item Uporabno mesto za testiranje algoritmov
+        \item Aplikacija abstraktnega mišljenja.
+        \item Spremljajo človeštvo že zelo dolgo.
+        \item ">Modelirajo"< resnično življenje.
+        \item Uporabno mesto za testiranje algoritmov.
     \end{itemize}
 \end{frame}
 
@@ -112,8 +112,8 @@
 \begin{frame}
     \frametitle{Spodbujevano učenje - osnovni koncepti 2}
     \begin{itemize}
-        \item Pomemben je čas
-        \item Ne poznamo ">pravilnih"< akcij
+        \item Pomemben je čas.
+        \item Ne poznamo ">pravilnih"< akcij.
         \item Raziskovanje in izkoriščanje
     \end{itemize}
 \end{frame}
@@ -132,10 +132,10 @@
 \begin{frame}
     \frametitle{Kje je to uporabno?}
     \begin{itemize}
-        \item Naučiti robota hoje
-        \item Upravljati s portfeljem
-        \item Igrati namizne igre
-        \item Igrati katerekoli igre
+        \item Naučiti robota hoje.
+        \item Upravljati s portfeljem.
+        \item Igrati namizne igre.
+        \item Igrati katerekoli igre.
         \item ...
     \end{itemize}
     \medskip
@@ -172,11 +172,11 @@
         \path [line] (Okolje.170) --++ (-4.25em,0em) |- node [near start, right] {Nagrada $R_{t+1}$} (Agent.190);
     \end{tikzpicture}
     \begin{itemize}
-        \item \textbf{Stanje:} Kje je prazno, kje ">X"< in kje ">O"<
-        \item \textbf{Agent:} Program, ki se odloča, kako igrati
-        \item \textbf{Okolje:} Agentu sporoča nagrade in stanje
-        \item \textbf{Nagrada:} Pozitivna za zmago, negativna za poraz
-        \item \textbf{Akcija:} Postavitev ">X"< oz. ">O"< na ploščo
+        \item \textbf{Stanje:} Kje je prazno, kje ">X"< in kje ">O"<.
+        \item \textbf{Agent:} Program, ki se odloča, kako igrati.
+        \item \textbf{Okolje:} Agentu sporoča nagrade in stanje.
+        \item \textbf{Nagrada:} Pozitivna za zmago, negativna za poraz.
+        \item \textbf{Akcija:} Postavitev ">X"< oz. ">O"< na ploščo.
     \end{itemize}
 \end{frame}
 
@@ -184,7 +184,7 @@
 \begin{frame}
     \frametitle{Primer: Križci in krožci 2}
     \begin{itemize}
-        \item Agent igra igre, posodablja svoje vrednosti stanj glede na odgovor okolja
+        \item Agent igra igre, posodablja svoje vrednosti stanj glede na odgovor okolja.
         \item Kako naj to stori?
     \end{itemize}
 \end{frame}
@@ -227,7 +227,7 @@
     %
     \medskip
     \begin{itemize}
-        \item Tako ocenimo dano strategijo
+        \item Tako ocenimo dano strategijo.
         \item Kako pa strategijo dejansko spremenimo?
     \end{itemize}
 \end{frame}
@@ -235,15 +235,15 @@
 
 \begin{frame}
     \frametitle{$\epsilon$-požrešna izboljšava strategije}
-    \only<1>{Izberemo ">najboljšo"< akcijo}
+    \only<1>{Izberemo ">najboljšo"< akcijo.}
     \pause
-    \sout{Izberemo ">najboljšo"< akcijo}
+    \sout{Izberemo ">najboljšo"< akcijo.}
     \pause
     \medskip
 
     \begin{itemize}
-        \item ">Ponavadi"< izberemo ">najboljšo"< akcijo
-        \item Z verjetnostjo $\epsilon$ izberemo naključno akcijo
+        \item ">Ponavadi"< izberemo ">najboljšo"< akcijo.
+        \item Z verjetnostjo $\epsilon$ izberemo naključno akcijo.
     \end{itemize}
 
     \begin{figure}
@@ -260,19 +260,19 @@
                     da velja 
                     \begin{align*}
                     a &= \pi(s) \\
-                    \pi(a | s) &= P(A_t = a | S_t = S) 
+                    \pi(a | s) &= P(A_t = a | S_t = s). 
                     \end{align*}
 
             \item Naj bodo $R_{t+1}, ...,R_T$ nagrade, ji jih bomo prejeli od trenutka 
                     $t$ do konca epizode. \textbf{Povračilo} $G_t$ definiramo kot
                     $$
-                    G_t = R_{t+1} + \gamma R_{t+2} + ... + \gamma^{T-1} R_T
+                    G_t = R_{t+1} + \gamma R_{t+2} + ... + \gamma^{T-1} R_T.
                     $$
 
             \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
                     stanja} glede na dano strategijo $v_\pi(s)$ je
                     $$
-                    v_\pi(s) = \mathbb{E} [G_t | S_t = s]
+                    v_\pi(s) = \mathbb{E} [G_t | S_t = s].
                     $$
         \end{itemize}
     \end{definicija}
@@ -378,10 +378,23 @@
 
 \begin{frame}
     \frametitle{Literatura}
+    \begin{thebibliography}{9}
+        \bibitem{RLintro} 
+        Richard S. Sutton and Andrew G. Barto. 
+    \textit{Reinforcement Learning: An introduction}.
+    The MIT Press, 
+    2015.
+
+    \medskip
+    \medskip
+
+    \bibitem{RLboard}
+    Imran Ghory.
+    \textit{Reinforcement learning in board games}.
+    2004.
+
+    \end{thebibliography}
 \end{frame}
-
-% TODO: nagrade
-
 
 
 \end{document}
