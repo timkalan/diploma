@@ -133,3 +133,59 @@ def __str__(self):
                 natis += '| ' + str(self.plosca[i, j])
         natis += '|' + '\n'
     return natis
+
+
+
+
+    def poteza_agent(self):
+        pozicije = self.legalne_pozicije()
+        p1_akcija = self.p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
+        self.igraj(p1_akcija)
+        stanje = self.pridobi_stanje()
+        self.p1.dodaj_stanje(stanje)
+
+
+    def poteza_clovek(self, naravno=True):
+        pozicije = self.legalne_pozicije()
+        p2_akcija = self.p2.izberi_akcijo(pozicije, naravno=naravno)
+        self.igraj(p2_akcija)
+    
+
+    def igraj_clovek2(self, naravno=True, zacne=True):
+        """
+        Metoda za igranje agent - človek.
+        """
+        if zacne:
+            poteza1 = self.poteza_agent()
+            poteza2 = self.poteza_clovek()
+        else:
+            poteza2 = self.poteza_agent()
+            poteza1 = self.poteza_clovek()
+
+        while not self.konec:
+            poteza1
+            print(self)
+
+            zmaga = self.zmagovalec()
+            if zmaga is not None:
+                if zmaga == 1:
+                    print(f'Zmagal je {self.p1.ime}!')
+
+                else:
+                    print('Izenačeno!')
+                self.ponastavi()
+                break
+
+            else:
+                poteza2
+                print(self)
+
+                zmaga = self.zmagovalec()
+                if zmaga is not None:
+                    if zmaga == -1:
+                        print(f'Zmagal je {self.p2.ime}!')
+                    
+                    else:
+                        print('Izenačeno!')
+                    self.ponastavi()
+                    break

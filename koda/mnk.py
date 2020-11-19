@@ -307,6 +307,7 @@ class Okolje:
                     break
 
 
+
     def igraj_nakljucni(self, st_iger=1000):
         """
         Metoda za igranje agent - naključni igralec.
@@ -430,7 +431,7 @@ class Agent:
     shraniti strategijo.
     """
 
-    def __init__(self, ime, epsilon=0.3, gama=1, alfa=0.2):
+    def __init__(self, ime, epsilon=0.3, alfa=0.2):
         """
         Agent mora beležiti vsa raziskana stanja v epizodi in 
         posodabljati vrednosti teh stanj. 
@@ -442,7 +443,6 @@ class Agent:
         self.ime = ime
         self.stanja = []            # beleži vsa stanja
         self.epsilon = epsilon
-        self.gama = gama
         self.alfa = alfa
 
         # začnemo s prazno - izogib prevelikim tabelam
@@ -506,7 +506,7 @@ class Agent:
                 self.vrednosti_stanj[stanje] = 0
 
             self.vrednosti_stanj[stanje] += self.alfa * (
-                self.gama * nagrada - self.vrednosti_stanj[stanje])
+                nagrada - self.vrednosti_stanj[stanje])
 
             nagrada = self.vrednosti_stanj[stanje]
 
@@ -535,6 +535,47 @@ class Agent:
         f = open(datoteka, 'rb')
         self.vrednosti_stanj = pickle.load(f)
         f.close
+
+
+
+# ideja:
+class MonteCarlo(Agent):
+    """
+    Modificiramo agenta tako, da uporablja Monte Carlo 
+    algoritem namesto neke primitivne verzije učenja s
+    časovno razliko.
+    """
+    
+    def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=0.9):
+        Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
+
+        self.gama = gama
+        # ustvarimo slovar, kjer hranimo povračila za vsako stanje
+        #self.povracila = {}
+
+
+    def nagradi(self, nagrada):
+        """
+        Po koncu igre se posodobijo vrednosti stanj od zadaj naprej
+        po pravilu spodaj. Za vrednost zadnjega stanja (ki ni dejansko 
+        stanje) je vrednost kar nagrada.
+
+        vrednost = vrednost + alfa * (gama * vrednost(naslednji) - vrednost)
+        """
+        for stanje in reversed(self.stanja):
+            if self.vrednosti_stanj.get(stanje) is None:
+                self.vrednosti_stanj[stanje] = 0
+
+            self.vrednosti_stanj[stanje] += self.alfa * (
+                self.gama * nagrada - self.vrednosti_stanj[stanje])
+
+            nagrada *= self.gama
+
+
+
+
+class TD(Agent):
+    pass
 
 
 
@@ -586,19 +627,9 @@ class Nakljucni:
         return akcija
 
 
-# ideja:
-class MonteCarlo(Agent):
-    pass
-
-class TD(Agent):
-    pass
 
 
 #class Minimax():
-#    """
-#    Igralec, ki s pomočjo algoritma Minimax poišče popolno strategijo. 
-#    Uporaben za namene testiranja.
-#    """
 #    pass
 
     
@@ -606,12 +637,11 @@ class TD(Agent):
 def main(p1=Agent('p1', epsilon=0.01), 
          p2=Agent('p2', epsilon=0.1), 
          trening=True,
-         epizode=2000,
+         epizode=200,
          nalozi=False, 
          shrani=True, 
          nasprotnik=Clovek('Tim'), 
          zacne=True):
-
     """
     p1 = Agent
     p2 = nasprotnik za namene treninga
