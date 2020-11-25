@@ -1,13 +1,14 @@
 import numpy as np
 
 hiperparametri = {
-                  'VRSTICE': 5,
-                  'STOLPCI': 5,
+                  'VRSTICE': 3,
+                  'STOLPCI': 3,
                   'V_VRSTO': 3,
                   'GRAVITACIJA': False,
                   'NAGRADA_ZMAGA': 1,
-                  'NAGRADA_REMI': 0,
+                  'NAGRADA_REMI': 0.4,
                   'NAGRADA_PORAZ': -1,
+                  'NAGRADA_KORAK': 0,
                   'KRIZCI': 1,
                   'KROZCI': -1
                   }
@@ -104,28 +105,6 @@ class Okolje:
                     # pozicijo shranimo kot nabor
                     pozicije.append((i, j))
         return pozicije
-
-
-    # prepiši s try except
-#    def igraj2(self, pozicija):
-#        """
-#        Preveri, če je pozicija na seznamu legalnih, in če je, nanjo vpiše 
-#        simbol trenutnega aktivnega igralca, po uspešni vložitvi pa 
-#        simbol zamenja.
-#
-#        pozicija = nabor oblike (x koordinata, y koordinata)
-#        (POZOR: prvi indeks je 0 (in ne 1))
-#        """
-#        if pozicija in self.legalne_pozicije():
-#            self.plosca[pozicija] = self.simbol
-#            
-#            # zamenjamo igralca po vsaki potezi
-#            self.simbol = hiperparametri['KRIZCI'] if self.simbol == hiperparametri['KROZCI'] else hiperparametri['KROZCI']
-#        else:
-#            print('To ni legalna pozicija!')
-
-
-
 
 
     def igraj(self, pozicija):
@@ -245,6 +224,47 @@ class Okolje:
             self.p2.nagradi(hiperparametri['NAGRADA_REMI'])
 
 
+    def poteza_agent(self, igralec):
+        """
+        Tako zgleda agentova poteza med treniranjem, igranjem in testiranjem, 
+        zato je smiselno, da je v svoji funkciji.
+
+        igralec = kater igralec igre je (npr. self.p1)
+        """
+        pozicije = self.legalne_pozicije()
+        agent_akcija = igralec.izberi_akcijo(pozicije, self.plosca, self.simbol)
+        self.igraj(agent_akcija)
+        stanje = self.pridobi_stanje()
+        igralec.dodaj_stanje(stanje)
+
+    
+    def poteza_clovek(self, igralec, naravno):
+        """
+        To je tipična poteza človeka, skrajšamo tako, damo v svojo funkcijo.
+
+        igralec = kater igralec igre je (npr. self.p1)
+        naravno = naravno = indeksiranje za pozicije človeka
+        """
+        pozicije = self.legalne_pozicije()
+        clovek_akcija = igralec.izberi_akcijo(pozicije, naravno)
+        self.igraj(clovek_akcija)
+
+
+    def poglej_zmago_igra(self):
+        zmaga = self.zmagovalec()
+        if zmaga is not None:
+            if zmaga == 1:
+                print(f'Zmagal je {self.p1.ime}!')
+            
+            elif zmaga == -1:
+                print(f'Zmagal je {self.p2.ime}!')
+
+            else:
+                print('Izenačeno!')
+            self.ponastavi()
+            return True
+
+
     def treniraj(self, epizode):
         """
         Vsak igralec:
@@ -259,11 +279,7 @@ class Okolje:
             
             while not self.konec:
                 # 1. igralec
-                pozicije = self.legalne_pozicije()
-                p1_akcija = self.p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
-                self.igraj(p1_akcija)
-                stanje = self.pridobi_stanje()
-                self.p1.dodaj_stanje(stanje)
+                self.poteza_agent(self.p1)
 
                 zmaga = self.zmagovalec()
                 if zmaga is not None:
@@ -277,11 +293,7 @@ class Okolje:
 
                 else:
                     # 2. igralec
-                    pozicije = self.legalne_pozicije()
-                    p2_akcija = self.p2.izberi_akcijo(pozicije, self.plosca, self.simbol)
-                    self.igraj(p2_akcija)
-                    stanje = self.pridobi_stanje()
-                    self.p2.dodaj_stanje(stanje)
+                    self.poteza_agent(self.p2)
 
                     zmaga = self.zmagovalec()
                     if zmaga is not None:
@@ -294,47 +306,80 @@ class Okolje:
                         break
 
     
-    def igraj_clovek(self, naravno=True):
+
+    def treniraj_online(self, epizode):
         """
-        Metoda za igranje agent - človek.
+        Vsak igralec:
+        poišče možne pozicije, 
+        izbere akcijo, 
+        posodobi ploščo in zabeleži stanje, 
+        počaka razsodbo o koncu
         """
-        while not self.konec:
-            pozicije = self.legalne_pozicije()
-            p1_akcija = self.p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
-            self.igraj(p1_akcija)
-            print(self)
-            stanje = self.pridobi_stanje()
-            self.p1.dodaj_stanje(stanje)
-
-            zmaga = self.zmagovalec()
-            if zmaga is not None:
-                if zmaga == 1:
-                    print(f'Zmagal je {self.p1.ime}!')
-
-                else:
-                    print('Izenačeno!')
-                self.ponastavi()
-                break
-
-            else:
-                pozicije = self.legalne_pozicije()
-                p2_akcija = self.p2.izberi_akcijo(pozicije, naravno=naravno)
-                self.igraj(p2_akcija)
-                print(self)
+        for i in range(epizode):
+            if i % 100 == 0:
+                print(f'Epizoda {i+1}')
+            
+            while not self.konec:
+                # 1. igralec
+                self.poteza_agent(self.p1)
+                self.p2.nagradi_online(hmhm)
 
                 zmaga = self.zmagovalec()
                 if zmaga is not None:
-                    if zmaga == -1:
-                        print(f'Zmagal je {self.p2.ime}!')
-                    
-                    else:
-                        print('Izenačeno!')
+                    # zmagal je prvi ali remi
+                    #print(f'Zmagal je {self.zmagovalec()}')
+                    self.daj_nagrado()
+                    self.p1.ponastavi()
+                    self.p2.ponastavi()
                     self.ponastavi()
                     break
 
+                else:
+                    # 2. igralec
+                    self.poteza_agent(self.p2)
+                    self.nagradi_online(hmhm)
+
+                    zmaga = self.zmagovalec()
+                    if zmaga is not None:
+                        # zmagal je drugi ali remi
+                        #print(f'Zmagal je {self.zmagovalec()}')
+                        self.daj_nagrado()
+                        self.p1.ponastavi()
+                        self.p2.ponastavi()
+                        self.ponastavi()
+                        break
+
+    
+    def igraj_clovek(self, zacne=True, naravno=True):
+        """
+        Metoda za igranje agent - človek.
+
+        zacne = bool; ali začne agent
+        naravno = indeksiranje za pozicije človeka
+        """
+        while not self.konec:
+            # poteza prvega igralca
+            if zacne:
+                self.poteza_agent(self.p1)
+            else:
+                self.poteza_clovek(self.p2, naravno)
+
+            print(self)
+            if self.poglej_zmago_igra():
+                break
+
+            # poteza drugega igralca
+            if zacne:
+                self.poteza_clovek(self.p2, naravno)
+            else:
+                self.poteza_agent(self.p1)
+            print(self)
+            if self.poglej_zmago_igra():
+                break
 
 
-    def igraj_nakljucni(self, st_iger=1000):
+
+    def testiraj_nakljucni(self, st_iger=1000):
         """
         Metoda za igranje agent - naključni igralec.
         """
@@ -388,7 +433,7 @@ class Okolje:
         print(rezultati)
 
 
-    def igraj_sebi(self, st_iger=1000):
+    def testiraj_sebi(self, st_iger=1000):
         """
         Metoda za igranje agent - agent.
         """

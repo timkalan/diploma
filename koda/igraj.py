@@ -58,15 +58,15 @@ class Nakljucni:
 
 def main(p1=Agent('p1', epsilon=0.01), 
          p2=Agent('p2', epsilon=0.1), 
-         trening=False,
-         epizode=5000,
+         trening=True,
+         epizode=3000,
          nalozi=False,
          nalozi_iz='454g', 
          shrani=True, 
-         shrani_v='333g',
-         nasprotnik=Clovek('Tim'), 
+         shrani_v='333',
+         nasprotnik=Clovek('p1'), 
          strategija='333',
-         zacne=True):
+         zacne=False):
     """
     p1 = Agent
     p2 = nasprotnik za namene treninga
@@ -83,6 +83,8 @@ def main(p1=Agent('p1', epsilon=0.01),
             p1.nalozi_strategijo(nalozi_iz)
 
         igra.treniraj(epizode)
+        #test = {k: -v for k, v in p2.vrednosti_stanj.items()}
+        #p1.vrednosti_stanj.update(test)
 
         if shrani:
             p1.shrani_strategijo(shrani_v)
@@ -94,8 +96,20 @@ def main(p1=Agent('p1', epsilon=0.01),
     #p2.nalozi_strategijo('333-mc')
 
     igra = Okolje(p1, p2)
-    igra.igraj_clovek()
+    igra.igraj_clovek(zacne)
 
 
 if __name__ == '__main__':
     main()
+
+
+# TODO: a je res dobra ideja da majo imena igralci
+# TODO: igraj_clovek, da lahko začne poljubni - ideja: funkcija poteza za vse mozne igralce
+# TODO: implementiraj nek timer (mogoče je lahko dekorator)
+# TODO: vse dobro dokumentiraj
+# TODO: implementiraj boljše algoritme
+# TODO: implementiraj nevronske mreže
+# TODO: refaktorizacija
+# TODO: online vs offline učenje
+# TODO: treniraj proti drugim vrstam nasprotnika
+# TODO: prepiši vse z numpy, da bo hitreje

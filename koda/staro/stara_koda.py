@@ -189,3 +189,31 @@ def __str__(self):
                         print('Izenačeno!')
                     self.ponastavi()
                     break
+
+
+
+    # prepiši s try except
+#    def igraj2(self, pozicija):
+#        """
+#        Preveri, če je pozicija na seznamu legalnih, in če je, nanjo vpiše 
+#        simbol trenutnega aktivnega igralca, po uspešni vložitvi pa 
+#        simbol zamenja.
+#
+#        pozicija = nabor oblike (x koordinata, y koordinata)
+#        (POZOR: prvi indeks je 0 (in ne 1))
+#        """
+#        if pozicija in self.legalne_pozicije():
+#            self.plosca[pozicija] = self.simbol
+#            
+#            # zamenjamo igralca po vsaki potezi
+#            self.simbol = hiperparametri['KRIZCI'] if self.simbol == hiperparametri['KROZCI'] else hiperparametri['KROZCI']
+#        else:
+#            print('To ni legalna pozicija!')
+
+def shrani_strategijo(self, datoteka):
+        """
+        Shrani slovar vrednosti stanj za kasnejšo uporabo.
+        """
+        f = open('koda/strategije/' + datoteka, 'wb')
+        pickle.dump(self.vrednosti_stanj, f)
+        f.close()

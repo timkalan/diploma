@@ -1,7 +1,7 @@
 import pickle
 import os
 import numpy as np
-from okolje import hiperparametri, Okolje
+from okolje import hiperparametri 
 
 
 class Agent:
@@ -92,6 +92,10 @@ class Agent:
             nagrada = self.vrednosti_stanj[stanje]
 
 
+    def nagradi_online(self, nagrada):
+        pass
+
+
     def ponastavi(self):
         """
         Izbriše zgodovino agentovih stanj.
@@ -104,19 +108,16 @@ class Agent:
         """
         Shrani slovar vrednosti stanj za kasnejšo uporabo.
         """
-        f = open('koda/strategije/' + datoteka, 'wb')
-        pickle.dump(self.vrednosti_stanj, f)
-        f.close()
+        with open('koda/strategije/' + datoteka, 'wb') as f:
+            pickle.dump(self.vrednosti_stanj, f)
     
 
     def nalozi_strategijo(self, datoteka):
         """
         Naloži slovar naučenih vrednosti.
         """
-        f = open('koda/strategije/' + datoteka, 'rb')
-        self.vrednosti_stanj = pickle.load(f)
-        f.close
-
+        with open('koda/strategije/' + datoteka, 'rb') as f:
+            self.vrednosti_stanj = pickle.load(f)
 
 
 class MonteCarlo(Agent):
