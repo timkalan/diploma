@@ -6,9 +6,9 @@ hiperparametri = {
                   'V_VRSTO': 3,
                   'GRAVITACIJA': False,
                   'NAGRADA_ZMAGA': 1,
-                  'NAGRADA_REMI': 0.4,
+                  'NAGRADA_REMI': 0.1,
                   'NAGRADA_PORAZ': -1,
-                  'NAGRADA_KORAK': 0,
+                  'NAGRADA_KORAK': -0.1,
                   'KRIZCI': 1,
                   'KROZCI': -1
                   }
@@ -99,12 +99,26 @@ class Okolje:
         znotraj meja igralne plošče.
         """
         pozicije = []
-        for i in range(hiperparametri['VRSTICE']):
+        if hiperparametri['GRAVITACIJA']:
             for j in range(hiperparametri['STOLPCI']):
-                if self.plosca[i, j] == 0:
-                    # pozicijo shranimo kot nabor
-                    pozicije.append((i, j))
+                najnizja = -1
+                for i in range(hiperparametri['VRSTICE']):
+                    if (self.plosca[i, j] == 0) and i > najnizja:
+                        najnizja = i
+
+                if najnizja >= 0:
+                    pozicije.append((najnizja, j))
+
+        else:
+            for i in range(hiperparametri['VRSTICE']):
+                for j in range(hiperparametri['STOLPCI']):
+                    if self.plosca[i, j] == 0:
+
+                        # pozicijo shranimo kot nabor
+                        pozicije.append((i, j))
+
         return pozicije
+
 
 
     def igraj(self, pozicija):
@@ -118,20 +132,13 @@ class Okolje:
         """
         legalne = self.legalne_pozicije()
         if pozicija in legalne:
-            if hiperparametri['GRAVITACIJA']:
-                mozne = []
-                vrstica, stolpec = pozicija
-                for i in range(len(legalne)):
-                    if legalne[i][1] == stolpec:
-                        mozne.append(legalne[i][0])
-                
-                self.plosca[(max(mozne), stolpec)] = self.simbol
-
-            else:
-                self.plosca[pozicija] = self.simbol
+            self.plosca[pozicija] = self.simbol
             
             # zamenjamo igralca po vsaki potezi
-            self.simbol = hiperparametri['KRIZCI'] if self.simbol == hiperparametri['KROZCI'] else hiperparametri['KROZCI']
+            self.simbol = (hiperparametri['KRIZCI'] if 
+                          self.simbol == hiperparametri['KROZCI'] else 
+                          hiperparametri['KROZCI'])
+
         else:
             print('To ni legalna pozicija!')
 
@@ -141,7 +148,9 @@ class Okolje:
     def zmagovalec(self):
         pregled = min(hiperparametri['VRSTICE'], hiperparametri['STOLPCI'])
         razlika = abs(hiperparametri['VRSTICE'] - hiperparametri['STOLPCI'])
-        plosca = self.plosca if hiperparametri['VRSTICE'] >= hiperparametri['STOLPCI'] else np.transpose(self.plosca)
+        plosca = (self.plosca if 
+                  hiperparametri['VRSTICE'] >= hiperparametri['STOLPCI'] else 
+                  np.transpose(self.plosca))
 
         if hiperparametri['V_VRSTO'] > max(hiperparametri['VRSTICE'], hiperparametri['STOLPCI']):
             print("Ne bo zmage!")
@@ -322,7 +331,7 @@ class Okolje:
             while not self.konec:
                 # 1. igralec
                 self.poteza_agent(self.p1)
-                self.p2.nagradi_online(hmhm)
+                self.p2.nagradi_online()
 
                 zmaga = self.zmagovalec()
                 if zmaga is not None:
@@ -337,7 +346,7 @@ class Okolje:
                 else:
                     # 2. igralec
                     self.poteza_agent(self.p2)
-                    self.nagradi_online(hmhm)
+                    self.p1.nagradi_online()
 
                     zmaga = self.zmagovalec()
                     if zmaga is not None:
