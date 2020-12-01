@@ -41,7 +41,7 @@ class Agent:
             akcija = pozicije[indeks]
 
         else:
-            najvecja_vrednost = -1
+            najvecja_vrednost = -10
             for pozicija in pozicije:
                 naslednje_stanje = stanje.copy()
                 naslednje_stanje[pozicija] = simbol
@@ -49,7 +49,8 @@ class Agent:
 
                 if self.vrednosti_stanj.get(naslednji) is None:
                     #vrednost = 0 
-                    vrednost = np.random.uniform(0,1)
+                    #vrednost = np.random.uniform(0,1)
+                    vrednost = 0
                 else:
                     vrednost = self.vrednosti_stanj.get(naslednji)
 
@@ -101,7 +102,6 @@ class Agent:
         Izbriše zgodovino agentovih stanj.
         """
         self.stanja = []
-        # self.vrednosti_stanj = {}
 
     
     def shrani_strategijo(self, datoteka):
@@ -123,16 +123,14 @@ class Agent:
 class MonteCarlo(Agent):
     """
     Modificiramo agenta tako, da uporablja Monte Carlo 
-    algoritem namesto neke primitivne verzije učenja s
-    časovno razliko.
+    algoritem namesto TD(0) - učenja s časovno razliko, 
+    ki gleda en korak.
     """
     
     def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=0.9):
         Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
 
         self.gama = gama
-        # ustvarimo slovar, kjer hranimo povračila za vsako stanje
-        #self.povracila = {}
 
 
     def nagradi(self, nagrada):
@@ -154,6 +152,86 @@ class MonteCarlo(Agent):
 
 
 
+class SelfPlay(Agent):
+    
+    def __init__(self, ime, epsilon=0.3, alfa=0.2):
+        Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
+
+
+    def izberi_akcijo_p1(self, pozicije, stanje, simbol):
+        """
+        epsilon-požrešno izbere akcijo in jo vrne.
+
+        pozicije = možne pozicije, ki jih lahko igramo
+        """
+        # izberemo naključno
+        if np.random.uniform(0, 1) <= self.epsilon:
+            indeks =  np.random.choice(len(pozicije))
+            akcija = pozicije[indeks]
+
+        else:
+            najvecja_vrednost = -10
+            for pozicija in pozicije:
+                naslednje_stanje = stanje.copy()
+                naslednje_stanje[pozicija] = simbol
+                naslednji = self.pridobi_stanje(naslednje_stanje)
+
+                if self.vrednosti_stanj.get(naslednji) is None:
+                    #vrednost = 0 
+                    #vrednost = np.random.uniform(0,1)
+                    vrednost = 0
+                else:
+                    vrednost = self.vrednosti_stanj.get(naslednji)
+
+                if vrednost >= najvecja_vrednost:
+                    najvecja_vrednost = vrednost
+                    akcija = pozicija
+
+    
+    def izberi_akcijo_p2(self, pozicije, stanje, simbol):
+        """
+        epsilon-požrešno izbere akcijo in jo vrne.
+
+        pozicije = možne pozicije, ki jih lahko igramo
+        """
+        # izberemo naključno
+        if np.random.uniform(0, 1) <= self.epsilon:
+            indeks =  np.random.choice(len(pozicije))
+            akcija = pozicije[indeks]
+
+        else:
+            najmanjsa_vrednost = 10
+            for pozicija in pozicije:
+                naslednje_stanje = stanje.copy()
+                naslednje_stanje[pozicija] = simbol
+                naslednji = self.pridobi_stanje(naslednje_stanje)
+
+                if self.vrednosti_stanj.get(naslednji) is None:
+                    #vrednost = 0 
+                    #vrednost = np.random.uniform(0,1)
+                    vrednost = 0
+                else:
+                    vrednost = self.vrednosti_stanj.get(naslednji)
+
+                if vrednost <= najmanjsa_vrednost:
+                    najmanjsa_vrednost = vrednost
+                    akcija = pozicija
+
+
+
+
 class TD(Agent):
-    pass
+    def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=0.9, lamb=0.9):
+        Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
+
+        self.gama = gama
+        self.lamb = lamb
+
+    
+    def nagradi_nazaj(self, nagrada):
+        pass
+
+    
+    def nagradi_naprej(self, nagrada):
+        pass
 
