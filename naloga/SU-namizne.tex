@@ -51,7 +51,7 @@
 % naslednje ukaze ustrezno popravi
 \newcommand{\program}{Finančna matematika} % ime studijskega programa: Matematika/Finan"cna matematika
 \newcommand{\imeavtorja}{Tim Kalan} % ime avtorja
-\newcommand{\imementorja}{prof.~dr. Marjetka Knez} % akademski naziv in ime mentorja
+\newcommand{\imementorja}{izred.~prof.~dr. Marjetka Knez} % akademski naziv in ime mentorja
 \newcommand{\naslovdela}{Spodbujevano učenje pri igranju namiznih iger}
 \newcommand{\letnica}{2021} %letnica diplome
 
@@ -93,7 +93,8 @@ Ljubljana, \letnica}
 {\sc Povzetek}
 \end{center}
 % tekst povzetka v slovenscini
-V povzetku na kratko opišite vsebinske rezultate dela. Sem ne sodi razlaga organizacije dela -- v katerem poglavju/razdelku je kaj, pa"c pa le opis vsebine.
+V povzetku na kratko opišite vsebinske rezultate dela. Sem ne sodi razlaga organizacije
+dela -- v katerem poglavju/razdelku je kaj, pa"c pa le opis vsebine.
 \vfill
 \begin{center}
 {\bf Reinforcement learning in board games}\\[3mm] % prevod slovenskega naslova dela 
@@ -103,18 +104,131 @@ V povzetku na kratko opišite vsebinske rezultate dela. Sem ne sodi razlaga orga
 Prevod zgornjega povzetka v angle"s"cino.
 
 \vfill\noindent
-{\bf Math. Subj. Class. (2010):} navedite vsaj eno klasifikacijsko oznako -- dostopne so na \url{www.ams.org/mathscinet/msc/msc2010.html}  \\[1mm]  
-{\bf Ključne besede:} navedite nekaj klju"cnih pojmov, ki nastopajo v delu  \\[1mm]  
-{\bf Keywords:} angle"ski prevod klju"cnih besed
+{\bf Math. Subj. Class. (2010):} navedite vsaj eno klasifikacijsko oznako -- 
+        dostopne so na \url{www.ams.org/mathscinet/msc/msc2010.html}  \\[1mm]  
+{\bf Ključne besede:} Spodbujevano učenje  \\[1mm]  
+{\bf Keywords:} angleški prevod ključnih besed
 \pagebreak
 
 
 
 % tu se zacne tekst seminarja
-\section{Naslov prvega razdelka}
-Na za"cetku prvega poglavja/razdelka (ali v samostojnem razdelku z naslovom Uvod) napi"site kratek zgodovinski in matemati"cni uvod. Pojasnite motivacijo za problem, kje nastopa, kje vse je bil obravnavan. Na koncu opi"site tudi organizacijo dela -- kaj je v kak"snem razdelku.
+\section{Uvod}
+%Na za"cetku prvega poglavja/razdelka (ali v samostojnem razdelku z naslovom Uvod) napi"site 
+%kratek zgodovinski in matemati"cni uvod. Pojasnite motivacijo za problem, kje nastopa, kje 
+%vse je bil obravnavan. Na koncu opi"site tudi organizacijo dela -- kaj je v kak"snem razdelku.
+%
+%"Ce se uvod naravno nadaljuje v besedilo prvega poglavja, lahko nadaljujete z besedilom v istem 
+%razdelku, sicer za"cnete novega. Na za"cetku vsakega razdelka/podraz\-delka povete, "cemu se 
+%bomo posvetili v nadaljevanju. Pri pisanju uporabljajte ukaze za matemati"cna okolja, med 
+%formalnimi enotami dodajte vezni razlagalni tekst.
+Namizne igre ljudje igramo že od prazgodovine. Na Kitajskem je bila igra Go znana kot ena 
+izmed štirih umetnosti Kitajskega učenjaka poleg igranja inštrumenta s strunami, kaligrafije
+in slikanja. Spremljajo nas že zelo dolgo časa, zato je naravno, da jih želimo ljudje čim
+bolje igrati.
 
-"Ce se uvod naravno nadaljuje v besedilo prvega poglavja, lahko nadaljujete z besedilom v istem razdelku, sicer za"cnete novega. Na za"cetku vsakega razdelka/podraz\-delka povete, "cemu se bomo posvetili v nadaljevanju. Pri pisanju uporabljajte ukaze za matemati"cna okolja, med formalnimi enotami dodajte vezni razlagalni tekst.
+Edgar Allan Poe in maelzel's chess player 
+“If we choose to call the former [Chess-Player] a pure machine we must be prepared to admit that 
+it is, beyond all comparison, the most wonderful of the inventions of mankind.”
+
+Z adventom računalnika in računalništva je bil ta problem postavljen v novi luči. Vprašanje
+ni bilo več samo, kako dobro lahko človek igra igro sam, temveč tudi do kakšnega nivoja 
+lahko spravi računalnik. Izkazalo se je, da nam pri tem problemu (in mnogih drugih) zelo dobro
+koristi umetna inteligenca in metode strojnega učenja. Eno izmed vej SU bomo predstavili v tem 
+delu in pogledali, kako nam lahko pomaga pri igranju namiznih iger.
+
+\subsection{Motivacija}
+Spodbujevano učenje ima zelo lepo motivacijo, in sicer izhaja iz psihologije. Znana psihologa 
+Thorndike in Skinner, sta na živalih izvajala eksperimente; postavila sta jih v neko novo 
+situacijo, kjer je lahko žival naredila akcijo, ki je rezultirala v neki nagradi. Ko je bila
+žival ponovno postavljena v to situacijo, je hitreje ugotovila, katero akcijo mora storiti, da
+pride do nagrade.
+
+Koncept, ki je opisan v zgornjem odstavku, se imenuje instrumentalno pogojevanje. Z njim se 
+srečamo tudi ljudje; tako se namreč učijo otroci, odrasli ljudje pa se bolj zanesejo na 
+logično razmišljanje. Vseeno pa je to motiviralo utemeljitelje (pač povej kdo so to ane) 
+spodbujevanega učenja
+
+\subsection{Strojno učenje}
+To relativno novo raziskovalno področje se deli na tri glavne veje:
+\begin{itemize}
+    \item \textbf{Nadzorovano učenje} se ukvarja s tem, kako iz nekih označenih podatkov 
+            naučimo računalnik, da prepoznava razne signale (slike, govor, tekst, ...)
+            in to znanje uporabi za razpoznavo novih, neoznačenih podatkov.
+    \item \textbf{Nenadzorovano učenje} odstrani označevanje iz podatkov in v njih probava 
+            odkriti skrite vzorce.
+    \item \textbf{Spodbujevano učenje} se ukvarja z ">učenjem iz izkušenj."< 
+\end{itemize}
+
+\subsection{Struktura naloge}
+V prvem poglavju bla bla
+
+
+\section{Spodbujevano učenje}
+
+\subsection{Osnovni koncepti}
+\subsubsection{Agent}
+Tu so stvari, ki sodijo k agentu - v, q, pi, \dots
+\subsubsection{Okolje}
+
+\subsection{Markovski proces odločanja}
+
+\subsection{Dinamično programiranje}
+\subsubsection{Neki pomembni algoritmi so tukaj}
+
+\subsection{Algoritmi}
+\subsubsection{Monte Carlo}
+\subsubsection{TD(0)}
+\subsubsection{TD($\lambda$)}
+
+\subsection{Izboljšave}
+\subsubsection{Nevronske mreže}
+
+
+\section{Namizne igre}
+
+\subsection{Pregled konceptov teorije iger}
+\subsubsection{Nashevo ravnotežje}
+\subsubsection{Igre z vsoto nič}
+\subsubsection{Ekstenzivne igre}
+
+\subsection{Kompleksnost iger}
+\subsubsection{Game tree ...}
+
+\subsection{Morda kaj o optimal board representationu?}
+\subsection{Pride še kaj v poštev tu?}
+
+
+\section{Spodbujevano učenje pri namiznih igrah}
+
+\subsection{Parcialni model - ">po-stanja"<}
+
+\subsection{Učenje}
+\subsubsection{Samoigra}
+\subsubsection{Igre iz podatkovnih baz}
+\subsubsection{Naključni nasprotnik}
+
+\subsection{Kombinacija z iskanjem - generalised policy eval?}
+
+\subsection{Algoritem - zaključena celota}
+\subsubsection{Opomba: deluje, tudi ko ni vsota 0}
+
+
+\section{Empirični rezultati}
+
+\subsection{m,n,k-igra}
+\subsubsection{Kompleksnost m,n,k-igre}
+
+\section{Uspehi glede na velikost}
+\subsubsection{Morda tudi kaj z bolj modificranimi mnk igrami}
+
+\section{Primerjava, grafi}
+
+
+
+
+
+
 
 \begin{definicija}
 Funkcija $f\colon [a,b]\to\R$ je {\em zvezna}, "ce...
@@ -228,6 +342,9 @@ J.~Globevnik in M.~Brojan, \emph{Analiza 1}, verzija 15.~9.~2010, [ogled 12.~5.~
 
 
 \end{thebibliography}
+
+
+
 
 \end{document}
 
