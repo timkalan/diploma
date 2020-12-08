@@ -8,6 +8,13 @@
 \usepackage{url}
 %\usepackage[normalem]{ulem}
 \usepackage[dvipsnames,usenames]{color}
+\usepackage{pgf}
+\usepackage{tikz}
+\usepackage{graphicx}
+
+\tikzstyle{block} = [rectangle, draw, 
+    text width=8em, text centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, -latex]
 
 % ne spreminjaj podatkov, ki vplivajo na obliko strani
 \textwidth 15cm
@@ -34,6 +41,7 @@
 \newtheorem{izrek}[definicija]{Izrek}
 \newtheorem{trditev}[definicija]{Trditev}
 \newtheorem{posledica}[definicija]{Posledica}
+\newtheorem{zgled}[definicija]{Zgled}
 
 
 % za stevilske mnozice uporabi naslednje simbole
@@ -51,8 +59,8 @@
 % naslednje ukaze ustrezno popravi
 \newcommand{\program}{Finančna matematika} % ime studijskega programa: Matematika/Finan"cna matematika
 \newcommand{\imeavtorja}{Tim Kalan} % ime avtorja
-\newcommand{\imementorja}{izred.~prof.~dr. Marjetka Knez} % akademski naziv in ime mentorja
-\newcommand{\naslovdela}{Spodbujevano učenje pri igranju namiznih iger}
+\newcommand{\imementorja}{izr.~prof.~dr. Marjetka Knez} % akademski naziv in ime mentorja
+\newcommand{\naslovdela}{Spodbujevalno učenje pri igranju namiznih iger}
 \newcommand{\letnica}{2021} %letnica diplome
 
 
@@ -106,8 +114,8 @@ Prevod zgornjega povzetka v angle"s"cino.
 \vfill\noindent
 {\bf Math. Subj. Class. (2010):} navedite vsaj eno klasifikacijsko oznako -- 
         dostopne so na \url{www.ams.org/mathscinet/msc/msc2010.html}  \\[1mm]  
-{\bf Ključne besede:} Spodbujevano učenje  \\[1mm]  
-{\bf Keywords:} angleški prevod ključnih besed
+{\bf Ključne besede:} Spodbujevalno učenje  \\[1mm]  
+{\bf Keywords:} Reinforcement learning
 \pagebreak
 
 
@@ -127,18 +135,19 @@ izmed štirih umetnosti Kitajskega učenjaka poleg igranja inštrumenta s struna
 in slikanja. Spremljajo nas že zelo dolgo časa, zato je naravno, da jih želimo ljudje čim
 bolje igrati.
 
-Edgar Allan Poe in maelzel's chess player 
-“If we choose to call the former [Chess-Player] a pure machine we must be prepared to admit that 
-it is, beyond all comparison, the most wonderful of the inventions of mankind.”
-
 Z adventom računalnika in računalništva je bil ta problem postavljen v novi luči. Vprašanje
 ni bilo več samo, kako dobro lahko človek igra igro sam, temveč tudi do kakšnega nivoja 
 lahko spravi računalnik. Izkazalo se je, da nam pri tem problemu (in mnogih drugih) zelo dobro
 koristi umetna inteligenca in metode strojnega učenja. Eno izmed vej SU bomo predstavili v tem 
 delu in pogledali, kako nam lahko pomaga pri igranju namiznih iger.
 
+Za konec uvodnega dela morda zabeležimo še citat iz eseja ameriškega pisatelja in pesnika 
+Edgarja Allana Poea, ki govori o mehaničnem igralcu šaha: “If we choose to call the former 
+[Chess-Player] a pure machine we must be prepared to admit that it is, beyond all comparison, 
+the most wonderful of the inventions of mankind.”
+
 \subsection{Motivacija}
-Spodbujevano učenje ima zelo lepo motivacijo, in sicer izhaja iz psihologije. Znana psihologa 
+Spodbujevalno učenje ima zelo lepo motivacijo, in sicer izhaja iz psihologije. Znana psihologa 
 Thorndike in Skinner, sta na živalih izvajala eksperimente; postavila sta jih v neko novo 
 situacijo, kjer je lahko žival naredila akcijo, ki je rezultirala v neki nagradi. Ko je bila
 žival ponovno postavljena v to situacijo, je hitreje ugotovila, katero akcijo mora storiti, da
@@ -146,8 +155,7 @@ pride do nagrade.
 
 Koncept, ki je opisan v zgornjem odstavku, se imenuje instrumentalno pogojevanje. Z njim se 
 srečamo tudi ljudje; tako se namreč učijo otroci, odrasli ljudje pa se bolj zanesejo na 
-logično razmišljanje. Vseeno pa je to motiviralo utemeljitelje (pač povej kdo so to ane) 
-spodbujevanega učenja
+logično razmišljanje. Vseeno pa je to motiviralo utemeljitelje spodbujevanega učenja
 
 \subsection{Strojno učenje}
 To relativno novo raziskovalno področje se deli na tri glavne veje:
@@ -157,26 +165,182 @@ To relativno novo raziskovalno področje se deli na tri glavne veje:
             in to znanje uporabi za razpoznavo novih, neoznačenih podatkov.
     \item \textbf{Nenadzorovano učenje} odstrani označevanje iz podatkov in v njih probava 
             odkriti skrite vzorce.
-    \item \textbf{Spodbujevano učenje} se ukvarja z ">učenjem iz izkušenj."< 
+    \item \textbf{Spodbujevalno učenje} se ukvarja z ">učenjem iz izkušenj."< 
 \end{itemize}
 
 \subsection{Struktura naloge}
-V prvem poglavju bla bla
+% morda to malo oštevilči
+Naloga je razdeljena na štiri glavne dele. Na začetku so predstavljeni osnovni koncepti 
+spodbujevalnega učenja in nekateri glavni algoritmi s tega področja. Potem se fokus obrne 
+na namizne igre in ob nekaj malega teorije iger povzame osnovne koncepte, na katere naletimo
+tam. V naslednjem odseku potem združimo znanje iz prejšnjih dveh in predstavimo, kako nam
+teorija iger pripomore pri spodbujevalnemu učenju v tem konteksu. Na koncu pa so predstavljeni 
+nekateri empirični rezultati, ki so posledica zgoraj navedene teorije.
 
-
-\section{Spodbujevano učenje}
+\section{Spodbujevalno učenje}
+Spodbujevalno učenje se ukvarja s ti. učenjem iz interakcije oz. izkušenj. Čeprav se to na prvi 
+pogled ne zdi kot računska metoda, pač pa stvar psihologije, bomo kmalu dognali, kako prevesti 
+to idejo v računalniku razumljiv jezik.
 
 \subsection{Osnovni koncepti}
-\subsubsection{Agent}
-Tu so stvari, ki sodijo k agentu - v, q, pi, \dots
+V osnovi nas zanima precej preprosta stvar: kako preslikati neko opazovano situacijo v akcijo na 
+tak način, da maksimirizramo neko numerično nagrado. Pri tem ne obstaja opazovalec, ki bi nam 
+povedal ali pa namignil, katere akcije so dobre, to moramo ugotoviti sami, s poskušanjem in 
+napakami. V tem dejstvu se skriva bistvena razlika med spodbujevalnim učenjem in ostalimi vejami 
+strojnega učenja.
+
+Pomembna razlika tiči tudi v pomembnosti časa pri spodbujevalnemu učenju. Pri drugih oblikah 
+strojnega učenja se ponavadi ukvarjamo s tabelaričnimi podatki, tu pa ponavadi modeliramo nek 
+dinamičen proces, zato je naravno, da je pomemben čas. Čeprav se da čas v tem kontekstu 
+modelirati zvezno, je za naše namene dovolj, da ga jemljemo kot diskretne točke $t \in 
+{1, \dots, T}$, kjer $T$ označuje nek končni čas (v splošnem je lahko seveda $T = \infty$).
+
+\subsubsection{Nagrada}
+Prvi pomemben koncept pri spodbujevanem učenju je nagrada. Kot sem že zgoraj omenil, to za nas 
+pomeni neko numerično vrednost, pozitivno število indicira pozitivno nagrado, negativno pa 
+">kazen"<. S pomočjo tega koncepta formaliziramo \textit{cilj} učenja. Edini cilj učenca je 
+maksimizacija te nagrade, pri čemer je vredno omeniti, da na nagrado učenec lahko vpliva samo 
+s svojimi akcijami (ne more recimo spremeniti načina, na katerega dobi nagrado). 
+
+Posebaj pomembno je na tem mestu poudariti, da akcije nimajo nujno neposredne nagrade. Le-te 
+lahko pridejo v poljubnem kasnejšem časovnem obdobju. To je smiselno, če pomislimo z vidika 
+namiznih iger: pri šahu ne razmišljamo samo o neposrednih akcijah, temveč razvijamo neko 
+dolgoročno strategijo ki nas na koncu nagradi z zmago. 
+
+\begin{zgled}[Križci in krožci]
+    Pri tej znani otroški igri (in pri mnogo drugih namiznih igrah) modeliramo nagrado na 
+    preprost način: če zmagamo, prejmemo nagrado $1$, če izgubimo pa $-1$. V vseh ostalih 
+    situacijah, torej za izenačenje in po vsaki potezi, prejmemo nagrado $0$.
+\end{zgled}
+
+Zavedati se moramo tudi potencialnih omejitev oz. pomanjkljivosti takega modela. Razmislimo 
+malo o 
+\begin{definicija}[Hipoteza o nagradi]
+    Vse cilje je mogoče opisati kot maksimizacijo neke kumulativne numerične 
+    nagrade.
+\end{definicija}
+
+\begin{zgled}[Protiprimera hipotezi o nagradi]
+    Problem je, da dovolimo samo enodimezionalnost:
+    \begin{itemize}
+        \item Ko kupujemo hamburger, nam je pomemben okus in cena; kaj nam več pomeni?
+        \item Država želi med epidemijo ohraniti življenja in gospodarstvo; v kakšni 
+                meri naj prioritizira ti dve katergoriji?
+    \end{itemize}
+    
+\end{zgled}
+
 \subsubsection{Okolje}
+Okolje predstavlja del našega sistema, na katerega agent nima nobenega vpliva. Funkcija okolja
+je, da učencu pokaže \textbf{stanje} (angl. \textit{state}) in mu da nagrado glede na 
+\textbf{akcijo}, ki jo prejme od njega. Če se ponovno osredotočimo na namizne igre, bi lahko rekli, 
+da je okolje igralna plošča pri šahu \textit{in} nasprotnik  - tudi nanj namreč nimamo vpliva. 
+Okolje nam služi tudi kot sodnik akcij.
+
+\begin{zgled}[Križci in krožci]
+    Okolje za nas pomeni $3\times3$ igralno polje in našega nasprotnika.
+\end{zgled}
+
+\subsubsection{Agent}
+Zgoraj omenjenemu ">učencu"< v spodbujevlanem učenju formalno rečemo \textit{agent}. Njegov 
+cilj je torej maksimizacija numerične nagrade, to težnjo pa dosega s pomočjo 
+\textbf{strategije} (angl. \textit{policy}), ki mu pove, katero akcijo naj izbere v določenem 
+stanju. Za ocenjevanje stanja, si pomaga z \textbf{vrednostno funkcijo} (angl. \textit{value 
+function}). Kot ime implicira, je to funkcija, ki določa vrednosti stanjem (in akcijam). 
+
+Nagrada nam pove takojšnjo vrednost stanja, vrednostna funkcija pa to vrednost gleda na dolgi
+rok. Je izpeljanka nagrade, a veliko bolj primerna za maksimizacijo kot nagrada, saj upošteva,
+da so tudi stanja, ki ne prinesejo takojšnje nagrade, lahko veliko vredna.
+
+Formalno gledano:
+
+\begin{definicija}
+    Naj $R_t, S_t, A_t$ zaporedoma označujejo nagrado, stanje in akcijo ob času $t$. Definiramo 
+    naslednje pojme: 
+    \begin{itemize}
+        \item Agentova \textbf{strategija} je takšna preslikava $\pi: S \rightarrow A$
+                da velja 
+                \begin{align*}
+                a &= \pi(s) \text{ oz.}\\
+                \pi(a | s) &= P(A_t = a | S_t = s). 
+                \end{align*}
+                Pri čemer prva formula definira \textit{deterministično} strategijo, druga pa 
+                \textit{stohastično}. $a$ in $s$ sta realizaciji akcije in stanja v času $t$ 
+                (to sta načeloma slučajni spremenljivki.)
+        
+        \item Naj bodo $R_{t+1}, ...,R_T$ nagrade, ji jih bomo prejeli od trenutka 
+                $t$ do končnega časa. \textbf{Povračilo} (angl. \textit{return}) $G_t$ definiramo 
+                kot
+                $$
+                G_t = R_{t+1} + \gamma R_{t+2} + ... + \gamma^{T-1} R_T,
+                $$
+                kjer je $\gamma \in [0,1]$ \textit{diskontni faktor}. Predstavlja dejstvo, da 
+                imamo raje nagrade, ki bodo prišle prej.
+
+         \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
+                stanja} (angl. \textit{state value function}) glede na strategijo $v_\pi(s)$ je
+                $$
+                v_\pi(s) = \mathbb{E} [G_t | S_t = s].
+                $$
+                Predstavlja torej pričakovani izplen, če se vedemo skladno s strategijo $\pi$.
+
+        \item Naj bo $\pi$ še vedno dana strategija agenta. \textbf{Vrednostna funkcija 
+                akcije} (tudi stanja-akcije) (angl. \textit{action value function}) glede na 
+                strategijo $q_\pi(s, a)$ definiramo
+                $$
+                q_\pi(s, a) = \mathbb{E} [G_t | S_t = s, A_t = a].
+                $$
+                Pove nam pričakovani izplen, če ob času $t$ naredimo akcijo $a$, nato pa se 
+                vedemo skladno s strategijo $\pi$.
+    \end{itemize}
+\end{definicija}
+
+\begin{zgled}[Križci in krožci]
+    Agent je v tem primeru računalniški program, ki prejme igralno ploščo, nasprotnikove 
+    poteze in nagrade, vrne pa optimalno strategijo (to si želimo).
+\end{zgled}
+
+\subsubsection{Model}
+Model je nenujen del našega sistema. Predstavlja znanje, ki ga ima agent o svojem okolju. 
+Če imamo model, da lahko uporabimo, da napovemo, kako se bo vedlo okolje in s tem premaknemo
+agentovo učenje iz čistih poskusov in napak na \textit{načrtovanje}. 
+
+Prisotnost modela je glavna ločnica med dvema velikima, a zelo različnima vejama spodbujevalnega
+učenja.
+
+\subsection{Korak spodbujevalnega učenja}
+Spodbujevalno učenje se pogosto ukvarja s procesi, ki naravno razpadejo v \textbf{epizode}. Tak 
+proces so recimo namizne igre, kjer so epizode precej naravno posamezne igre. Ni pa nujno, da je 
+delitev tako naravna (ali pa sploh možna oz. smiselna). Za namene te diplomske naloge lahko 
+privzamemo, da taka delitev obstaja.
+
+Ideja učenja je, da agenta spustimo v okolje in mu dovolimo, da doživi (igra) mnogo epizod. Nato 
+na nek način (bo razjasnjeno kasneje) ob nekih določenih časih (npr. po koncu epizode) posodobi 
+svojo strategijo (in/ali vrednostno funkcijo).
+
+Dejanski korak (poteza v namizni igri) v epizodi pa formalno gledano opredelimo: 
+\begin{itemize}
+    \item Agent naredi akcijo $A_t$ ob prejetem stanju $S_t$ in prejme nagrado $R_t$.
+    \item Okolje prejme akcijo $A_t$, posreduje agentu stanje $S_{t+1}$ in nagrado $R_{t+1}$
+\end{itemize}
+
+\medspace
+
+\begin{tikzpicture}[node distance = 6em, auto, thick]
+    \node [block] (Agent) {Agent};
+    \node [block, below of=Agent] (Okolje) {Okolje};
+
+    \path [line] (Agent.0) --++ (4em,0em) |- node [near start]{Akcija $A_t$} (Okolje.0);
+    \path [line] (Okolje.190) --++ (-6em,0em) |- node [near start] {Novo stanje  $S_{t+1}$} (Agent.170);
+    \path [line] (Okolje.170) --++ (-4.25em,0em) |- node [near start, right] {Nagrada $R_{t+1}$} (Agent.190);
+\end{tikzpicture}
+
+\subsubsection{Raziskovanje in izkoriščanje}
 
 \subsection{Markovski proces odločanja}
 
-\subsection{Dinamično programiranje}
-\subsubsection{Neki pomembni algoritmi so tukaj}
-
 \subsection{Algoritmi}
+\subsubsection{Dinamično programiranje}
 \subsubsection{Monte Carlo}
 \subsubsection{TD(0)}
 \subsubsection{TD($\lambda$)}
@@ -199,7 +363,7 @@ Tu so stvari, ki sodijo k agentu - v, q, pi, \dots
 \subsection{Pride še kaj v poštev tu?}
 
 
-\section{Spodbujevano učenje pri namiznih igrah}
+\section{Spodbujevalno učenje pri namiznih igrah}
 
 \subsection{Parcialni model - ">po-stanja"<}
 
@@ -230,120 +394,122 @@ Tu so stvari, ki sodijo k agentu - v, q, pi, \dots
 
 
 
-\begin{definicija}
-Funkcija $f\colon [a,b]\to\R$ je {\em zvezna}, "ce...
-\end{definicija}
+%\begin{definicija}
+%Funkcija $f\colon [a,b]\to\R$ je {\em zvezna}, "ce...
+%\end{definicija}
+%
+%Osnovne rezultate o zveznih funkcijah najdemo v \cite{glob}. Navedimo le naslednji izrek.
+%
+%\begin{izrek}\label{izr:enakomerno}
+%Zvezna funkcija na zaprtem intervalu je enakomerno zvezna.
+%\end{izrek}
+%
+%\proof
+%Na za"cetku dokaza, "ce je to le mogo"ce in smiselno, razlo"zite idejo dokaza. 
+%
+%Dokazovali bomo s protislovjem. Pomagali si bomo z definicijo zveznosti in s kompaktnostjo intervala.
+%Izberimo $\varepsilon>0$. "Ce $f$ ni enakomerno zvezna, potem za vsak $\delta>0$ obstajata $x, y$, ki zado"s"cata
+%\begin{equation}\label{eq:razlika}
+%|x-y|<\delta\quad \text{in}\quad |f(x)-f(y)| \ge \varepsilon.
+%\end{equation}
+%\endproof
+%
+%Na ena"cbe se sklicujemo takole: Oglejmo si "se enkrat neena"cbi \eqref{eq:razlika}.\\
+%
+%"Ce dokaz trditve ne sledi neposredno formulaciji trditve, moramo povedati, kaj bomo dokazovali. To naredimo tako, da ob ukazu za izpis besede \emph{Dokaz} dodamo neobvezni parameter, v katerem napi"semo tekst, ki se bo izpisal namesto besede \emph{Dokaz}.
+%
+%\proof[Dokaz izreka \ref{izr:enakomerno}]
+%Dokazovanja te trditve se lahko lotimo tudi takole...
+%\endproof
+%
+%\subsection{Naslov morebitnega podrazdelka} Besedilo naj se nadaljuje v vrstici naslova, torej za ukazom \verb|\subsection{}| ne smete izpustiti prazne vrstice.
+%
+%V tem podrazdelku si bomo ogledali "se nekatere posledice zveznosti. 
+%
+%\begin{lema}
+%Naj bo $f$ zvezna in ...
+%\end{lema}
+%
+%$$\vdots$$
+%
+%Na konec dela sodita angle"sko-slovenski slovar"cek strokovnih izrazov in seznam uporabljene literature. Slovar naj vsebuje vse pojme, ki ste jih spoznali ob pripravi dela, pa tudi "ze znane pojme, ki ste jih spoznali pri izbirnih predmetih. Najprej navedite angle"ski pojem (ti naj bodo urejeni po abecedi) in potem ustrezni slovenski prevod; za"zeleno je, da temu sledi tudi opis pojma, lahko komentar ali pojasnilo. Slovarska gesla navajajte z ukazom \verb|\geslo{}{}|. Med zaporednima geselskima ukazoma v \LaTeX\ datoteki mora biti prazna vrstica, da so gesla izpisana vsako v svoji vrstici.
+%
+%Pri navajanju literature si pomagajte s spodnjimi primeri; najprej je opisano pravilo za vsak tip vira, nato so podani primeri. Posebej opozarjam, da spletni viri uporabljajo paket url, ki je vklju"cen v preambuli. Polje ``ogled'' pri spletnih virih je obvezno; "ce je kak podatek neznan, ustrezno ``polje'' seveda izpustimo. Literaturo je potrebno urediti po abecednem vrstnem redu; najprej navedemo vse vire z znanimi avtorji po abecednem redu avtorjev (po priimkih, nato imenih), nato pa spletne vire, urejene po naslovih strani. "Ce isti vir citiramo v dveh oblikah, kot tiskani in spletni vir, najprej navedemo tiskani vir, nato pa "se podatek o tem, kje je dostopen v elektronski obliki.
+%
+%% slovar
+%\section*{Slovar strokovnih izrazov}
+%
+%\geslo{glide reflection}{zrcalni zdrs ali zrcalni pomik -- tip ravninske evklidske izometrije, ki je kompozitum zrcaljenja in translacije vzdol"z iste premice}
+%
+%\geslo{lattice}{mre"za}
+%
+%\geslo{link}{splet}
+%
+%\geslo{partition}{\textbf{$\sim$ of a set} razdelitev mno"zice; \textbf{$\sim$ of a number} raz"clenitev "stevila}
+%
+%
+%% seznam uporabljene literature
+%%\begin{thebibliography}{99}
+%%
+%%\bibitem{referenca-clanek}
+%%I.~Priimek, \emph{Naslov "clanka}, okraj"sano ime revije \textbf{letnik revije} (leto izida) strani od--do.
+%%
+%%\bibitem{navodilaOMF}
+%%C.~Velkovrh, \emph{Nekaj navodil avtorjem za pripravo rokopisa}, Obzornik mat.\ fiz.\ \textbf{21} (1974) 62--64.
+%%
+%%\bibitem{vec-avtorjev}
+%%P.~Angelini, F.~Frati in M.~Kaufmann, \emph{Straight-line rectangular drawings of clustered graphs}, Discrete Comput.\ Geom.\ \textbf{45} (2011) 88--140.
+%%
+%%
+%%
+%%\bibitem{referenca-knjiga}
+%%I.~Priimek, \emph{Naslov knjige}, morebitni naslov zbirke  \textbf{zaporedna "stevilka}, zalo"zba, kraj, leto izdaje.
+%%
+%%\bibitem{glob}
+%%J.~Globevnik in M.~Brojan, \emph{Analiza I}, Matemati"cni rokopisi \textbf{25}, DMFA -- zalo"zni"stvo, Ljubljana, 2010.
+%%
+%%\bibitem{glob-vse}
+%%J.~Globevnik in M.~Brojan, \emph{Analiza I}, Matemati"cni rokopisi \textbf{25}, DMFA -- zalo"zni"stvo, Ljubljana, 2010; dostopno tudi na
+%%\url{http://www.fmf.uni-lj.si/~globevnik/skripta.pdf}.
+%%
+%%\bibitem{lang}
+%%S.~Lang, \emph{Fundamentals of differential geometry}, Graduate Texts in Mathematics {\bf 191}, Springer-Verlag, New York, 1999.
+%%
+%%
+%%
+%%\bibitem{referenca-clanek-v-zborniku}
+%%I.~Priimek, \emph{Naslov "clanka}, v: naslov zbornika (ur.\ ime urednika), morebitni naslov zbirke  \textbf{zaporedna "stevilka}, zalo"zba, kraj, leto izdaje, str.\ od--do.
+%%
+%%\bibitem{zbornik}
+%%S.~Cappell in J.~Shaneson, \emph{An introduction to embeddings, immersions and singularities in codimension two}, v: Algebraic and geometric topology, Part 2 (ur.\ R.~Milgram), Proc.\ Sympos.\ Pure Math.\ \textbf{XXXII}, Amer.\ Math.\ Soc., Providence, 1978, str.\ 129--149.
+%%
+%%
+%%
+%%\bibitem{diploma-magisterij}
+%%I.~Priimek, \emph{Naslov dela}, diplomsko/magistrsko delo, ime fakultete, ime univerze, leto.
+%%
+%%\bibitem{kalisnik}
+%%J.~Kali"snik, \emph{Upodobitev orbiterosti}, diplomsko delo, Fakulteta za matematiko in fiziko, Univerza v Ljubljani, 2004.
+%%
+%%
+%%
+%%\bibitem{referenca-spletni-vir}
+%%I.~Priimek, \emph{Naslov spletnega vira}, v: ime morebitne zbirke/zbornika, ki vsebuje vir, verzija "stevilka/datum, [ogled datum], dostopno na \url{spletni.naslov}.
+%%
+%%\bibitem{glob-splet}
+%%J.~Globevnik in M.~Brojan, \emph{Analiza 1}, verzija 15.~9.~2010, [ogled 12.~5.~2011], dostopno na \url{http://www.fmf.uni-lj.si/~globevnik/skripta.pdf}.
+%%
+%%\bibitem{wiki}
+%%\emph{Matrix (mathematics)}, v: Wikipedia: The Free Encyclopedia, [ogled 12.~5.~2011], dostopno na \url{http://en.wikipedia.org/wiki/Matrix_(mathematics)}.
+%%
+%%
+%%
+%%
+%%\end{thebibliography}
 
-Osnovne rezultate o zveznih funkcijah najdemo v \cite{glob}. Navedimo le naslednji izrek.
-
-\begin{izrek}\label{izr:enakomerno}
-Zvezna funkcija na zaprtem intervalu je enakomerno zvezna.
-\end{izrek}
-
-\proof
-Na za"cetku dokaza, "ce je to le mogo"ce in smiselno, razlo"zite idejo dokaza. 
-
-Dokazovali bomo s protislovjem. Pomagali si bomo z definicijo zveznosti in s kompaktnostjo intervala.
-Izberimo $\varepsilon>0$. "Ce $f$ ni enakomerno zvezna, potem za vsak $\delta>0$ obstajata $x, y$, ki zado"s"cata
-\begin{equation}\label{eq:razlika}
-|x-y|<\delta\quad \text{in}\quad |f(x)-f(y)| \ge \varepsilon.
-\end{equation}
-\endproof
-
-Na ena"cbe se sklicujemo takole: Oglejmo si "se enkrat neena"cbi \eqref{eq:razlika}.\\
-
-"Ce dokaz trditve ne sledi neposredno formulaciji trditve, moramo povedati, kaj bomo dokazovali. To naredimo tako, da ob ukazu za izpis besede \emph{Dokaz} dodamo neobvezni parameter, v katerem napi"semo tekst, ki se bo izpisal namesto besede \emph{Dokaz}.
-
-\proof[Dokaz izreka \ref{izr:enakomerno}]
-Dokazovanja te trditve se lahko lotimo tudi takole...
-\endproof
-
-\subsection{Naslov morebitnega podrazdelka} Besedilo naj se nadaljuje v vrstici naslova, torej za ukazom \verb|\subsection{}| ne smete izpustiti prazne vrstice.
-
-V tem podrazdelku si bomo ogledali "se nekatere posledice zveznosti. 
-
-\begin{lema}
-Naj bo $f$ zvezna in ...
-\end{lema}
-
-$$\vdots$$
-
-Na konec dela sodita angle"sko-slovenski slovar"cek strokovnih izrazov in seznam uporabljene literature. Slovar naj vsebuje vse pojme, ki ste jih spoznali ob pripravi dela, pa tudi "ze znane pojme, ki ste jih spoznali pri izbirnih predmetih. Najprej navedite angle"ski pojem (ti naj bodo urejeni po abecedi) in potem ustrezni slovenski prevod; za"zeleno je, da temu sledi tudi opis pojma, lahko komentar ali pojasnilo. Slovarska gesla navajajte z ukazom \verb|\geslo{}{}|. Med zaporednima geselskima ukazoma v \LaTeX\ datoteki mora biti prazna vrstica, da so gesla izpisana vsako v svoji vrstici.
-
-Pri navajanju literature si pomagajte s spodnjimi primeri; najprej je opisano pravilo za vsak tip vira, nato so podani primeri. Posebej opozarjam, da spletni viri uporabljajo paket url, ki je vklju"cen v preambuli. Polje ``ogled'' pri spletnih virih je obvezno; "ce je kak podatek neznan, ustrezno ``polje'' seveda izpustimo. Literaturo je potrebno urediti po abecednem vrstnem redu; najprej navedemo vse vire z znanimi avtorji po abecednem redu avtorjev (po priimkih, nato imenih), nato pa spletne vire, urejene po naslovih strani. "Ce isti vir citiramo v dveh oblikah, kot tiskani in spletni vir, najprej navedemo tiskani vir, nato pa "se podatek o tem, kje je dostopen v elektronski obliki.
-
-% slovar
-\section*{Slovar strokovnih izrazov}
-
-\geslo{glide reflection}{zrcalni zdrs ali zrcalni pomik -- tip ravninske evklidske izometrije, ki je kompozitum zrcaljenja in translacije vzdol"z iste premice}
-
-\geslo{lattice}{mre"za}
-
-\geslo{link}{splet}
-
-\geslo{partition}{\textbf{$\sim$ of a set} razdelitev mno"zice; \textbf{$\sim$ of a number} raz"clenitev "stevila}
-
-
-% seznam uporabljene literature
-\begin{thebibliography}{99}
-
-\bibitem{referenca-clanek}
-I.~Priimek, \emph{Naslov "clanka}, okraj"sano ime revije \textbf{letnik revije} (leto izida) strani od--do.
-
-\bibitem{navodilaOMF}
-C.~Velkovrh, \emph{Nekaj navodil avtorjem za pripravo rokopisa}, Obzornik mat.\ fiz.\ \textbf{21} (1974) 62--64.
-
-\bibitem{vec-avtorjev}
-P.~Angelini, F.~Frati in M.~Kaufmann, \emph{Straight-line rectangular drawings of clustered graphs}, Discrete Comput.\ Geom.\ \textbf{45} (2011) 88--140.
-
-
-
-\bibitem{referenca-knjiga}
-I.~Priimek, \emph{Naslov knjige}, morebitni naslov zbirke  \textbf{zaporedna "stevilka}, zalo"zba, kraj, leto izdaje.
-
-\bibitem{glob}
-J.~Globevnik in M.~Brojan, \emph{Analiza I}, Matemati"cni rokopisi \textbf{25}, DMFA -- zalo"zni"stvo, Ljubljana, 2010.
-
-\bibitem{glob-vse}
-J.~Globevnik in M.~Brojan, \emph{Analiza I}, Matemati"cni rokopisi \textbf{25}, DMFA -- zalo"zni"stvo, Ljubljana, 2010; dostopno tudi na
-\url{http://www.fmf.uni-lj.si/~globevnik/skripta.pdf}.
-
-\bibitem{lang}
-S.~Lang, \emph{Fundamentals of differential geometry}, Graduate Texts in Mathematics {\bf 191}, Springer-Verlag, New York, 1999.
-
-
-
-\bibitem{referenca-clanek-v-zborniku}
-I.~Priimek, \emph{Naslov "clanka}, v: naslov zbornika (ur.\ ime urednika), morebitni naslov zbirke  \textbf{zaporedna "stevilka}, zalo"zba, kraj, leto izdaje, str.\ od--do.
-
-\bibitem{zbornik}
-S.~Cappell in J.~Shaneson, \emph{An introduction to embeddings, immersions and singularities in codimension two}, v: Algebraic and geometric topology, Part 2 (ur.\ R.~Milgram), Proc.\ Sympos.\ Pure Math.\ \textbf{XXXII}, Amer.\ Math.\ Soc., Providence, 1978, str.\ 129--149.
-
-
-
-\bibitem{diploma-magisterij}
-I.~Priimek, \emph{Naslov dela}, diplomsko/magistrsko delo, ime fakultete, ime univerze, leto.
-
-\bibitem{kalisnik}
-J.~Kali"snik, \emph{Upodobitev orbiterosti}, diplomsko delo, Fakulteta za matematiko in fiziko, Univerza v Ljubljani, 2004.
-
-
-
-\bibitem{referenca-spletni-vir}
-I.~Priimek, \emph{Naslov spletnega vira}, v: ime morebitne zbirke/zbornika, ki vsebuje vir, verzija "stevilka/datum, [ogled datum], dostopno na \url{spletni.naslov}.
-
-\bibitem{glob-splet}
-J.~Globevnik in M.~Brojan, \emph{Analiza 1}, verzija 15.~9.~2010, [ogled 12.~5.~2011], dostopno na \url{http://www.fmf.uni-lj.si/~globevnik/skripta.pdf}.
-
-\bibitem{wiki}
-\emph{Matrix (mathematics)}, v: Wikipedia: The Free Encyclopedia, [ogled 12.~5.~2011], dostopno na \url{http://en.wikipedia.org/wiki/Matrix_(mathematics)}.
-
-
-
-
-\end{thebibliography}
-
-
+\nocite{*}
+\bibliographystyle{plain}
+\bibliography{literatura}
 
 
 \end{document}
