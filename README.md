@@ -1,4 +1,4 @@
-# Spodbujevano učenj pri igranju namiznih iger
+# Spodbujevano učenje pri igranju namiznih iger
 
 Pri diplomskem seminarju se bom posvetil zgornji temi (*angl.* Reinforcement learning
 in board games).
