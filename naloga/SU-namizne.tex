@@ -83,7 +83,7 @@ FAKULTETA ZA MATEMATIKO IN FIZIKO\\[5mm]
 \imeavtorja\\[2mm]
 {\bf \naslovdela}\\[10mm]
 Delo diplomskega seminarja\\[1cm]
-Mentor: \imementorja}
+Mentorica: \imementorja}
 \end{center}
 \vfill
 
@@ -138,13 +138,21 @@ bolje igrati.
 Z adventom računalnika in računalništva je bil ta problem postavljen v novi luči. Vprašanje
 ni bilo več samo, kako dobro lahko človek igra igro sam, temveč tudi do kakšnega nivoja 
 lahko spravi računalnik. Izkazalo se je, da nam pri tem problemu (in mnogih drugih) zelo dobro
-koristi umetna inteligenca in metode strojnega učenja. Eno izmed vej SU bomo predstavili v tem 
-delu in pogledali, kako nam lahko pomaga pri igranju namiznih iger.
+koristi ">umetna inteligenca"< oz. metode strojnega učenja (SU). Eno izmed vej SU bomo 
+predstavili v tem delu in pogledali, kako nam lahko pomaga pri igranju namiznih iger.
 
+Ideja, da bi nek stroj igral igre ni nova, in kompleksnosti takega stroja so se zavedali ljudje
+že pred obstojem računalnika. 
 Za konec uvodnega dela morda zabeležimo še citat iz eseja ameriškega pisatelja in pesnika 
-Edgarja Allana Poea, ki govori o mehaničnem igralcu šaha: “If we choose to call the former 
-[Chess-Player] a pure machine we must be prepared to admit that it is, beyond all comparison, 
-the most wonderful of the inventions of mankind.”
+Edgarja Allana Poea, ki govori o mehaničnem igralcu šaha: 
+
+\begin{quotation}
+    %“If we choose to call the former 
+    %[Chess-Player] a pure machine we must be prepared to admit that it is, beyond all comparison, 
+    %the most wonderful of the inventions of mankind.”
+    ">Če prej omenjenemu [igralcu šaha] rečemo čisti stroj, moramo biti pripravljeni priznati, da je
+    zunaj vseh primerjav, najbolj čudovit izum človeštva.
+\end{quotation}
 
 \subsection{Motivacija}
 Spodbujevalno učenje ima zelo lepo motivacijo, in sicer izhaja iz psihologije. Znana psihologa 
@@ -191,12 +199,12 @@ strojnega učenja.
 
 Pomembna razlika tiči tudi v pomembnosti časa pri spodbujevalnemu učenju. Pri drugih oblikah 
 strojnega učenja se ponavadi ukvarjamo s tabelaričnimi podatki, tu pa ponavadi modeliramo nek 
-dinamičen proces, zato je naravno, da je pomemben čas. Čeprav se da čas v tem kontekstu 
+dinamičen proces, zato je naravno, da je pomemben čas. Čeprav se ga da v tem kontekstu 
 modelirati zvezno, je za naše namene dovolj, da ga jemljemo kot diskretne točke $t \in 
 {1, \dots, T}$, kjer $T$ označuje nek končni čas (v splošnem je lahko seveda $T = \infty$).
 
 \subsubsection{Nagrada}
-Prvi pomemben koncept pri spodbujevanem učenju je nagrada. Kot sem že zgoraj omenil, to za nas 
+Prvi pomemben koncept pri spodbujevanem učenju je nagrada. Kot smo že zgoraj omenili, to za nas 
 pomeni neko numerično vrednost, pozitivno število indicira pozitivno nagrado, negativno pa 
 ">kazen"<. S pomočjo tega koncepta formaliziramo \textit{cilj} učenja. Edini cilj učenca je 
 maksimizacija te nagrade, pri čemer je vredno omeniti, da na nagrado učenec lahko vpliva samo 
@@ -214,28 +222,31 @@ dolgoročno strategijo ki nas na koncu nagradi z zmago.
 \end{zgled}
 
 Zavedati se moramo tudi potencialnih omejitev oz. pomanjkljivosti takega modela. Razmislimo 
-malo o 
+malo o:
 \begin{definicija}[Hipoteza o nagradi]
     Vse cilje je mogoče opisati kot maksimizacijo neke kumulativne numerične 
     nagrade.
 \end{definicija}
 
 \begin{zgled}[Protiprimera hipotezi o nagradi]
-    Problem je, da dovolimo samo enodimezionalnost:
+    Problem je, da hipoteza dovoljuje samo enodimezionalnost:
     \begin{itemize}
         \item Ko kupujemo hamburger, nam je pomemben okus in cena; kaj nam več pomeni?
         \item Država želi med epidemijo ohraniti življenja in gospodarstvo; v kakšni 
                 meri naj prioritizira ti dve katergoriji?
     \end{itemize}
+    Na tem mestu poudarimo še, da se da tudi v takih situacijah modelirati nagrado na zgoraj 
+    opisani način in da je ta koncept vseeno dovolj splošen, da zajame zelo velik razred problemov.
     
 \end{zgled}
 
 \subsubsection{Okolje}
-Okolje predstavlja del našega sistema, na katerega agent nima nobenega vpliva. Funkcija okolja
+Okolje predstavlja del našega sistema, na katerega učenec nima nobenega vpliva. Funkcija okolja
 je, da učencu pokaže \textbf{stanje} (angl. \textit{state}) in mu da nagrado glede na 
 \textbf{akcijo}, ki jo prejme od njega. Če se ponovno osredotočimo na namizne igre, bi lahko rekli, 
 da je okolje igralna plošča pri šahu \textit{in} nasprotnik  - tudi nanj namreč nimamo vpliva. 
-Okolje nam služi tudi kot sodnik akcij.
+Okolje nam služi tudi kot sodnik akcij oz. stanj. V kontekstu programa za igranje iger torej 
+okolje izbira nasprotnikove akcije, odloča katero stanje pomeni zmago in dodeljuje nagrade.
 
 \begin{zgled}[Križci in krožci]
     Okolje za nas pomeni $3\times3$ igralno polje in našega nasprotnika.
@@ -251,6 +262,9 @@ function}). Kot ime implicira, je to funkcija, ki določa vrednosti stanjem (in 
 Nagrada nam pove takojšnjo vrednost stanja, vrednostna funkcija pa to vrednost gleda na dolgi
 rok. Je izpeljanka nagrade, a veliko bolj primerna za maksimizacijo kot nagrada, saj upošteva,
 da so tudi stanja, ki ne prinesejo takojšnje nagrade, lahko veliko vredna.
+
+Poleg tega je v splošnem lažje učenje prek vrednostnih funkcij kot prek strategij neposredno, 
+saj je ponavadi stanj mnogokrat manj kot možnih strategij agenta.
 
 Formalno gledano:
 
@@ -275,7 +289,8 @@ Formalno gledano:
                 G_t = R_{t+1} + \gamma R_{t+2} + ... + \gamma^{T-1} R_T,
                 $$
                 kjer je $\gamma \in [0,1]$ \textit{diskontni faktor}. Predstavlja dejstvo, da 
-                imamo raje nagrade, ki bodo prišle prej.
+                imamo raje nagrade, ki bodo prišle prej. Formalno gledano, je cilj učenja 
+                maksimizacija pričakovanega povračila
 
          \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
                 stanja} (angl. \textit{state value function}) glede na strategijo $v_\pi(s)$ je
@@ -303,22 +318,24 @@ Formalno gledano:
 \subsubsection{Model}
 Model je nenujen del našega sistema. Predstavlja znanje, ki ga ima agent o svojem okolju. 
 Če imamo model, da lahko uporabimo, da napovemo, kako se bo vedlo okolje in s tem premaknemo
-agentovo učenje iz čistih poskusov in napak na \textit{načrtovanje}. 
+agentovo učenje iz čistih poskusov in napak na \textit{načrtovanje} (angl. \textit{planning}).
+Model je torej poleg strategije in vrednostne funkcije še tretja komponenta agenta. Na podlagi 
+modela lahko agent ">preračuna"< smiselnost svojih akcij, brez da bi dejansko karkoli storil. 
 
 Prisotnost modela je glavna ločnica med dvema velikima, a zelo različnima vejama spodbujevalnega
 učenja.
 
 \subsection{Korak spodbujevalnega učenja}
-Spodbujevalno učenje se pogosto ukvarja s procesi, ki naravno razpadejo v \textbf{epizode}. Tak 
-proces so recimo namizne igre, kjer so epizode precej naravno posamezne igre. Ni pa nujno, da je 
-delitev tako naravna (ali pa sploh možna oz. smiselna). Za namene te diplomske naloge lahko 
+Spodbujevalno učenje se pogosto ukvarja s procesi, ki naravno razpadejo v ti .\textbf{epizode}. 
+Tak proces so recimo namizne igre, kjer so epizode precej naravno posamezne igre. Ni pa nujno, 
+da je delitev tako naravna (ali pa sploh možna oz. smiselna). Za namene te diplomske naloge lahko 
 privzamemo, da taka delitev obstaja.
 
 Ideja učenja je, da agenta spustimo v okolje in mu dovolimo, da doživi (igra) mnogo epizod. Nato 
 na nek način (bo razjasnjeno kasneje) ob nekih določenih časih (npr. po koncu epizode) posodobi 
-svojo strategijo (in/ali vrednostno funkcijo).
+svojo strategijo (in/ali vrednostno funkcijo). 
 
-Dejanski korak (poteza v namizni igri) v epizodi pa formalno gledano opredelimo: 
+Dejanski korak (npr. poteza v namizni igri) v epizodi pa formalno gledano opredelimo: 
 \begin{itemize}
     \item Agent naredi akcijo $A_t$ ob prejetem stanju $S_t$ in prejme nagrado $R_t$.
     \item Okolje prejme akcijo $A_t$, posreduje agentu stanje $S_{t+1}$ in nagrado $R_{t+1}$
@@ -336,8 +353,57 @@ Dejanski korak (poteza v namizni igri) v epizodi pa formalno gledano opredelimo:
 \end{tikzpicture}
 
 \subsubsection{Raziskovanje in izkoriščanje}
+Eden izmed glavnih problemov, s katerim se srečamo pri spodbujevalnem učenju je problem 
+raziskovanja in izkoriščanja. Ko se agent uči, začne dojemati katere akcije ali pa kombinacije 
+akcij mu pripeljejo nagrado. Ko to ugotovi, seveda lahko začne te akcije \textit{izkoriščati} 
+in prejemativso nagrado, jim pripada. Pri tem pa naletimo na problem. Agent lahko izkorišča te 
+akcije in nikoli ne ugotovi, da neka druga akcija prinese še višjo nagrado; tega ne izve, ker ne
+\textit{raziskuje}. Če pa samo raziskuje pa nikoli ne izkoristi potencialnih nagrad, ki jih sreča
+to je, ničesar se ne nauči. 
+
+Uravnoteženje raziskovanja in izkoriščanja je pomemben problem, a se izkaže, da ima dokaj enostavno
+rešitev (ki deluje dovolj dobro). Spoznali jo bomo v kratkem.
+
+Morda se nekaterim bralcem zdi, da smo zaenkrat preceč ">mahali z rokami"<, to je zato, ker želimo, 
+da se do te točke razvije intuicija o predstavljenih pojmih. V nadaljevanju bomo do sedaj opisane 
+stvari bolj formalizirali.
+
 
 \subsection{Markovski proces odločanja}
+Spomnimo se najprej procesa spodbujevalnega učenja in ga poskusimo opisati bolj formalno: 
+imamo zaporedje časovnih korakov $t = 0, 1, 2, \dots$, ob katerih med sabo interaktirata agent 
+in okolje. Ob koraku $t$ agent prejme od okolja stanje (oz. reprezentacijo stanja) $S_t \in 
+\mathcal{S}$, kjer $\mathcal{S}$ označuje množico vseh stanj. Na podalagi stanja in strategije, 
+ki jo ima, izbere akcijo $A_t \in \mathcal{A}(S_t)$, kjer $\mathcal{A}(S_t)$ predstavlja 
+množico akcij, ki jih ima agent na voljo v stanju $S_t$. Rezultat te akcije je nagrada $R_{t+1} 
+\in \mathcal{R}$ in novo stanje $S_{t+1}$.
+
+Čeprav se da vse opisane koncepte posplošiti na števne in celo neštevne množice stanj in akcij, 
+se bomo mi omejili na končne množice. To je glede na problem, s katerim se ukvarajmo, dovolj.
+
+\subsubsection{Markovska veriga}
+Dogajanje pri spodbujevalnem učenju lahko v grobem opišemo s slučajim procesom stanj 
+$(S_t)_{t=0}^T$. Zato je pomembno, da si natančno pogledamo nekaj lastnosti, ki jih 
+lahko pričakujemo. 
+
+\begin{definicija}[Markovska veriga]
+    Slučajni proces $(S_t)_{t=0}^T$ na končnem verjetnostnem prostoru 
+    $(\Omega, P)$ je \textbf{Markovska veriga}, če zanj velja Markovska lastnost
+    $$
+    P(S_{t+1} = s_{t+1} | S_{t} = s_{t}, ..., S_0 = s_0) = P(S_{t+1} = s_{t+1} | S_{t} = s_{t}).
+    $$
+    Na kratko to \textit{prehodno verjetnost} označimo $p_{ss'} := P(S_{t+1} = s' | S_{t} = s)$.
+    Opazimo, da lahko te verjetnoti zložimo v matriko $\mathcal{P} := 
+    [p_{ss'}]_{s,s'\in \mathcal{S} }$. 
+
+    Zdaj Markovsko verigo predstavimo še na alternativni način: kot dvojico $(\mathcal{S}, 
+    \mathcal{P})$, kjer je $\mathcal{P}$ zgoraj definirana matrika.
+\end{definicija}
+
+Markovska lastnost pomeni, da je prihodnost neodvisna od preteklosti, če poznamo sedanjost. 
+Spodbujevalno učenje se ukvarja predvsem s problemi, kjer to dejstvo drži. Tudi pri našem 
+ciljnem problemu to načeloma velja: če pogledamo igralno ploščo na katerikoli točki pogosto 
+izvemo enako o trenutnem stanju, kot če bi opazovali igro od začetka.
 
 \subsection{Algoritmi}
 \subsubsection{Dinamično programiranje}
