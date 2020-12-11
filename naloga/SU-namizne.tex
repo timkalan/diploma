@@ -114,8 +114,8 @@ Prevod zgornjega povzetka v angle"s"cino.
 \vfill\noindent
 {\bf Math. Subj. Class. (2010):} navedite vsaj eno klasifikacijsko oznako -- 
         dostopne so na \url{www.ams.org/mathscinet/msc/msc2010.html}  \\[1mm]  
-{\bf Ključne besede:} Spodbujevalno učenje  \\[1mm]  
-{\bf Keywords:} Reinforcement learning
+{\bf Ključne besede:} Spodbujevalno učenje, Markovski proces odločanja  \\[1mm]  
+{\bf Keywords:} Reinforcement learning, Markov decision process
 \pagebreak
 
 
@@ -182,7 +182,7 @@ Naloga je razdeljena na štiri glavne dele. Na začetku so predstavljeni osnovni
 spodbujevalnega učenja in nekateri glavni algoritmi s tega področja. Potem se fokus obrne 
 na namizne igre in ob nekaj malega teorije iger povzame osnovne koncepte, na katere naletimo
 tam. V naslednjem odseku potem združimo znanje iz prejšnjih dveh in predstavimo, kako nam
-teorija iger pripomore pri spodbujevalnemu učenju v tem konteksu. Na koncu pa so predstavljeni 
+teorija iger pripomore pri spodbujevalnem učenju v tem konteksu. Na koncu pa so predstavljeni 
 nekateri empirični rezultati, ki so posledica zgoraj navedene teorije.
 
 \section{Spodbujevalno učenje}
@@ -197,7 +197,7 @@ povedal ali pa namignil, katere akcije so dobre, to moramo ugotoviti sami, s pos
 napakami. V tem dejstvu se skriva bistvena razlika med spodbujevalnim učenjem in ostalimi vejami 
 strojnega učenja.
 
-Pomembna razlika tiči tudi v pomembnosti časa pri spodbujevalnemu učenju. Pri drugih oblikah 
+Pomembna razlika tiči tudi v pomembnosti časa pri spodbujevalnem učenju. Pri drugih oblikah 
 strojnega učenja se ponavadi ukvarjamo s tabelaričnimi podatki, tu pa ponavadi modeliramo nek 
 dinamičen proces, zato je naravno, da je pomemben čas. Čeprav se ga da v tem kontekstu 
 modelirati zvezno, je za naše namene dovolj, da ga jemljemo kot diskretne točke $t \in 
@@ -283,10 +283,10 @@ Formalno gledano:
                 (to sta načeloma slučajni spremenljivki.)
         
         \item Naj bodo $R_{t+1}, ...,R_T$ nagrade, ji jih bomo prejeli od trenutka 
-                $t$ do končnega časa. \textbf{Povračilo} (angl. \textit{return}) $G_t$ definiramo 
-                kot
+                $t$ do končnega časa. \textbf{Povračilo} (angl. \textit{return}) $G_t$ v splošnem 
+                definiramo za $T=\infty$
                 $$
-                G_t = R_{t+1} + \gamma R_{t+2} + ... + \gamma^{T-1} R_T,
+                G_t = R_{t+1} + \gamma R_{t+2} + ... = \sum_{k=0}^\infty \gamma^k R_{t + k + 1} ,
                 $$
                 kjer je $\gamma \in [0,1]$ \textit{diskontni faktor}. Predstavlja dejstvo, da 
                 imamo raje nagrade, ki bodo prišle prej. Formalno gledano, je cilj učenja 
@@ -295,7 +295,7 @@ Formalno gledano:
          \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
                 stanja} (angl. \textit{state value function}) glede na strategijo $v_\pi(s)$ je
                 $$
-                v_\pi(s) = \mathbb{E} [G_t | S_t = s].
+                v_\pi(s) = \mathrm{E} [G_t | S_t = s].
                 $$
                 Predstavlja torej pričakovani izplen, če se vedemo skladno s strategijo $\pi$.
 
@@ -303,7 +303,7 @@ Formalno gledano:
                 akcije} (tudi stanja-akcije) (angl. \textit{action value function}) glede na 
                 strategijo $q_\pi(s, a)$ definiramo
                 $$
-                q_\pi(s, a) = \mathbb{E} [G_t | S_t = s, A_t = a].
+                q_\pi(s, a) = \mathrm{E} [G_t | S_t = s, A_t = a].
                 $$
                 Pove nam pričakovani izplen, če ob času $t$ naredimo akcijo $a$, nato pa se 
                 vedemo skladno s strategijo $\pi$.
@@ -388,16 +388,17 @@ lahko pričakujemo.
 
 \begin{definicija}[Markovska veriga]
     Slučajni proces $(S_t)_{t=0}^T$ na končnem verjetnostnem prostoru 
-    $(\Omega, P)$ je \textbf{Markovska veriga}, če zanj velja Markovska lastnost
+    $(\Omega, P)$ je \textbf{Markovska veriga oz. Markovski proces} (angl. \textit{Markov 
+    chain}), če zanj velja Markovska lastnost
     $$
     P(S_{t+1} = s_{t+1} | S_{t} = s_{t}, ..., S_0 = s_0) = P(S_{t+1} = s_{t+1} | S_{t} = s_{t}).
     $$
     Na kratko to \textit{prehodno verjetnost} označimo $p_{ss'} := P(S_{t+1} = s' | S_{t} = s)$.
     Opazimo, da lahko te verjetnoti zložimo v matriko $\mathcal{P} := 
-    [p_{ss'}]_{s,s'\in \mathcal{S} }$. 
+    [p_{ss'}]_{s,s'\in \mathcal{S} }$, ki ji pravimo \textit{prehodna matrika}.
 
     Zdaj Markovsko verigo predstavimo še na alternativni način: kot dvojico $(\mathcal{S}, 
-    \mathcal{P})$, kjer je $\mathcal{P}$ zgoraj definirana matrika.
+    \mathcal{P})$, kjer je $\mathcal{P}$ zgoraj definirana prehodna matrika.
 \end{definicija}
 
 Markovska lastnost pomeni, da je prihodnost neodvisna od preteklosti, če poznamo sedanjost. 
@@ -405,11 +406,134 @@ Spodbujevalno učenje se ukvarja predvsem s problemi, kjer to dejstvo drži. Tud
 ciljnem problemu to načeloma velja: če pogledamo igralno ploščo na katerikoli točki pogosto 
 izvemo enako o trenutnem stanju, kot če bi opazovali igro od začetka.
 
-\subsection{Algoritmi}
-\subsubsection{Dinamično programiranje}
-\subsubsection{Monte Carlo}
-\subsubsection{TD(0)}
-\subsubsection{TD($\lambda$)}
+\subsubsection{Markovski proces nagrajevanja}
+Podoben koncept, ki se malo bolj približa dejanski situaciji v spodbujevalnem učenju je \textit{
+Markovski proces nagrajevanja}. Kot že ime morda namigne, je precej podoben Markovski verigi, le 
+da v njem nastopajo \textit{nagrade}. 
+
+\begin{definicija}[Markovski proces nagrajevanja]
+    Pričakovani nagradi glede na stanje $s$ in akcijo $a$ pravimo \textbf{nagradna funkcija} (angl.
+    \textit{reward function}) in označimo
+    $$
+    \mathcal{R}_s^a = E[R_{t+1} | S_{t} = s, A_t = a].
+    $$
+    Naboru $(\mathcal{S}, \mathcal{P}, \mathcal{R}, \gamma)$, za katerega velja
+    \begin{itemize}
+        \item $\mathcal{S}$ je (končna) množica stanj,
+        \item $\mathcal{P}$ je prehodna matrika $\mathcal{P}_{ss'} = P(S_{t+1} = s' | S_{t} = s)$, 
+        \item $\mathcal{R}$ je \textit{nagradna funkcija} 
+                $\mathcal{R}_s = \mathrm{E}[R_{t+1} | S_{t} = s]$, 
+        \item $\gamma \in [0,1]$ je \textit{diskontni faktor}, 
+    \end{itemize}
+    pravimo \textbf{Markovski proces nagrajevanja} (angl. \textit{Markov reward process}).
+\end{definicija}
+
+Od navadne Markovske verige se torej razlikuje samo v prisotnosti nagrad ob vsakem koraku. Če te 
+nagrade postavimo na $R_t = 0 \forall t$, dobimo navadno Markovsko verigo. Pomembna razlika je še 
+prisotnost diskontnega faktorja $\gamma$. Če velja $\gamma < 1$, potem procesu pravimo \textit{
+diskontirani Markovski proces nagrajevanja}.
+
+Diskontiranje je motivirano iz različnih vidikov: po eni strani nam pomaga, da se v primeru 
+cikličnih procesov izognemo neomejenim povračilom. Poleg tega pa je diskontiranje v mnogo pogledih 
+naraven način za opis situacije: pogosto imamo raje nagrade, ki pridejo prej. Primer tega poznamo 
+recimo iz ekonomije; denar, ki ga dobimo kasneje nam pomeni manj, kot tisti, ki ga dobimo takoj. 
+
+Še vedno pa tovrsten proces ne opiše situacije v kateri se znajdemo pri spodbujevalnem učenju, saj 
+ne vsebuje koncepta akcij. Je pa že dovolj ">globok"<, da v njem lahko definiramo vrednostno 
+funkcijo $v(s) = \mathrm{E} [G_t | S_t = s]$, ki je v tem primeru neodvisna od strategije $\pi$, 
+saj strategija v tem modelu nima pomena.
+
+\subsubsection{Markovski proces odločanja}
+Kot ime že nakazuje, \textit{Markovski proces odločanja (MDP)} razširja koncept procesa nagrajevanja 
+z dodatkom odločanja - akcij. S tem dodatkom imamo v popolnosti opisan problem spodbujevalnega 
+učenja: opisujemo torej nek proces, kjer ima agent možnost odločanja, izid pa je vsaj delno slučajen 
+in odvisen od okolja. 
+
+\begin{definicija}[Markovski proces odločanja]
+    Naboru $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, za katerega velja
+    \begin{itemize}
+        \item $\mathcal{S}$ je (končna) množica stanj,
+        \item $\mathcal{A}$ je (končna) množica akcij, 
+        \item $\mathcal{P}$ je prehodna matrika $\mathcal{P}_{ss'}^a = P(S_{t+1} = s' | 
+                S_t = s, A_t = a)$, 
+        \item $\mathcal{R}$ je \textit{nagradna funkcija} 
+                $\mathcal{R}_s^a = \mathrm{E}[R_{t+1} | S_{t} = s, A_t = a]$, 
+        \item $\gamma \in [0,1]$ je \textit{diskontni faktor}, 
+    \end{itemize}
+    pravimo \textbf{Markovski proces odločanja} (angl. \textit{Markov decision process}).
+\end{definicija}
+
+Prehodna matrika in nagradna funkcija sta sedaj seveda odvisna tudi od akcije. V kontekstu MDP-jev
+lahko sedaj formalno definiramo strategijo agenta $\pi$, vrednostno funkcijo stanja $v_{\pi}(s)$ in 
+vrednostno funkcijo akcije $q_{\pi}(s, a)$. Njihove definicije se ne spremenijo, so pa sedaj 
+formalno umeščene v model.
+
+Opazimo tudi, da je v MDP-ju pri fiksni strategiji $\pi$ zaporedje oz. proces stanj $S_1, S_2, 
+\dots$ Markovska veriga $(\mathcal{S}, \mathcal{P}^\pi)$. Če v zaporedje stanj pomešamo še nagrade, 
+torej $S_1, R_2, S_2, R_3, \dots$, dobimo Markovski proces nagrajevanja $(\mathcal{S}, 
+\mathcal{P}^\pi, \mathcal{R}^\pi, \gamma)$, kjer smo označili
+
+\begin{align*}
+    \mathcal{P}^\pi &= \sum_{a \in \mathcal{A}} \pi(a|s) \mathcal{P}_{ss'}^a \\
+    \mathcal{R}^\pi &= \sum_{a \in \mathcal{A}} \pi(a|s) \mathcal{R}_{s}^a. 
+    \end{align*}
+
+\begin{opomba}
+    Morda je nekatere bralce zbodlo, da v zaporedju stanj in nagrad $S_1$ ne sledi $R_1$, temveč 
+    $R_2$. Za tako notacijo smo se odločili, da poudarimo, da okolje agentu sočasno poda $S_2$ in 
+    $R_2$, glede na stanje $S_1$ pa se agent odloča o akciji $A_1$.
+\end{opomba}
+
+MDP-ji so splošna orodja za obravnavo stohastičnih procesov, ki vključujejo odločitve v diskretnem 
+času. Njihov utemeljitelj je Richard Bellman, ki je znan predvsem po izumu dinamičnega 
+programiranja, zato morda ni presenetljivo, da nam prav dinamično programiranje poda osnovo za 
+njihovo reševanje.
+
+\section{Algoritmi pri spodbujevalnem učenju}
+Algoritmov za reševanje MDP-jev je precej. Mi se bomo omejili predvsem na algoritme, ki se učijo 
+prek vrednostne funkcije in izhajajo iz dinamičnega programiranja, a naj na tem mestu omenimo, 
+da obstajajo tudi algoritmi, ki posodabljajo strategijo neposredno (mogoče kakšen reference al 
+pa kej).
+
+\subsection{Dinamično programiranje}
+Je optimizacijska metoda deluje na principu deljenja velikega problema na manjše prekrivajoče 
+podprobleme. V jedru reševanja je \textbf{Bellmanova enačba}, ki opisuje odnos med vrednostmi 
+podproblemov in glavnega problema. Ker je idejo dinamičnega programiranja (DP) in MDP-jev dobil
+Bellman ob istem času, je naravno, da je DP metoda, ki je prilagojena prav situaciji v MDP-ju.
+
+Morda formalno bolj o bellmanovih enačbah?
+
+\subsubsection{MRP}
+Spomnimo se Markovskega procesa nagrajevanja, torej $(\mathcal{S}, \mathcal{P}, \mathcal{R}, 
+\gamma)$. Na tej enostavnejši verziji MDP-ja, lahko nazorno pokažemo uporabo dinamičnega
+programiranja za reševanje. Spomnimo se še vrednostne funkcije in jo poskušajmo razdeliti na
+dva dela; neposredno nagrado $R_{t+1}$ in \textit{diskontirano} vrednost naslednjega stanja
+$S_{t+1}$.
+
+\begin{align*}
+    v(s) &= \mathrm{E} [G_t | S_t = s] \\
+         &= \mathrm{E} [\sum_{k=0}^\infty \gamma^k R_{t + k + 1} | S_t = s] \\
+         &= \mathrm{E} [R_{t+1} + \sum_{k=1}^\infty \gamma^k R_{t + k + 1} | S_t = s] \\
+         &= \mathrm{E} [R_{t+1} + \gamma(\sum_{k=1}^\infty \gamma^{k-1} R_{t + k + 1}) | S_t = s] \\
+         &= \mathrm{E} [R_{t+1} + \gamma G_{t+1} | S_t = s] \\
+         &= \mathrm{E} [R_{t+1} + \gamma v(S_{t+1}) | S_t = s]
+\end{align*}
+
+Dobili smo torej 
+
+\begin{align}
+    v(s) &= \mathrm{E} [R_{t+1} + \gamma v(S_{t+1}) | S_t = s] \text{ oz.} \\
+    v(s) &= \mathcal{R}_s + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'} v(s'),
+\end{align}
+
+kjer smo v drugi vrstici upoštevali aditivnost in idempotentnost matematičnega upanja. To je 
+\textbf{Bellmanova enačba za Markovkse procese nagrajevanja}.
+
+\subsubsection{MDP}
+
+\subsection{Monte Carlo}
+\subsection{TD(0)}
+\subsection{TD($\lambda$)}
 
 \subsection{Izboljšave}
 \subsubsection{Nevronske mreže}
