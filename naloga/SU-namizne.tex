@@ -192,10 +192,10 @@ to idejo v računalniku razumljiv jezik.
 
 \subsection{Osnovni koncepti}
 V osnovi nas zanima precej preprosta stvar: kako preslikati neko opazovano situacijo v akcijo na 
-tak način, da maksimirizramo neko numerično nagrado. Pri tem ne obstaja opazovalec, ki bi nam 
-povedal ali pa namignil, katere akcije so dobre, to moramo ugotoviti sami, s poskušanjem in 
-napakami. V tem dejstvu se skriva bistvena razlika med spodbujevalnim učenjem in ostalimi vejami 
-strojnega učenja.
+tak način, da učenec, ki mu v spodbujevalnem učenju pravimo \textbf{agent}, maksimirizra neko 
+numerično nagrado. Pri tem ne obstaja opazovalec, ki bi agentu povedal ali pa namignil, katere 
+akcije so dobre, to mora ugotoviti sam, s poskušanjem in napakami. V tem dejstvu se skriva 
+bistvena razlika med spodbujevalnim učenjem in ostalimi vejami strojnega učenja. 
 
 Pomembna razlika tiči tudi v pomembnosti časa pri spodbujevalnem učenju. Pri drugih oblikah 
 strojnega učenja se ponavadi ukvarjamo s tabelaričnimi podatki, tu pa ponavadi modeliramo nek 
@@ -206,8 +206,8 @@ modelirati zvezno, je za naše namene dovolj, da ga jemljemo kot diskretne točk
 \subsubsection{Nagrada}
 Prvi pomemben koncept pri spodbujevanem učenju je nagrada. Kot smo že zgoraj omenili, to za nas 
 pomeni neko numerično vrednost, pozitivno število indicira pozitivno nagrado, negativno pa 
-">kazen"<. S pomočjo tega koncepta formaliziramo \textit{cilj} učenja. Edini cilj učenca je 
-maksimizacija te nagrade, pri čemer je vredno omeniti, da na nagrado učenec lahko vpliva samo 
+">kazen"<. S pomočjo tega koncepta formaliziramo \textit{cilj} učenja. Edini cilj agenta je 
+maksimizacija te nagrade, pri čemer je vredno omeniti, da na nagrado agent lahko vpliva samo 
 s svojimi akcijami (ne more recimo spremeniti načina, na katerega dobi nagrado). 
 
 Posebaj pomembno je na tem mestu poudariti, da akcije nimajo nujno neposredne nagrade. Le-te 
@@ -241,8 +241,8 @@ malo o:
 \end{zgled}
 
 \subsubsection{Okolje}
-Okolje predstavlja del našega sistema, na katerega učenec nima nobenega vpliva. Funkcija okolja
-je, da učencu pokaže \textbf{stanje} (angl. \textit{state}) in mu da nagrado glede na 
+Okolje predstavlja del našega sistema, na katerega agent nima nobenega vpliva. Funkcija okolja
+je, da agentu pokaže \textbf{stanje} (angl. \textit{state}) in mu da nagrado glede na 
 \textbf{akcijo}, ki jo prejme od njega. Če se ponovno osredotočimo na namizne igre, bi lahko rekli, 
 da je okolje igralna plošča pri šahu \textit{in} nasprotnik  - tudi nanj namreč nimamo vpliva. 
 Okolje nam služi tudi kot sodnik akcij oz. stanj. V kontekstu programa za igranje iger torej 
@@ -253,11 +253,11 @@ okolje izbira nasprotnikove akcije, odloča katero stanje pomeni zmago in dodelj
 \end{zgled}
 
 \subsubsection{Agent}
-Zgoraj omenjenemu ">učencu"< v spodbujevlanem učenju formalno rečemo \textit{agent}. Njegov 
-cilj je torej maksimizacija numerične nagrade, to težnjo pa dosega s pomočjo 
-\textbf{strategije} (angl. \textit{policy}), ki mu pove, katero akcijo naj izbere v določenem 
-stanju. Za ocenjevanje stanja, si pomaga z \textbf{vrednostno funkcijo} (angl. \textit{value 
-function}). Kot ime implicira, je to funkcija, ki določa vrednosti stanjem (in akcijam). 
+Kot smo že omenili zgoraj, je agent naš učenec. Njegov cilj je torej maksimizacija numerične 
+nagrade, to težnjo pa dosega s pomočjo \textbf{strategije} (angl. \textit{policy}), ki mu pove, 
+katero akcijo naj izbere v določenem stanju. Za ocenjevanje stanja, si pomaga z \textbf{vrednostno 
+funkcijo} (angl. \textit{value function}). Kot ime implicira, je to funkcija, ki določa vrednosti 
+stanjem (in akcijam). 
 
 Nagrada nam pove takojšnjo vrednost stanja, vrednostna funkcija pa to vrednost gleda na dolgi
 rok. Je izpeljanka nagrade, a veliko bolj primerna za maksimizacijo kot nagrada, saj upošteva,
@@ -276,7 +276,7 @@ Formalno gledano:
                 da velja 
                 \begin{align*}
                 a &= \pi(s) \text{ oz.}\\
-                \pi(a | s) &= P(A_t = a | S_t = s). 
+                \pi(a | s) &= P(A_t = a~|~S_t = s). 
                 \end{align*}
                 Pri čemer prva formula definira \textit{deterministično} strategijo, druga pa 
                 \textit{stohastično}. $a$ in $s$ sta realizaciji akcije in stanja v času $t$ 
@@ -293,17 +293,17 @@ Formalno gledano:
                 maksimizacija pričakovanega povračila
 
          \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
-                stanja} (angl. \textit{state value function}) glede na strategijo $v_\pi(s)$ je
+                stanja} (angl. \textit{state value function}) glede na strategijo $\pi$ je
                 $$
-                v_\pi(s) = \mathrm{E} [G_t | S_t = s].
+                v_\pi(s) = \mathrm{E} [G_t~|~S_t = s].
                 $$
                 Predstavlja torej pričakovani izplen, če se vedemo skladno s strategijo $\pi$.
 
         \item Naj bo $\pi$ še vedno dana strategija agenta. \textbf{Vrednostna funkcija 
                 akcije} (tudi stanja-akcije) (angl. \textit{action value function}) glede na 
-                strategijo $q_\pi(s, a)$ definiramo
+                strategijo $\pi$ definiramo
                 $$
-                q_\pi(s, a) = \mathrm{E} [G_t | S_t = s, A_t = a].
+                q_\pi(s, a) = \mathrm{E} [G_t~|~S_t = s, A_t = a].
                 $$
                 Pove nam pričakovani izplen, če ob času $t$ naredimo akcijo $a$, nato pa se 
                 vedemo skladno s strategijo $\pi$.
@@ -391,9 +391,9 @@ lahko pričakujemo.
     $(\Omega, P)$ je \textbf{Markovska veriga oz. Markovski proces} (angl. \textit{Markov 
     chain}), če zanj velja Markovska lastnost
     $$
-    P(S_{t+1} = s_{t+1} | S_{t} = s_{t}, ..., S_0 = s_0) = P(S_{t+1} = s_{t+1} | S_{t} = s_{t}).
+    P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}, ..., S_0 = s_0) = P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}).
     $$
-    Na kratko to \textit{prehodno verjetnost} označimo $p_{ss'} := P(S_{t+1} = s' | S_{t} = s)$.
+    Na kratko to \textit{prehodno verjetnost} označimo $p_{ss'} := P(S_{t+1} = s'~|~S_{t} = s)$.
     Opazimo, da lahko te verjetnoti zložimo v matriko $\mathcal{P} := 
     [p_{ss'}]_{s,s'\in \mathcal{S} }$, ki ji pravimo \textit{prehodna matrika}.
 
@@ -415,14 +415,14 @@ da v njem nastopajo \textit{nagrade}.
     Pričakovani nagradi glede na stanje $s$ in akcijo $a$ pravimo \textbf{nagradna funkcija} (angl.
     \textit{reward function}) in označimo
     $$
-    \mathcal{R}_s^a = E[R_{t+1} | S_{t} = s, A_t = a].
+    \mathcal{R}_s^a = E[R_{t+1}~|~S_{t} = s, A_t = a].
     $$
     Naboru $(\mathcal{S}, \mathcal{P}, \mathcal{R}, \gamma)$, za katerega velja
     \begin{itemize}
         \item $\mathcal{S}$ je (končna) množica stanj,
-        \item $\mathcal{P}$ je prehodna matrika $\mathcal{P}_{ss'} = P(S_{t+1} = s' | S_{t} = s)$, 
+        \item $\mathcal{P}$ je prehodna matrika $\mathcal{P}_{ss'} = P(S_{t+1} = s'~|~S_{t} = s)$, 
         \item $\mathcal{R}$ je \textit{nagradna funkcija} 
-                $\mathcal{R}_s = \mathrm{E}[R_{t+1} | S_{t} = s]$, 
+                $\mathcal{R}_s = \mathrm{E}[R_{t+1}~|~S_{t} = s]$, 
         \item $\gamma \in [0,1]$ je \textit{diskontni faktor}, 
     \end{itemize}
     pravimo \textbf{Markovski proces nagrajevanja} (angl. \textit{Markov reward process}).
@@ -440,8 +440,73 @@ recimo iz ekonomije; denar, ki ga dobimo kasneje nam pomeni manj, kot tisti, ki 
 
 Še vedno pa tovrsten proces ne opiše situacije v kateri se znajdemo pri spodbujevalnem učenju, saj 
 ne vsebuje koncepta akcij. Je pa že dovolj ">globok"<, da v njem lahko definiramo vrednostno 
-funkcijo $v(s) = \mathrm{E} [G_t | S_t = s]$, ki je v tem primeru neodvisna od strategije $\pi$, 
-saj strategija v tem modelu nima pomena.
+funkcijo $v(s) = \mathrm{E} [G_t~|~S_t = s]$, ki je v tem primeru neodvisna od strategije $\pi$, 
+saj strategija v tem modelu nima pomena. 
+
+Za vrednostno funkcijo lahko izpeljemo rekurzivno enačbo, s pomočjo katere lahko ">rešimo"< Markovski
+proces nagrajevanja. S tem mislimo, da vsakemu stanju dodelimo pravo vrednost.
+
+\begin{align*}
+    v(s) &= \mathrm{E} [G_t~|~S_t = s] \\
+         &= \mathrm{E} [\sum_{k=0}^\infty \gamma^k R_{t + k + 1}~|~S_t = s] \\
+         &= \mathrm{E} [R_{t+1} + \sum_{k=1}^\infty \gamma^k R_{t + k + 1}~|~S_t = s] \\
+         &= \mathrm{E} [R_{t+1} + \gamma(\sum_{k=1}^\infty \gamma^{k-1} R_{t + k + 1})~|~S_t = s] \\
+         &= \mathrm{E} [R_{t+1} + \gamma G_{t+1}~|~S_t = s] \\
+         &= \mathrm{E} [R_{t+1} + \gamma v(S_{t+1})~|~S_t = s]
+\end{align*}
+
+Dobili smo torej 
+
+\begin{align}
+    v(s) &= \mathrm{E} [R_{t+1} + \gamma v(S_{t+1})~|~S_t = s] \text{ oz.} \\
+    v(s) &= \mathcal{R}_s + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'} v(s'),
+\end{align}
+
+kjer smo v drugi vrstici upoštevali aditivnost in idempotentnost matematičnega upanja. To je 
+\textbf{Bellmanova enačba za Markovkse procese nagrajevanja}.
+
+Ker se ukvarjamo s primerom, ko je stanj končno mnogo, recimo $n$, jih lahko brez škode za 
+splošnost označimo kar $1, \dots, n$. Potem lahko Bellmanovo enačbo prepišemo v matrični obliki
+\begin{align*}
+    \begin{bmatrix}
+        v(1) \\ 
+        \vdots \\ 
+        v(n)
+    \end{bmatrix}
+    &=
+    \begin{bmatrix}
+        \mathcal{R}_1 \\ 
+        \vdots \\ 
+        \mathcal{R}_n 
+    \end{bmatrix}
+    + \gamma
+    \begin{bmatrix}
+        \mathcal{P}_{11} \dots \mathcal{P}_{1n} \\ 
+        \vdots \\ 
+        \mathcal{P}_{n1} \dots \mathcal{P}_{nn}
+    \end{bmatrix}
+    \begin{bmatrix}
+        v(1) \\ 
+        \vdots \\ 
+        v(n)
+    \end{bmatrix} 
+    \text{ ali krajše}\\
+    v &= \mathcal{R} + \gamma \mathcal{P}v
+\end{align*}
+
+Opazimo, da je to \textit{linearna} enačba in da v splošnem eksplicitno rešitev: 
+
+\begin{align*}
+    v &= \mathcal{R} + \gamma \mathcal{P}v \\
+    (I - \gamma \mathcal{P}) v &= \mathcal{R} \\
+    v &= (I - \gamma \mathcal{P})^{-1} \mathcal{R} 
+\end{align*}
+
+Ta rešitev predpostavlja obrnljivost matrike $(I - \gamma \mathcal{P})$ in računanje njenega 
+inverza, kar zahteva $O(n^3)$ operacij, zato je smiselna samo za majhne procese. Za večje 
+obstajajo iterativni algoritmi in metode, nekater izmed njih bomo spoznali v naslenjem odseku.
+
+Ta del lahko še rahlo matematiziraš - enoličnost rešitev
 
 \subsubsection{Markovski proces odločanja}
 Kot ime že nakazuje, \textit{Markovski proces odločanja (MDP)} razširja koncept procesa nagrajevanja 
@@ -454,19 +519,20 @@ in odvisen od okolja.
     \begin{itemize}
         \item $\mathcal{S}$ je (končna) množica stanj,
         \item $\mathcal{A}$ je (končna) množica akcij, 
-        \item $\mathcal{P}$ je prehodna matrika $\mathcal{P}_{ss'}^a = P(S_{t+1} = s' | 
+        \item $\mathcal{P}$ je prehodna matrika $\mathcal{P}_{ss'}^a = P(S_{t+1} = s'~|~
                 S_t = s, A_t = a)$, 
         \item $\mathcal{R}$ je \textit{nagradna funkcija} 
-                $\mathcal{R}_s^a = \mathrm{E}[R_{t+1} | S_{t} = s, A_t = a]$, 
+                $\mathcal{R}_s^a = \mathrm{E}[R_{t+1}~|~S_{t} = s, A_t = a]$, 
         \item $\gamma \in [0,1]$ je \textit{diskontni faktor}, 
     \end{itemize}
     pravimo \textbf{Markovski proces odločanja} (angl. \textit{Markov decision process}).
 \end{definicija}
 
 Prehodna matrika in nagradna funkcija sta sedaj seveda odvisna tudi od akcije. V kontekstu MDP-jev
-lahko sedaj formalno definiramo strategijo agenta $\pi$, vrednostno funkcijo stanja $v_{\pi}(s)$ in 
-vrednostno funkcijo akcije $q_{\pi}(s, a)$. Njihove definicije se ne spremenijo, so pa sedaj 
-formalno umeščene v model.
+lahko sedaj formalno definiramo strategijo agenta $\pi$, ki je zahvaljujoč Markovski lastnosti 
+odvisna od enega stanja in ne celotne zgodovine procesa. Definiramo tudi vrednostno funkcijo stanja 
+$v_{\pi}(s)$ in vrednostno funkcijo akcije $q_{\pi}(s, a)$. Njihove definicije se ne spremenijo, so 
+pa sedaj formalno umeščene v model.
 
 Opazimo tudi, da je v MDP-ju pri fiksni strategiji $\pi$ zaporedje oz. proces stanj $S_1, S_2, 
 \dots$ Markovska veriga $(\mathcal{S}, \mathcal{P}^\pi)$. Če v zaporedje stanj pomešamo še nagrade, 
@@ -488,6 +554,67 @@ MDP-ji so splošna orodja za obravnavo stohastičnih procesov, ki vključujejo o
 času. Njihov utemeljitelj je Richard Bellman, ki je znan predvsem po izumu dinamičnega 
 programiranja, zato morda ni presenetljivo, da nam prav dinamično programiranje poda osnovo za 
 njihovo reševanje.
+Kot pri procesih nagrajevanja, lahko tudi tu izpeljemo Bellmanovo enačbo. Najprej zapišemo 
+rekurzivni zvezi za vrednostni funkciji stanjja in akcije: 
+
+\begin{align*}
+    v_\pi(s) &= \mathrm{E} [R_{t+1} + \gamma v_\pi(S_{t+1})~|~S_t = s] \\
+    q_\pi(s, a) &= \mathrm{E} [R_{t+1} + \gamma q_\pi(S_{t+1})~|~S_t = s, A_t = a].
+\end{align*}
+
+Opazimo, da $v_\pi$ in $q_\pi$ povezujta zvezi:
+
+\begin{align*}
+    v_\pi(s) &= \sum_{a \in \mathcal{A}} \pi(a|s)q_\pi(s, a) \\
+    q_\pi(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s').
+\end{align*}
+
+Če zvezi združimo, dobimo: 
+
+\begin{align*}
+    v_\pi(s) &= \sum_{a \in \mathcal{A}} \pi(a|s) \left[\mathcal{R}_s^a + 
+    \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s') \right] \\
+    q_\pi(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} 
+    \mathcal{P}_{ss'}^a \left[\sum_{a' \in \mathcal{A}} \pi(a'|s')q_\pi(s', a') \right].
+\end{align*}
+
+Prvo enačbo (dej to un reference) imenujemo \textbf{Bellmanova enačba pričakovanja} (angl. 
+\textit{Bellman expectation equation}), ki ima ponovno matrično obliko in eksplicitno (ENOLIČNO - 
+ZAKAJ) rešitev: 
+
+\begin{align*}
+    v_\pi &= \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_\pi \\
+    v_\pi &= (I - \gamma \mathcal{P}^\pi)^{-1} \mathcal{R}^\pi
+\end{align*}
+
+Ta enačba je sicer pomembna, a nas najbolj zanima ">rešitev"< MDP-ja. Želimo najti torej optimalno 
+strategijo. Pri tem nam pomaga naslednje: 
+
+\begin{definicija}
+    ~
+    \begin{itemize}
+        \item \textbf{Optimalna vrednostna funkcija stanja} (angl. \textit{optimal state-value 
+                function}) $v_*(s)$ je največja med vsemi vrednostnimi funkcijami stanj
+                $$
+                v_*(s) = \max_\pi v_\pi(s).
+                $$
+        \item \textbf{Optimalna vrednostna funkcija akcije} (angl. \textit{optimal action-value 
+                function}) $q_*(s, a)$ je največja med vsemi vrednostnimi funkcijami akcij
+                $$
+                q_*(s, a) = \max_\pi q_\pi(s, a).
+                $$
+        \item Na množici vseh možnih strategij $\Pi$ definiramo delno urejenost na naslednji način:
+                $$
+                \pi \geq \pi', \text{če } v_\pi(s) \geq v_{\pi'}(s) \text{ } \forall s. 
+                $$
+    \end{itemize}
+\end{definicija}
+
+Do konca nas potem pripelje naslednji izrek. 
+
+\begin{izrek}
+    Za vsak Markovski proces odločanja velja: 
+\end{izrek}
 
 \section{Algoritmi pri spodbujevalnem učenju}
 Algoritmov za reševanje MDP-jev je precej. Mi se bomo omejili predvsem na algoritme, ki se učijo 
@@ -509,25 +636,6 @@ Spomnimo se Markovskega procesa nagrajevanja, torej $(\mathcal{S}, \mathcal{P}, 
 programiranja za reševanje. Spomnimo se še vrednostne funkcije in jo poskušajmo razdeliti na
 dva dela; neposredno nagrado $R_{t+1}$ in \textit{diskontirano} vrednost naslednjega stanja
 $S_{t+1}$.
-
-\begin{align*}
-    v(s) &= \mathrm{E} [G_t | S_t = s] \\
-         &= \mathrm{E} [\sum_{k=0}^\infty \gamma^k R_{t + k + 1} | S_t = s] \\
-         &= \mathrm{E} [R_{t+1} + \sum_{k=1}^\infty \gamma^k R_{t + k + 1} | S_t = s] \\
-         &= \mathrm{E} [R_{t+1} + \gamma(\sum_{k=1}^\infty \gamma^{k-1} R_{t + k + 1}) | S_t = s] \\
-         &= \mathrm{E} [R_{t+1} + \gamma G_{t+1} | S_t = s] \\
-         &= \mathrm{E} [R_{t+1} + \gamma v(S_{t+1}) | S_t = s]
-\end{align*}
-
-Dobili smo torej 
-
-\begin{align}
-    v(s) &= \mathrm{E} [R_{t+1} + \gamma v(S_{t+1}) | S_t = s] \text{ oz.} \\
-    v(s) &= \mathcal{R}_s + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'} v(s'),
-\end{align}
-
-kjer smo v drugi vrstici upoštevali aditivnost in idempotentnost matematičnega upanja. To je 
-\textbf{Bellmanova enačba za Markovkse procese nagrajevanja}.
 
 \subsubsection{MDP}
 
