@@ -11,6 +11,13 @@
 \usepackage{pgf}
 \usepackage{tikz}
 \usepackage{graphicx}
+\usepackage{bbm}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true, %set true if you want colored links
+    linktoc=all,     %set to all if you want both sections and subsections linked
+    linkcolor=black,  %choose some color if you want links to stand out
+}
 
 \tikzstyle{block} = [rectangle, draw, 
     text width=8em, text centered, rounded corners, minimum height=4em]
@@ -326,7 +333,7 @@ Prisotnost modela je glavna ločnica med dvema velikima, a zelo različnima veja
 učenja.
 
 \subsection{Korak spodbujevalnega učenja}
-Spodbujevalno učenje se pogosto ukvarja s procesi, ki naravno razpadejo v ti .\textbf{epizode}. 
+Spodbujevalno učenje se pogosto ukvarja s procesi, ki naravno razpadejo v ti. \textbf{epizode}. 
 Tak proces so recimo namizne igre, kjer so epizode precej naravno posamezne igre. Ni pa nujno, 
 da je delitev tako naravna (ali pa sploh možna oz. smiselna). Za namene te diplomske naloge lahko 
 privzamemo, da taka delitev obstaja.
@@ -559,7 +566,7 @@ rekurzivni zvezi za vrednostni funkciji stanjja in akcije:
 
 \begin{align*}
     v_\pi(s) &= \mathrm{E} [R_{t+1} + \gamma v_\pi(S_{t+1})~|~S_t = s] \\
-    q_\pi(s, a) &= \mathrm{E} [R_{t+1} + \gamma q_\pi(S_{t+1})~|~S_t = s, A_t = a].
+    q_\pi(s, a) &= \mathrm{E} [R_{t+1} + \gamma q_\pi(S_{t+1}, A_{t+1})~|~S_t = s, A_t = a].
 \end{align*}
 
 Opazimo, da $v_\pi$ in $q_\pi$ povezujta zvezi:
@@ -607,14 +614,51 @@ strategijo. Pri tem nam pomaga naslednje:
                 $$
                 \pi \geq \pi', \text{če } v_\pi(s) \geq v_{\pi'}(s) \text{ } \forall s. 
                 $$
+                Če za strategiji velja kot zgoraj, pravimo, da je $\pi$ \textit{boljša ali enaka} 
+                kot $\pi'$.
     \end{itemize}
 \end{definicija}
 
 Do konca nas potem pripelje naslednji izrek. 
 
-\begin{izrek}
+\begin{izrek}\label{optim}
     Za vsak Markovski proces odločanja velja: 
+    \begin{itemize}
+        \item Obstaja \textit{optimalna} strategija $\pi_*$, ki je boljša ali enaka kot vse ostale 
+                strategije; $\pi_* \geq \pi \text{ } \forall \pi \in \Pi$. 
+        
+        \item Vedno obstaja \textit{deterministična} optimalna stragegija. 
+        \item Vse optimalne strategije določajo optimalno vrednostno funkcijo stanja in optimalno 
+                vrednostno funkcijo akcije; 
+                \begin{align*}
+                    v_{\pi*}(s) &= v_*(s) \\
+                    q_{\pi*}(s, a) &= q_*(s, a).
+                \end{align*}
+    \end{itemize} 
 \end{izrek}
+
+Izrek nam pove, da če poznamo $q_*(s, a)$, poznamo tudi optimalno deterministično strategijo, 
+ki jo dobimo kot $\pi_*(a|s) = \mathbbm{1} (a =\text{arg}\max_{a \in \mathcal{A}} q_*(s, a))$.
+
+Podobno, kot za poljubne vrednostne funkcije, lahko tudi za optimalne vrednostne funkcije 
+izpeljemo Bellmanovo enačbo, ki jo sedaj imenujemo \textbf{Bellmanova enačba optimalnosti} (angl. 
+\textit{Bellman optimality equation}). Sprva opazimo zvezi med $q_*$ in $v_*$:
+
+\begin{align*}
+    v_*(s) &= \max_a q_*(s, a) \\
+    q_*(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_*(s).
+\end{align*}
+
+Ti zvezi nato vstavimo eno v drugo, in dobimo enačbi: 
+
+\begin{align}\label{beo}
+    v_*(s) &= \max_a \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_*(s) \\
+    q_*(s, a) &= \mathcal{R}_s^a + 
+                \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a \max_{a'} q_*(s', a')
+\end{align}
+
+Opazimo, da sta enačbi tokrat nelinearni, kar močno oteži direktno reševanje. Na srečo pa tudi 
+v tem primeru pridejo prav metode iz naslednjega odseka.
 
 \section{Algoritmi pri spodbujevalnem učenju}
 Algoritmov za reševanje MDP-jev je precej. Mi se bomo omejili predvsem na algoritme, ki se učijo 
@@ -622,22 +666,149 @@ prek vrednostne funkcije in izhajajo iz dinamičnega programiranja, a naj na tem
 da obstajajo tudi algoritmi, ki posodabljajo strategijo neposredno (mogoče kakšen reference al 
 pa kej).
 
-\subsection{Dinamično programiranje}
-Je optimizacijska metoda deluje na principu deljenja velikega problema na manjše prekrivajoče 
-podprobleme. V jedru reševanja je \textbf{Bellmanova enačba}, ki opisuje odnos med vrednostmi 
-podproblemov in glavnega problema. Ker je idejo dinamičnega programiranja (DP) in MDP-jev dobil
-Bellman ob istem času, je naravno, da je DP metoda, ki je prilagojena prav situaciji v MDP-ju.
+Še en pomemben razlikovalec pri reševanju MDP-jev je, ali je MDP \textit{poznan}, ali ne. Poznan 
+MDP pomeni, da so nam znane vse komponente - dobro je definirana prehodna matrika $\mathcal{P}$.
+Pogosto se pojavijo problemi, kjer te matrike ne poznamo, eden izmed takih problemov je tudi 
+igranje namiznih iger.
+
+Poleg tega naj na tem mestu omenimo, da reševanju celotnega problema spodbujevalnega učenja 
+pravimo \textbf{načrtovanje} (angl. \textit{planning}), le-ta pa se deli na dve stopnji: 
+
+\begin{itemize}
+    \item \textbf{Napovedovanje} - pri tem podproblemu podamo nek MDP in strategijo, algoritem nam 
+            vrne vrednsotno funkcijo stanja (glede na strategijo).   
+    \item \textbf{Upravljanje} - to je bolj poln problem: podan je MDP, algoritem pa nam vrne 
+            optimalno vrednostno funkcijo in optimalno strategijo.
+\end{itemize}
+
+\subsection{Dinamično programiranje - Reševanje poznanih MDP-jev}
+Dinamično programiranje je optimizacijska metoda deluje na principu deljenja velikega problema 
+na manjše prekrivajoče podprobleme. V jedru reševanja je \textbf{Bellmanova enačba}, ki opisuje 
+odnos med vrednostmi podproblemov in glavnega problema. Ker je idejo dinamičnega programiranja 
+(DP) in MDP-jev dobil Bellman ob istem času, je naravno, da je DP metoda, ki je prilagojena prav 
+situaciji v MDP-ju.
+
+Problem mora v splošnem zadoščati dvem lastnostim, da je zanj primerno reševanje z dinamičnim 
+programiranjem. Prvi pravimo \textbf{lastnost optimalne podstrukture}, ki pravi, da problem 
+lahko razstavimo na podprobleme in rešitve podproblemov lahko potem sestavimo nazaj v rešitev
+celotnega problema. Druga pomembna lastnost pa so \textbf{prekrivajoči podproblemi}, ki 
+implicira, da lahko že poznane rešitve podproblemov večkrat uporabimo.
+
+Opazimo, da obe lastnosti veljata za MDP-je; Bellmanova enačba, nam razdeli problem na 
+podprobleme, vrednostna funkcija pa hrani in ponovno uporablja rešitve. Lastnosti veljata tudi 
+za MRP-je in tudi metode, ki jih bomo spoznali so aplikativne na njih, a mi se bomo posvetili 
+predvsem procesom odločanja.
 
 Morda formalno bolj o bellmanovih enačbah?
 
-\subsubsection{MRP}
-Spomnimo se Markovskega procesa nagrajevanja, torej $(\mathcal{S}, \mathcal{P}, \mathcal{R}, 
-\gamma)$. Na tej enostavnejši verziji MDP-ja, lahko nazorno pokažemo uporabo dinamičnega
-programiranja za reševanje. Spomnimo se še vrednostne funkcije in jo poskušajmo razdeliti na
-dva dela; neposredno nagrado $R_{t+1}$ in \textit{diskontirano} vrednost naslednjega stanja
-$S_{t+1}$.
 
-\subsubsection{MDP}
+\subsubsection{Iterativno ocenjevanje strategije}
+Podatki so tu poznan MDP in strategija $\pi$. Za algoritmom stoji Bellmanova enačba pričakovanja, 
+z njo na vsakem koraku posodobimo $v_k(s) \rightarrow v_{k+1}(s)$ s pomočjo $v(s')$, kjer je $s'$
+naslednje stanje od $s$. Enačba iteracije se potem glasi 
+
+\begin{align*}
+    v_{k+1}(s) &= \sum_{a \in \mathcal{A}} \pi(a|s) \left[ \mathcal{R}_s^a + 
+        \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] \text{ ali na kratko}\\
+    v_{k+1} &= \mathcal{R}_\pi + \gamma \mathcal{P}_\pi v_k.
+\end{align*}
+
+\begin{izrek}
+    Iterativno ocenjevanje strategije konvergira proti vrednostni funkciji, ki jo določa strategija 
+    $\pi$.
+\end{izrek}
+
+\begin{proof}
+    Pokazali bomo, da iz iteracije lahko pridobimo skrčitev, iz izrekov o fiksni točki potem sledi 
+    naš rezultat (MOGOČE DEJMO NAVEST IZREK? - BANACH, CONTRACTION MAPPING).
+
+    Definiramo \textbf{Bellmanov operator pričakovanja} kot 
+    $$
+    T_\pi(v) = \mathcal{R}_\pi + \gamma \mathcal{P}_\pi v.
+    $$
+
+    Naj bosta $u$ in $v$ vrednostni funkciji. Potem je zgornji operator skrčitev glede na neskončno 
+    normo: 
+
+    \begin{align*}
+        ||T_\pi(v) - T_\pi(u)||_\infty &= ||\mathcal{R}_\pi + \gamma \mathcal{P}_\pi v - 
+                                            \mathcal{R}_\pi + \gamma \mathcal{P}_\pi u||_\infty \\  
+        &= ||\gamma \mathcal{P}_\pi (v - u)||_\infty \\
+        &\leq ||\gamma \mathcal{P}_\pi ||v - u||_\infty||_\infty \\
+        &\leq \gamma ||v - u||_\infty,
+    \end{align*}
+
+    kjer smo upoštevali, da velja $||\mathcal{P}_\pi||_\infty \leq 1$, saj so elementi 
+    $\mathcal{P}_\pi$ verjetnosti.
+
+\end{proof}
+
+S tem procesom tako res dobimo vrednsotno funkcijo, ki jo določa strategija, a strategija je 
+statična; to reši problem napovedovanja. 
+
+Da rešimo problem upravljanja, uporabimo enostavno idejo: strategijo izboljšamo \textbf{požrešno}. 
+To pomeni, da izberemo tako akcijo, ki nas pripelje v stanje, ki je dosegljivo in ima trenutno 
+največjo vrednost $v_\pi$.
+
+\subsubsection{Iteracija strategije}
+Algoritem, ki ga dobimo s tem, da združimo iterativno ocenjevanje strategije in požrešno izboljšavo 
+strategije, imenujemo iteracija strategije (angl. \textit{policy iteration}). S tem algoritmom 
+lahko sedaj rešimo problem upravljanja in s tem celoten problem poznanega MDP-ja. 
+
+\begin{trditev}
+    Iteracija strategije vedno konvergira k optimalni strategiji $\pi_*$.
+\end{trditev}
+
+\begin{proof}
+    Ukvarjali se bomo samo z determinističnimi strategijami, saj so zaradi požrešne izbire 
+    strategije le-te vedno deterministične, razen začetne. Ker je izbira začetne strategije za 
+    trditev nepomembna, lahko izberemo neko naključno deterministično strategijo $a = \pi(s)$.
+
+    Požrešno vedenje zdaj za nas pomeni, da vzamemo $\pi'(s) = 
+    \text{arg}\max_{a \in \mathcal{A}} q_\pi(s, a)$. To očitno izboljša vrednost za vsako stanje 
+    $$
+    q_\pi(s, \pi'(s)) = \max_{a \in \mathcal{A}} q_\pi(s, a) \geq q_\pi(s, \pi(s)) = v_\pi(s).
+    $$
+
+    Posledično izboljša tudi vrednostno funkcijo: 
+
+    \begin{align*}
+        v_\pi(s) &\leq q_\pi(s, \pi'(s)) = \mathrm{E}_{\pi'} [R_{t+1} + 
+            \gamma v_\pi(S_{t+1})~|~S_t = s] \\
+        &\leq \mathrm{E}_{\pi'} [R_{t+1} + \gamma q_\pi(S_{t+1}. \pi'(S_{t+1}))~|~S_t = s] \\
+        &\leq \mathrm{E}_{\pi'} [R_{t+1} + \gamma R_{t+2} + 
+            \gamma^2 q_\pi(S_{t+2}. \pi'(S_{t+2}))~|~S_t = s] \\
+        &\leq \mathrm{E}_{\pi'} [R_{t+1} + \gamma R_{t+2} + \dots~|~S_t = s] = v_{\pi'}(s)
+    \end{align*}
+
+Če se izboljšave nehajo, dobimo 
+$$
+q_\pi(s, \pi'(s)) = \max_{a \in \mathcal{A}} q_\pi(s, a) = q_\pi(s, \pi(s)) = v_\pi(s).
+$$
+
+To se zgodi, saj zaradi končnih nagrad tudi vrednostne funkcije zavzemajo končne vrednosti. 
+Potem opazimo, da je zaradi $v_\pi(s) = \max_{a \in \mathcal{A}} q_\pi(s, a)$ zadoščeno Bellmanovi 
+enačbi optimalnosti in zato po izreku \ref{optim} velja $v_\pi(s) = 
+v_*(s) \text{ } \forall s \in \mathcal{S}$, torej je $\pi$ optimalna strategija.
+\end{proof}
+
+\subsubsection{Iteracija vrednosti}
+K problemu lahko pristopimo tudi neposredno prek Bellmanove enačbe optimalnosti in se s tem 
+izognemo neposredni uporabi strategije, vseeno pa rešimo problem upravljanja. Ideja je podobna kot 
+pri iterativnem ocenjevanju strategije, le da imamo drugačno enačbo za iteracijo: 
+
+\begin{align*}
+    v_{k+1}(s) &= \max_{a \in \mathcal{A}} \left[ \mathcal{R}_s^a + 
+        \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] \\
+    v_{k+1} &= \max_{a \in \mathcal{A}} \mathcal{R}^a + \gamma \mathcal{P}^a v_k.
+\end{align*}
+
+Podobno kot pri iterativnem ocenjevanju strategije pokažemo, da zgornja iteracija konvergira k $v_*$.
+
+\subsubsection{Časovna zahtevnost}
+Za korak obeh iteracij je potrebnih $O(mn^2)$ operacij, kjer je $m$ število akcij in $n$ število 
+stanj. Popolnoma enake algoritme lahko uporabimo za iteracijo $q_\pi(s, a)$ oz. $q_*(s, a)$, le 
+da sedaj pridemo do časovne zahtevnosti $O(m^2n^2)$.
 
 \subsection{Monte Carlo}
 \subsection{TD(0)}
@@ -692,10 +863,7 @@ $S_{t+1}$.
 
 
 
-%\begin{definicija}
-%Funkcija $f\colon [a,b]\to\R$ je {\em zvezna}, "ce...
-%\end{definicija}
-%
+
 %Osnovne rezultate o zveznih funkcijah najdemo v \cite{glob}. Navedimo le naslednji izrek.
 %
 %\begin{izrek}\label{izr:enakomerno}
