@@ -803,7 +803,8 @@ pri iterativnem ocenjevanju strategije, le da imamo drugačno enačbo za iteraci
     v_{k+1} &= \max_{a \in \mathcal{A}} \mathcal{R}^a + \gamma \mathcal{P}^a v_k.
 \end{align*}
 
-Podobno kot pri iterativnem ocenjevanju strategije pokažemo, da zgornja iteracija konvergira k $v_*$.
+Podobno kot pri iterativnem ocenjevanju strategije pokažemo, da zgornja iteracija konvergira k 
+$v_*$.
 
 \subsubsection{Časovna zahtevnost}
 Za korak obeh iteracij je potrebnih $O(mn^2)$ operacij, kjer je $m$ število akcij in $n$ število 
@@ -811,7 +812,112 @@ stanj. Popolnoma enake algoritme lahko uporabimo za iteracijo $q_\pi(s, a)$ oz. 
 da sedaj pridemo do časovne zahtevnosti $O(m^2n^2)$.
 
 \subsection{Monte Carlo}
+Do sedaj smo se ukvarjali s poznanim MDP-jem, kar pa ni naš končen cilj. V nadaljevanju se bomo 
+posvetili nepoznanim. Metode, ki jih bomo spoznali so tako bolj splošno aplikativne. Svoje 
+bistvo pa črpajo pri dosedaj poznanem.
+
+Prva taka metoda je Monte Carlo. Spopada se s problemom napovedovanja z dodatno izboljšavo, da 
+ne rabi poznati matrike $\mathcal{P}$. Potrebujemo pa strategijo $\pi$, na podlagi katere opazujemo 
+epizode dogajanja. Ideja delovanja je, da se namesto na direktno računanje pričakovanega povračilo, 
+osredotočimo na računanje \textit{empiričnega} povračila: 
+
+\begin{itemize}
+    \item Ob vsakem (ali samo prvem) obisku stanja $s$: 
+        \begin{align*}
+            N(s) &\leftarrow N(s) + 1 \\
+            S(s) &\leftarrow S(s) + G_t.
+        \end{align*}
+    \item Po zadostni količini epizod (ob koncu učenja): 
+        $$
+        V(s) \leftarrow S(s) / N(s)
+        $$
+\end{itemize}
+
+Opazimo, da vrednost $V(s)$ konvergira proti $v_\pi(s)$, ko gre $N(s) \rightarrow \infty$ po 
+krepkem zakonu velikih števil. Opazimo tudi, da metoda deluje samo za probleme, ki imajo končne 
+epizode. Če za vsako stanje $s$ hranimo $N(s)$ in $S(s)$, tako dobimo oceno za $v_\pi(s) \text{ } 
+\forall s \in \mathcal{S}$.
+
+Prostorsko zahtevnost lahko izboljšamo, če upoštevamo, da povprečje $\mu$ nekega zaporedja $X_1,
+ X_2, \dots$ lahko izračunamo inkrementalno:
+
+\begin{align*}
+    \mu_k &= \frac{1}{k} \sum_{i = 1}^k X_i \\
+        &= \frac{1}{k} \left[X_k + \sum_{i = 1}^{k-1} X_i \right] \\
+        &= \frac{1}{k} \left[X_k + (k-1) \mu_{k-1} \right] \\
+        &= \mu_{k-1} + \frac{1}{k} \left(X_k - \mu_{k-1} \right).
+\end{align*}
+
+Na podlagi te zveze lahko implementiramo inkrementalni Monte Carlo, tako da po končani epizodi 
+za vsako stanje $S_t$ s povračilom $G_t$ posodobimo: 
+
+\begin{align*}
+    N(S_t) &\leftarrow N(S_t) + 1 \\
+    V(S_t) &\leftarrow V(S_t) + \frac{1}{N(S_t)} (G_t - V(S_t)).
+\end{align*}
+
+Izkaže se, da lahko zgornje še malo posplošimo, in uporabimo:
+
+\begin{equation}\label{mc}
+    V(S_t) \leftarrow V(S_t) + \alpha (G_t - V(S_t)),
+\end{equation}
+
+kjer $\alpha$ imenujemo \textbf{velikost koraka} oz. \textbf{hitrost učenja} (angl. 
+\textit{learning rate}).
+
+Posodobitveno pravilo \eqref{mc} je konkreten primer bistvene ideje spodbujevalnega učenja prek 
+vrednostne funkcije. Vsi ostali algoritmi nam dajo pravilo podobne oblike: 
+
+\begin{equation}\label{osnova}
+    \textit{nova ocena} \leftarrow \textit{stara ocena} + \textit{korak } 
+    (\textit{tarča} - \textit{stara ocena}).
+\end{equation}
+
 \subsection{TD(0)}
+V spodbujevalnem učenju obstaja skupina algoritmov, ki se imenujejo \textbf{algoritmi učenja s 
+časovno razliko} (angl. \textit{temporal-difference learning}). Delujejo v podobnih pogojih kot 
+Monte Carlo in tudi dosegajo enak cilj. Pomembna razlika je, da ne potrebujejo povračila pri 
+posodobitvi. Delujejo lahko tudi v sistemih, ki se ne delijo na epizode oz. ne potrebujejo 
+končanih epizod za svoje delovanje.
+
+Najpreprostejši algoritem učenja s časovno razliko je TD(0). Ideja je, da v stanju ocenimo
+povračilo kot $G_t \approx R_{t+1} + \gamma V(S_{t+1}).$ To potem uporabimo za \textit{tarčo}
+v pravilu \eqref{osnova}. To nam da pravilo: 
+
+\begin{equation}
+    V(S_t) \leftarrow V(S_t) + \alpha (R_{t+1} + \gamma V(S_{t+1}) - V(S_t)).
+\end{equation}
+
+\subsubsection{Primerjava z Monte Carlo}
+\begin{itemize}
+    \item Tarča pri MC je nepristranska ocena $v_\pi(S_t)$, medtem ko je pri TD(0) tarča 
+    pristranska ocena. Ta prednost MC je uravnotežena s tem, da ima TD(0) tarča nižjo varianco, 
+    saj je odvisna od ene same slučajne spremenljivke, medtem ko je pri MC odvisna od mnogih 
+    slučajnih dogodkov.
+    
+    \item Prav tako je pomembna razlika v dejstvu, da MC nujno rabi popolne epizode in se lahko
+    izvede le po končani epizodi, TD(0) pa se lahko uči sproti (angl. \textit{online}) in sploh 
+    ne potrebuje končnih epizod.
+
+    \item Razlika je tudi v tem, kam konvergirata algoritma, če imamo na voljo samo končno 
+    količino epizod. Naj $K$ označuje število epizod in $k$ nakazuje, v kateri epizodi smo. Potem 
+    MC konvergira k rešitvi z minimalno povprečno kvadratno napako (MSE) $\sum_{k=1}^K 
+    \sum_{t=1}^{T_k} (G_t^k - V(s_t^k))^2$ - najbolje se prilega opazovanim povračilom.
+
+    TD(0) pa konvergira k rešitvi modela največjega verjetja Markova; to je rešitev MDP-ja, ki se 
+    najbolje prilega podatkom. Dobimo torej naslednji cenilki: (TO SI ŠE POGLEJ)
+    
+    \begin{align*}
+        \hat{\mathcal{P}}_{ss'}^a &= \frac{1}{N(s, a)} \sum_{k=1}^K \sum_{t=1}^{T_k} 
+                \mathbbm{1}(s_t^k, a_t^k, s_{t+1}^k = s, a, s') \\
+        \hat{\mathcal{R}}_{s}^a &= \frac{1}{N(s, a)} \sum_{k=1}^K \sum_{t=1}^{T_k} 
+                \mathbbm{1}(s_t^k, a_t^k = s, a)r_t^k
+    \end{align*}
+
+    \item Zadnja pomembna razlika je, da TD izrabi Markovsko lastnost, medtem ko je MC ne. Zato je 
+    vsaj v teoriji TD veliko bolj učinkovit v MDP-jih.
+\end{itemize}
+
 \subsection{TD($\lambda$)}
 
 \subsection{Izboljšave}
@@ -864,8 +970,7 @@ da sedaj pridemo do časovne zahtevnosti $O(m^2n^2)$.
 
 
 
-%Osnovne rezultate o zveznih funkcijah najdemo v \cite{glob}. Navedimo le naslednji izrek.
-%
+
 %\begin{izrek}\label{izr:enakomerno}
 %Zvezna funkcija na zaprtem intervalu je enakomerno zvezna.
 %\end{izrek}
