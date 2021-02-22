@@ -237,7 +237,17 @@ class Okolje:
         """
         Za posodabljanje nagrad "online" oz. med igro. 
         """
-        pass
+        rezultat = self.zmagovalec()
+        if rezultat == 1:
+            self.p1.nagradi_koncna(hiperparametri['NAGRADA_ZMAGA'])
+            self.p2.nagradi_koncna(hiperparametri['NAGRADA_PORAZ'])
+        elif rezultat == -1:
+            self.p1.nagradi_koncna(hiperparametri['NAGRADA_PORAZ'])
+            self.p2.nagradi_koncna(hiperparametri['NAGRADA_ZMAGA'])
+        else:
+            self.p1.nagradi_koncna(hiperparametri['NAGRADA_REMI'])
+            self.p2.nagradi_koncna(hiperparametri['NAGRADA_REMI'])
+
 
 
     def poteza_agent(self, igralec):
@@ -313,14 +323,12 @@ class Okolje:
                     zmaga = self.zmagovalec()
                     if zmaga is not None:
                         # zmagal je drugi ali remi
-                        #print(f'Zmagal je {self.zmagovalec()}')
                         self.daj_nagrado()
                         self.p1.ponastavi()
                         self.p2.ponastavi()
                         self.ponastavi()
                         break
 
-    
 
     def treniraj_online(self, epizode):
         """
@@ -342,8 +350,7 @@ class Okolje:
                 zmaga = self.zmagovalec()
                 if zmaga is not None:
                     # zmagal je prvi ali remi
-                    #print(f'Zmagal je {self.zmagovalec()}')
-                    self.daj_nagrado()
+                    self.daj_nagrado_online()
                     self.p1.ponastavi()
                     self.p2.ponastavi()
                     self.ponastavi()
@@ -357,8 +364,7 @@ class Okolje:
                     zmaga = self.zmagovalec()
                     if zmaga is not None:
                         # zmagal je drugi ali remi
-                        #print(f'Zmagal je {self.zmagovalec()}')
-                        self.daj_nagrado()
+                        self.daj_nagrado_online()
                         self.p1.ponastavi()
                         self.p2.ponastavi()
                         self.ponastavi()

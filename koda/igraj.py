@@ -64,7 +64,7 @@ def main(p1=Agent('p1', epsilon=0.01),
          n=3,
          k=3,
          gravitacija=False,
-         trening=False,
+         trening=True,
          epizode=2000,
          nalozi=False,
          nalozi_iz='454g', 
@@ -72,7 +72,7 @@ def main(p1=Agent('p1', epsilon=0.01),
          shrani_v='333',
          nasprotnik=Clovek('p2'), 
          strategija='333',
-         zacne=False):
+         zacne=True):
     """
     p1 = Agent
     p2 = nasprotnik za namene treninga
@@ -94,7 +94,7 @@ def main(p1=Agent('p1', epsilon=0.01),
 
         igra = Okolje(p1, p2)
         tik = time.perf_counter()
-        igra.treniraj(epizode)
+        igra.treniraj_online(epizode)
         tok = time.perf_counter()
 
         # izmerimo čas treniranja

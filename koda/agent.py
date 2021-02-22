@@ -85,8 +85,10 @@ class Agent:
         vrednost = vrednost + alfa * (gama * vrednost(naslednji) - vrednost)
         """
         for stanje in reversed(self.stanja):
+            # poskrbimo za primer, ko stanja še nismo videli
             if self.vrednosti_stanj.get(stanje) is None:
                 self.vrednosti_stanj[stanje] = 0
+                #self.vrednosti_stanj[stanje] = np.random.uniform(-1, 1)
 
             self.vrednosti_stanj[stanje] += self.alfa * (
                 nagrada - self.vrednosti_stanj[stanje])
@@ -94,14 +96,37 @@ class Agent:
             nagrada = self.vrednosti_stanj[stanje]
 
 
-    def nagradi_online(self, nagrada):
+    def nagradi_online(self):
         """
         Agent lahko posodobi svoje vrednosti stanj kar med igro.
         """
-        zadnje. predzadnje = self.stanja[-1], self.stanja[-2]
+        if len(self.stanja) > 1:
+            zadnje, predzadnje = self.stanja[-1], self.stanja[-2]
+
+            # poskrbimo za primer, ko stanja še nismo videli
+            if (self.vrednosti_stanj.get(predzadnje) is None) or (
+                self.vrednosti_stanj.get(zadnje) is None):
+                self.vrednosti_stanj[predzadnje] = 0
+                self.vrednosti_stanj[zadnje] = 0
+                #self.vrednosti_stanj[predzadnje] = np.random.uniform(-1, 1)
+                #self.vrednosti_stanj[zadnje] = np.random.uniform(-1, 1)
+
+            self.vrednosti_stanj[predzadnje] += self.alfa * (
+                self.vrednosti_stanj[zadnje] - self.vrednosti_stanj[predzadnje])
+
+
+    def nagradi_koncna(self, nagrada):
+        """
+        Tudi online po koncu igre dobi nagrado.
+        """
+        zadnje = self.stanja[-1]
+
+        # poskrbimo za primer, ko stanja še nismo videli
+        if self.vrednosti_stanj.get(zadnje) is None:
+                self.vrednosti_stanj[zadnje] = 0
 
         self.vrednosti_stanj[zadnje] += self.alfa * (
-            self.vrednosti_stanj[predzadnje] - self.vrednosti_stanj[zadnje])
+            nagrada - self.vrednosti_stanj[zadnje])
 
 
     def ponastavi(self):
