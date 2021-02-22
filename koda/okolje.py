@@ -88,11 +88,10 @@ class Okolje:
         Pridobi trenutno stanje igralne plošče in ga shrani kot 
         enodimenzionalni seznam.
         """
-        self.stanje = str(self.plosca.reshape(hiperparametri['VRSTICE'] * hiperparametri['STOLPCI']))
-        return self.stanje
+        stanje = str(self.plosca.reshape(hiperparametri['VRSTICE'] * hiperparametri['STOLPCI']))
+        return stanje
 
 
-    # morda prepiši to z numpy
     def legalne_pozicije(self):
         """
         Poišče vse legalne pozicije - torej prazna polja, 
@@ -143,9 +142,11 @@ class Okolje:
             print('To ni legalna pozicija!')
 
 
-
-
     def zmagovalec(self):
+        """
+        Preveri, če dana plošča vsebuje zmagovalca za poljubno velikost igre in 
+        zahtevanega števila simbolov v vrsti.
+        """
         pregled = min(hiperparametri['VRSTICE'], hiperparametri['STOLPCI'])
         razlika = abs(hiperparametri['VRSTICE'] - hiperparametri['STOLPCI'])
         plosca = (self.plosca if 
@@ -217,8 +218,7 @@ class Okolje:
 
     def daj_nagrado(self):
         """
-        Da nagrade obema igralcema glede na izid igre, 
-        s številkami se lahko še malo igramo.
+        Da nagrade obema igralcema glede na izid igre.
         """
         # nagrade pridejo samo ob koncu igre
         rezultat = self.zmagovalec()
@@ -231,6 +231,13 @@ class Okolje:
         else:
             self.p1.nagradi(hiperparametri['NAGRADA_REMI'])
             self.p2.nagradi(hiperparametri['NAGRADA_REMI'])
+
+
+    def daj_nagrado_online(self):
+        """
+        Za posodabljanje nagrad "online" oz. med igro. 
+        """
+        pass
 
 
     def poteza_agent(self, igralec):
@@ -293,7 +300,6 @@ class Okolje:
                 zmaga = self.zmagovalec()
                 if zmaga is not None:
                     # zmagal je prvi ali remi
-                    #print(f'Zmagal je {self.zmagovalec()}')
                     self.daj_nagrado()
                     self.p1.ponastavi()
                     self.p2.ponastavi()
@@ -314,56 +320,6 @@ class Okolje:
                         self.ponastavi()
                         break
 
-
-
-    def treniraj_self(self, epizode):
-        """
-        Vsak igralec:
-        poišče možne pozicije, 
-        izbere akcijo, 
-        posodobi ploščo in zabeleži stanje, 
-        počaka razsodbo o koncu
-        """
-        for i in range(epizode):
-            if i % 100 == 0:
-                print(f'Epizoda {i+1}')
-            
-            while not self.konec:
-                # 1. igralec
-                pozicije = self.legalne_pozicije()
-                agent_akcija = self.p1.izberi_akcijo_p1(pozicije, self.plosca, self.simbol)
-                self.igraj(agent_akcija)
-                stanje = self.pridobi_stanje()
-                self.p1.dodaj_stanje(stanje)
-
-                zmaga = self.zmagovalec()
-                if zmaga is not None:
-                    # zmagal je prvi ali remi
-                    #print(f'Zmagal je {self.zmagovalec()}')
-                    self.daj_nagrado()
-                    self.p1.ponastavi()
-                    self.p2.ponastavi()
-                    self.ponastavi()
-                    break
-
-                else:
-                    # 2. igralec
-                    pozicije = self.legalne_pozicije()
-                    agent_akcija = self.p2.izberi_akcijo_p2(pozicije, self.plosca, self.simbol)
-                    self.igraj(agent_akcija)
-                    stanje = self.pridobi_stanje()
-                    self.p2.dodaj_stanje(stanje)
-
-                    zmaga = self.zmagovalec()
-                    if zmaga is not None:
-                        # zmagal je drugi ali remi
-                        #print(f'Zmagal je {self.zmagovalec()}')
-                        self.daj_nagrado()
-                        self.p1.ponastavi()
-                        self.p2.ponastavi()
-                        self.ponastavi()
-                        break
-    
     
 
     def treniraj_online(self, epizode):
