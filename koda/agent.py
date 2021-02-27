@@ -3,7 +3,6 @@ import os
 import numpy as np
 from okolje import hiperparametri 
 
-from mreza import Mreza
 
 
 class Agent:
@@ -185,6 +184,39 @@ class MonteCarlo(Agent):
 
 
 
+class TDn(Agent):
+    """
+    Agent, ki uporablja n-step return.
+    """
+    def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=0.9, n=3):
+        Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
+
+        self.gama = gama
+        self.n = n
+
+    
+    def nagradi(self, nagrada):
+
+        zacetna_nagrada = nagrada
+
+        for stanje in reversed(self.stanja):
+            # poskrbimo za primer, ko stanja še nismo videli
+            if self.vrednosti_stanj.get(stanje) is None:
+                self.vrednosti_stanj[stanje] = 0
+                #self.vrednosti_stanj[stanje] = np.random.uniform(-1, 1)
+
+            self.vrednosti_stanj[stanje] += self.alfa * (
+                nagrada - self.vrednosti_stanj[stanje])
+
+            cas = self.stanja.index(stanje)
+            if len(self.stanja[cas:]) <= self.n:
+                nagrada *= self.gama
+
+            else:
+                nagrada = (self.gama ** len(self.stanja[cas:])) * (
+                            self.vrednosti_stanj.get(self.stanja[cas+self.n]))
+
+
 class TD(Agent):
     def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=0.9, lamb=0.9):
         Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
@@ -194,7 +226,16 @@ class TD(Agent):
 
     
     def nagradi_nazaj(self, nagrada):
-        pass
+
+        for stanje in reversed(self.stanja):
+            koraki += 1
+            if self.vrednosti_stanj.get(stanje) is None:
+                self.vrednosti_stanj[stanje] = 0
+
+            self.vrednosti_stanj[stanje] += self.alfa * (
+                (1 - self.lamb) * nagrada - self.vrednosti_stanj[stanje])
+
+            nagrada += 0
 
     
     def nagradi_naprej(self, nagrada):
@@ -203,7 +244,4 @@ class TD(Agent):
 
 
 class DeepAgent(Agent):
-    def __init__(self, ime, epsilon=0.3, alfa=0.2):
-        Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
-
-        self.vrednosti_stanj = Mreza()
+        pass
