@@ -218,6 +218,9 @@ class TDn(Agent):
 
 
 class TD(Agent):
+    """
+    Agent, ki za učenje uporablja tabelarični TD(lambda).
+    """
     def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=0.9, lamb=0.9):
         Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
 
@@ -226,16 +229,18 @@ class TD(Agent):
 
     
     def nagradi_nazaj(self, nagrada):
-
+        """
+        ti. backward-view TD(lambda), ki omogoča samo offline učenje.
+        """
         for stanje in reversed(self.stanja):
-            koraki += 1
             if self.vrednosti_stanj.get(stanje) is None:
                 self.vrednosti_stanj[stanje] = 0
+
+            nagrada = self.lamb * self.gama * nagrada + self.vrednosti_stanj[stanje]
 
             self.vrednosti_stanj[stanje] += self.alfa * (
                 (1 - self.lamb) * nagrada - self.vrednosti_stanj[stanje])
 
-            nagrada += 0
 
     
     def nagradi_naprej(self, nagrada):

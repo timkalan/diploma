@@ -14,11 +14,12 @@ hiperparametri = {
                   }
 
 # Funkcije pomagači
-def ponovitve(seznam, simbol, st_ponovitev=hiperparametri['V_VRSTO']):
+def ponovitve(seznam, simbol):
     """
     Funkcija v seznamu poišče, če se simbol kje ponovi st_ponovitev-krat.
     Uporabljeno pri metodi zmagovalec, da je bila posplošena na nxn plošče.
     """
+    st_ponovitev=hiperparametri['V_VRSTO']
     i = 0
     while i < len(seznam):
         if seznam[i] == simbol:
@@ -416,11 +417,7 @@ class Okolje:
 
             while not self.konec:
                 # 1. igralec
-                pozicije = self.legalne_pozicije()
-                p1_akcija = self.p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
-                self.igraj(p1_akcija)
-                stanje = self.pridobi_stanje()
-                self.p1.dodaj_stanje(stanje)
+                self.poteza_agent(self.p1)
 
                 zmaga = self.zmagovalec()
                 if zmaga is not None:
