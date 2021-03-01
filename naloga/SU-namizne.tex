@@ -180,7 +180,7 @@ To relativno novo raziskovalno področje se deli na tri glavne veje:
             in to znanje uporabi za razpoznavo novih, neoznačenih podatkov.
     \item \textbf{Nenadzorovano učenje} odstrani označevanje iz podatkov in v njih probava 
             odkriti skrite vzorce.
-    \item \textbf{Spodbujevalno učenje} se ukvarja z ">učenjem iz izkušenj."< 
+    \item \textbf{Spodbujevalno učenje} se ukvarja z ">učenjem iz izkušenj"<.
 \end{itemize}
 
 \subsection{Struktura naloge}
@@ -256,7 +256,7 @@ Okolje nam služi tudi kot sodnik akcij oz. stanj. V kontekstu programa za igran
 okolje izbira nasprotnikove akcije, odloča katero stanje pomeni zmago in dodeljuje nagrade.
 
 \begin{zgled}[Križci in krožci]
-    Okolje za nas pomeni $3\times3$ igralno polje in našega nasprotnika.
+    Okolje za nas pomeni $3\times3$ igralno polje \textbf{in} našega nasprotnika.
 \end{zgled}
 
 \subsubsection{Agent}
@@ -287,7 +287,7 @@ Formalno gledano:
                 \end{align*}
                 Pri čemer prva formula definira \textit{deterministično} strategijo, druga pa 
                 \textit{stohastično}. $a$ in $s$ sta realizaciji akcije in stanja v času $t$ 
-                (to sta načeloma slučajni spremenljivki.)
+                (to sta načeloma slučajni spremenljivki).
         
         \item Naj bodo $R_{t+1}, ...,R_T$ nagrade, ji jih bomo prejeli od trenutka 
                 $t$ do končnega časa. \textbf{Povračilo} (angl. \textit{return}) $G_t$ v splošnem 
@@ -297,7 +297,7 @@ Formalno gledano:
                 $$
                 kjer je $\gamma \in [0,1]$ \textit{diskontni faktor}. Predstavlja dejstvo, da 
                 imamo raje nagrade, ki bodo prišle prej. Formalno gledano, je cilj učenja 
-                maksimizacija pričakovanega povračila
+                maksimizacija pričakovanega povračila.
 
          \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
                 stanja} (angl. \textit{state value function}) glede na strategijo $\pi$ je
@@ -308,7 +308,7 @@ Formalno gledano:
 
         \item Naj bo $\pi$ še vedno dana strategija agenta. \textbf{Vrednostna funkcija 
                 akcije} (tudi stanja-akcije) (angl. \textit{action value function}) glede na 
-                strategijo $\pi$ definiramo
+                strategijo $\pi$ definiramo kot
                 $$
                 q_\pi(s, a) = \mathrm{E} [G_t~|~S_t = s, A_t = a].
                 $$
@@ -363,10 +363,10 @@ Dejanski korak (npr. poteza v namizni igri) v epizodi pa formalno gledano oprede
 Eden izmed glavnih problemov, s katerim se srečamo pri spodbujevalnem učenju je problem 
 raziskovanja in izkoriščanja. Ko se agent uči, začne dojemati katere akcije ali pa kombinacije 
 akcij mu pripeljejo nagrado. Ko to ugotovi, seveda lahko začne te akcije \textit{izkoriščati} 
-in prejemativso nagrado, jim pripada. Pri tem pa naletimo na problem. Agent lahko izkorišča te 
+in prejemati vso nagrado, jim pripada. Pri tem pa naletimo na problem. Agent lahko izkorišča te 
 akcije in nikoli ne ugotovi, da neka druga akcija prinese še višjo nagrado; tega ne izve, ker ne
-\textit{raziskuje}. Če pa samo raziskuje pa nikoli ne izkoristi potencialnih nagrad, ki jih sreča
-to je, ničesar se ne nauči. 
+\textit{raziskuje}. Če pa samo raziskuje pa nikoli ne izkoristi potencialnih nagrad, ki jih sreča, 
+torej se ničesar ne nauči. 
 
 Uravnoteženje raziskovanja in izkoriščanja je pomemben problem, a se izkaže, da ima dokaj enostavno
 rešitev (ki deluje dovolj dobro). Spoznali jo bomo v kratkem.
@@ -395,8 +395,8 @@ lahko pričakujemo.
 
 \begin{definicija}[Markovska veriga]
     Slučajni proces $(S_t)_{t=0}^T$ na končnem verjetnostnem prostoru 
-    $(\Omega, P)$ je \textbf{Markovska veriga oz. Markovski proces} (angl. \textit{Markov 
-    chain}), če zanj velja Markovska lastnost
+    $(\Omega, \mathcal{F}, P)$ je \textbf{Markovska veriga} oz. \textbf{Markovski proces} (angl. 
+    \textit{Markov chain}), če zanj velja Markovska lastnost
     $$
     P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}, ..., S_0 = s_0) = P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}).
     $$
@@ -405,7 +405,8 @@ lahko pričakujemo.
     [p_{ss'}]_{s,s'\in \mathcal{S} }$, ki ji pravimo \textit{prehodna matrika}.
 
     Zdaj Markovsko verigo predstavimo še na alternativni način: kot dvojico $(\mathcal{S}, 
-    \mathcal{P})$, kjer je $\mathcal{P}$ zgoraj definirana prehodna matrika.
+    \mathcal{P})$, kjer je $\mathcal{P}$ zgoraj definirana prehodna matrika, $\mathcal{S}$ pa 
+    množica vseh stanj.
 \end{definicija}
 
 Markovska lastnost pomeni, da je prihodnost neodvisna od preteklosti, če poznamo sedanjost. 
@@ -436,7 +437,7 @@ da v njem nastopajo \textit{nagrade}.
 \end{definicija}
 
 Od navadne Markovske verige se torej razlikuje samo v prisotnosti nagrad ob vsakem koraku. Če te 
-nagrade postavimo na $R_t = 0 \forall t$, dobimo navadno Markovsko verigo. Pomembna razlika je še 
+nagrade postavimo na $R_t = 0 ~ \forall t$, dobimo navadno Markovsko verigo. Pomembna razlika je še 
 prisotnost diskontnega faktorja $\gamma$. Če velja $\gamma < 1$, potem procesu pravimo \textit{
 diskontirani Markovski proces nagrajevanja}.
 
@@ -469,8 +470,8 @@ Dobili smo torej
     v(s) &= \mathcal{R}_s + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'} v(s'),
 \end{align}
 
-kjer smo v drugi vrstici upoštevali aditivnost in idempotentnost matematičnega upanja. To je 
-\textbf{Bellmanova enačba za Markovkse procese nagrajevanja}.
+kjer smo v drugi vrstici upoštevali aditivnost in idempotentnost pogojnega matematičnega upanja. 
+To je \textbf{Bellmanova enačba za Markovkse procese nagrajevanja}.
 
 Ker se ukvarjamo s primerom, ko je stanj končno mnogo, recimo $n$, jih lahko brez škode za 
 splošnost označimo kar $1, \dots, n$. Potem lahko Bellmanovo enačbo prepišemo v matrični obliki
@@ -511,9 +512,9 @@ Opazimo, da je to \textit{linearna} enačba in da v splošnem eksplicitno rešit
 
 Ta rešitev predpostavlja obrnljivost matrike $(I - \gamma \mathcal{P})$ in računanje njenega 
 inverza, kar zahteva $O(n^3)$ operacij, zato je smiselna samo za majhne procese. Za večje 
-obstajajo iterativni algoritmi in metode, nekater izmed njih bomo spoznali v naslenjem odseku.
+obstajajo iterativni algoritmi in metode, nekater izmed njih bomo spoznali v naslednjem odseku.
 
-Ta del lahko še rahlo matematiziraš - enoličnost rešitev
+TA DEL LAHKO MATEMATIZIRAŠ - ENOLIČNOST REŠITEV
 
 \subsubsection{Markovski proces odločanja}
 Kot ime že nakazuje, \textit{Markovski proces odločanja (MDP)} razširja koncept procesa nagrajevanja 
@@ -612,7 +613,7 @@ strategijo. Pri tem nam pomaga naslednje:
                 $$
         \item Na množici vseh možnih strategij $\Pi$ definiramo delno urejenost na naslednji način:
                 $$
-                \pi \geq \pi', \text{če } v_\pi(s) \geq v_{\pi'}(s) \text{ } \forall s. 
+                \pi \geq \pi', \text{če } v_\pi(s) \geq v_{\pi'}(s) ~ \forall s. 
                 $$
                 Če za strategiji velja kot zgoraj, pravimo, da je $\pi$ \textit{boljša ali enaka} 
                 kot $\pi'$.
@@ -699,7 +700,7 @@ podprobleme, vrednostna funkcija pa hrani in ponovno uporablja rešitve. Lastnos
 za MRP-je in tudi metode, ki jih bomo spoznali so aplikativne na njih, a mi se bomo posvetili 
 predvsem procesom odločanja.
 
-Morda formalno bolj o bellmanovih enačbah?
+(Morda formalno bolj o bellmanovih enačbah?)
 
 
 \subsubsection{Iterativno ocenjevanje strategije}
@@ -835,8 +836,8 @@ osredotočimo na računanje \textit{empiričnega} povračila:
 
 Opazimo, da vrednost $V(s)$ konvergira proti $v_\pi(s)$, ko gre $N(s) \rightarrow \infty$ po 
 krepkem zakonu velikih števil. Opazimo tudi, da metoda deluje samo za probleme, ki imajo končne 
-epizode. Če za vsako stanje $s$ hranimo $N(s)$ in $S(s)$, tako dobimo oceno za $v_\pi(s) \text{ } 
-\forall s \in \mathcal{S}$.
+epizode, saj šele takrat lahko poznamo $G_t$. Če za vsako stanje $s$ hranimo $N(s)$ in $S(s)$, 
+tako dobimo oceno za $v_\pi(s) \text{ } \forall s \in \mathcal{S}$.
 
 Prostorsko zahtevnost lahko izboljšamo, če upoštevamo, da povprečje $\mu$ nekega zaporedja $X_1,
  X_2, \dots$ lahko izračunamo inkrementalno:
@@ -873,20 +874,25 @@ vrednostne funkcije. Vsi ostali algoritmi nam dajo pravilo podobne oblike:
     (\textit{tarča} - \textit{stara ocena}).
 \end{equation}
 
-\subsection{TD(0)}
+\subsection{$TD(0)$}
 V spodbujevalnem učenju obstaja skupina algoritmov, ki se imenujejo \textbf{algoritmi učenja s 
 časovno razliko} (angl. \textit{temporal-difference learning}). Delujejo v podobnih pogojih kot 
 Monte Carlo in tudi dosegajo enak cilj. Pomembna razlika je, da ne potrebujejo povračila pri 
 posodobitvi. Delujejo lahko tudi v sistemih, ki se ne delijo na epizode oz. ne potrebujejo 
 končanih epizod za svoje delovanje.
 
-Najpreprostejši algoritem učenja s časovno razliko je TD(0). Ideja je, da v stanju ocenimo
+Najpreprostejši algoritem učenja s časovno razliko je $TD(0)$. Ideja je, da v stanju ocenimo
 povračilo kot $G_t \approx R_{t+1} + \gamma V(S_{t+1}).$ To potem uporabimo za \textit{tarčo}
 v pravilu \eqref{osnova}. To nam da pravilo: 
 
 \begin{equation}
     V(S_t) \leftarrow V(S_t) + \alpha (R_{t+1} + \gamma V(S_{t+1}) - V(S_t)).
 \end{equation}
+
+Iz tega zelo hitro ugotovimo, od kod pride poimenovanje. Algoritem za svoje posodabljanje uporablja 
+podatek iz naslednjega trenutka - torej se uči s časovno razliko. Pomembno je omeniti tudi, da  za 
+učenje uporablja oceno, torej ocenjuje na podalgi ocene. Temu pravimo \textit{zankanje} (angl. 
+\textit{bootstrapping}).
 
 \subsubsection{Primerjava z Monte Carlo}
 \begin{itemize}
@@ -918,7 +924,101 @@ v pravilu \eqref{osnova}. To nam da pravilo:
     vsaj v teoriji TD veliko bolj učinkovit v MDP-jih.
 \end{itemize}
 
-\subsection{TD($\lambda$)}
+\begin{zgled}[Ti si sodnik - IZ SUTTON BARTO UČBENIKA]
+    Recimo, da imamo na voljo za učenje naslednjih 8 epizod: 
+    A $0$, B, $0$;
+    B $1$;
+    B $1$;
+    B $1$;
+    B $1$;
+    B $1$;
+    B $1$;
+    B $0$
+
+    To pomeni recimo, da smo prvo epizodo začeli v stanju A, nato dobili nagrado $0$ in prešli v 
+    stanje B, kjer smo ponovno dobili nagrado $0$, tu pa se je epizoda končala. Če bi se učili 
+    samo iz teh osmih epizod, bi se verjetno vsi strinjali, da je $V(B) = 3/4$, saj je v šestih
+    opažanjih B zavzel vrednost $1$, v dveh pa $0$. Z nami se strinjata tudi $TD(0)$ in $MC$. 
+
+    Razlike se začenjo pri stanju A. $MC$, ki minimizira povprečno kvadratno napako in zato ob 
+    enem opažanju A, ki je dal nagrado $0$, enostavno reče $V(A) = 0$ - to ima celo ničelno 
+    napako glede na podatke. 
+
+    $TD(0)$ pa pristopi nekoliko drugače. Vedno, ko smo opazili A, smo potem takoj opazili tudi B
+    (vmes smo prejeli nagrado $0$), zato je smiselno, da je vrednost stanja A enaka vrednosti 
+    stanja B, tj. $V(A) = 3/4$. V tem pristopu smo si pomagali tako, da smo problem modelirali kot 
+    markovski proces.
+\end{zgled}
+
+\subsection{$TD(\lambda)$}
+Algoritma, ki smo ju spoznali do sedaj mogoče na prvi pogled nista najbolj podobna, a bomo kmalu 
+videli, da pripadata isti družini algoritmov. V ta namen si poglejmo povračila, ki gledajo $n$-
+korakov v prihodnost. Tarča se primerno prilagodi v: 
+$$
+G_t^{(n)} = R_{t+1} + \dots + \gamma^{n-1} R_{t+n} + \gamma^n V(S_{t+1}).
+$$
+To tarčo lahko uporabimo v pravilu \eqref{osnova}. S tem dobimo algoritem, ki se imenuje \textit{
+učenje s časovno razliko z $n$ koraki}. Opazimo tudi, da z večanjem $n$ proti neskončno pridemo na 
+neki točki do že znanega MC pravila. Hitro tudi vidimo, da to pravilo sicer res poveže $TD(0)$ in 
+MC, a ne predstavlja nobene bistvene izboljšave. Pojavi pa se še dodaten problem. Če smo v času, ki
+je manj kot $n$ korakov stran od konca epizode, ne moremo porabiti celotnega $G_t^{(n)}$. V tem 
+primeru enostavno vzamemo toliko korakov naprej, kot nam čas dopušča. To pomeni, da se vedemo enako 
+kot pri MC algoritmu.
+
+Nadgradnjo algoritma nam da dejstvo, da lahko skupaj združujemo podatke iz različnih časov prek 
+tega, da povprečimo $G_t^{(n)}$ za različne $n$. V nadaljevanju bomo pogledali, kako združimo 
+podatke iz vseh časov, ki nastopijo. Najti moramo ustrezne uteži, ki se seštejejo v ena in so 
+smiselne glede na obravnavan problem. Primernega kandidata sta našla CITIRAJ ITD ITD, in sicer:
+$$
+G_t^\lambda = (1 - \lambda) \sum_{n=1}^\infty \lambda^{(n-1)} G_t^{(n)}.
+$$
+
+Od tu takoj sledi algoritem \textbf{$TD(\lambda)$ s pogledom naprej} (angl. \textit{forward-view 
+$TD(\lambda)$}). To poimenovanje izhaja iz dejstva, da kot MC, tudi ta algoritem potrebuje znanje
+prihodnosti, da posodobi vrednsoti; z drugimi besedami, uči se lahko samo iz popolnih epizod.
+
+Čeprav je teoretično zanimiv algoritem, je v praksi veliko bolj uporaben algoritem, ki ne potrebuje
+vedenja o prihodnosti in se tako lahko uči \textit{">online"<}. Izkaže se, da je zgornji algoritem 
+mogoče popraviti in ga spremeniti v bolj praktično verzijo.
+
+ZAKAJ JE TO POVEZAVA MED TD(0) IN MC!!!!!
+
+\subsubsection{Sledi upravičenosti (angl. \textit{Eligibility traces})}
+Prek tega koncepta lahko spremenimo algoritem tako, da se lahko uči po vsaki potezi sproti. Ideja 
+je, da za vsako stanje hranimo njegovo sled upravičenosti. Konceptualno to za nas pomeni, da sproti 
+ugotavljamo, kako zasluženo je stanje za morebitno nagrado - koliko je pripomoglo k njeni 
+pridobitvi.
+
+Praktično pa je sled upravičenosti slučajna spremenljivka $E_t(s) \in \mathbb{R}^+$. Pri sledeh 
+sta pomembni dve stvari: \textbf{čas}, ki je pretekel od obiska in \textbf{pogostost} obiska 
+stanja. Sledi upravičenosti združijo oboje. Za stanje tako lahko napišemo enostavno enačbo, 
+kjer je z $E_t(s)$ označena sled v času $t$ za stanje $s$:
+
+\begin{align*}
+    E_0(s) &= 0 \\
+    E_t(s) &= \gamma \lambda E_{t-1}(s) + \mathbbm{1}(S_t = s),
+\end{align*}
+
+kjer sta $\gamma$ in $\lambda$ že poznana parametra. Pomensko torej sled propada z oddaljevanjem 
+od obiska $s$, v primeru, da je $s$ ponovno obiskan, pa skoči za $1$. S tem lahko torej dodelimo 
+nagrade oz. kazni samo tistim stanjem, ki to zaslužijo. V tem pogledu je to res osnovni mehanizem 
+za dodeljevanje nagrad, ko smo dodatno vezani še na čas.
+
+S tem novim konceptom lahko posodobimo naš algoritem. Če označimo napako kot $\delta_t = R_{t+1} + 
+\gamma V(S_{t+1}) - V(S_t)$, potem zapišemo: 
+
+\begin{equation}\label{TDlambda}
+    V(s) \leftarrow V(s) + \alpha \delta_t E_t(s).
+\end{equation}
+
+V tej formulaciji pravila je tudi zelo očitno, zakaj ta algoritem poveže $TD(0)$ in $MC$:
+
+\begin{itemize}
+    \item Če je $\lambda = 0$
+\end{itemize}
+
+\subsection{Prednosti $TD$ metod}
+
 
 \subsection{Izboljšave}
 \subsubsection{Nevronske mreže}
