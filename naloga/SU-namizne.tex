@@ -589,7 +589,6 @@ Opazimo, da $v_\pi$ in $q_\pi$ povezujta zvezi:
 Prvo enačbo (dej to un reference) imenujemo \textbf{Bellmanova enačba pričakovanja} (angl. 
 \textit{Bellman expectation equation}), ki ima ponovno matrično obliko in eksplicitno (ENOLIČNO - 
 ZAKAJ) rešitev: 
-
 \begin{align*}
     v_\pi &= \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_\pi \\
     v_\pi &= (I - \gamma \mathcal{P}^\pi)^{-1} \mathcal{R}^\pi
@@ -644,14 +643,12 @@ ki jo dobimo kot $\pi_*(a|s) = \mathbbm{1} (a =\text{arg}\max_{a \in \mathcal{A}
 Podobno, kot za poljubne vrednostne funkcije, lahko tudi za optimalne vrednostne funkcije 
 izpeljemo Bellmanovo enačbo, ki jo sedaj imenujemo \textbf{Bellmanova enačba optimalnosti} (angl. 
 \textit{Bellman optimality equation}). Sprva opazimo zvezi med $q_*$ in $v_*$:
-
 \begin{align*}
     v_*(s) &= \max_a q_*(s, a) \\
     q_*(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_*(s).
 \end{align*}
 
 Ti zvezi nato vstavimo eno v drugo, in dobimo enačbi: 
-
 \begin{align}\label{beo}
     v_*(s) &= \max_a \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_*(s) \\
     q_*(s, a) &= \mathcal{R}_s^a + 
@@ -702,12 +699,10 @@ predvsem procesom odločanja.
 
 (Morda formalno bolj o bellmanovih enačbah?)
 
-
 \subsubsection{Iterativno ocenjevanje strategije}
 Podatki so tu poznan MDP in strategija $\pi$. Za algoritmom stoji Bellmanova enačba pričakovanja, 
 z njo na vsakem koraku posodobimo $v_k(s) \rightarrow v_{k+1}(s)$ s pomočjo $v(s')$, kjer je $s'$
 naslednje stanje od $s$. Enačba iteracije se potem glasi 
-
 \begin{align*}
     v_{k+1}(s) &= \sum_{a \in \mathcal{A}} \pi(a|s) \left[ \mathcal{R}_s^a + 
         \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] \text{ ali na kratko}\\
@@ -730,7 +725,6 @@ naslednje stanje od $s$. Enačba iteracije se potem glasi
 
     Naj bosta $u$ in $v$ vrednostni funkciji. Potem je zgornji operator skrčitev glede na neskončno 
     normo: 
-
     \begin{align*}
         ||T_\pi(v) - T_\pi(u)||_\infty &= ||\mathcal{R}_\pi + \gamma \mathcal{P}_\pi v - 
                                             \mathcal{R}_\pi + \gamma \mathcal{P}_\pi u||_\infty \\  
@@ -738,7 +732,6 @@ naslednje stanje od $s$. Enačba iteracije se potem glasi
         &\leq ||\gamma \mathcal{P}_\pi ||v - u||_\infty||_\infty \\
         &\leq \gamma ||v - u||_\infty,
     \end{align*}
-
     kjer smo upoštevali, da velja $||\mathcal{P}_\pi||_\infty \leq 1$, saj so elementi 
     $\mathcal{P}_\pi$ verjetnosti.
 
@@ -772,7 +765,6 @@ lahko sedaj rešimo problem upravljanja in s tem celoten problem poznanega MDP-j
     $$
 
     Posledično izboljša tudi vrednostno funkcijo: 
-
     \begin{align*}
         v_\pi(s) &\leq q_\pi(s, \pi'(s)) = \mathrm{E}_{\pi'} [R_{t+1} + 
             \gamma v_\pi(S_{t+1})~|~S_t = s] \\
@@ -786,7 +778,6 @@ lahko sedaj rešimo problem upravljanja in s tem celoten problem poznanega MDP-j
 $$
 q_\pi(s, \pi'(s)) = \max_{a \in \mathcal{A}} q_\pi(s, a) = q_\pi(s, \pi(s)) = v_\pi(s).
 $$
-
 To se zgodi, saj zaradi končnih nagrad tudi vrednostne funkcije zavzemajo končne vrednosti. 
 Potem opazimo, da je zaradi $v_\pi(s) = \max_{a \in \mathcal{A}} q_\pi(s, a)$ zadoščeno Bellmanovi 
 enačbi optimalnosti in zato po izreku \ref{optim} velja $v_\pi(s) = 
@@ -797,13 +788,11 @@ v_*(s) \text{ } \forall s \in \mathcal{S}$, torej je $\pi$ optimalna strategija.
 K problemu lahko pristopimo tudi neposredno prek Bellmanove enačbe optimalnosti in se s tem 
 izognemo neposredni uporabi strategije, vseeno pa rešimo problem upravljanja. Ideja je podobna kot 
 pri iterativnem ocenjevanju strategije, le da imamo drugačno enačbo za iteracijo: 
-
 \begin{align*}
     v_{k+1}(s) &= \max_{a \in \mathcal{A}} \left[ \mathcal{R}_s^a + 
         \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] \\
     v_{k+1} &= \max_{a \in \mathcal{A}} \mathcal{R}^a + \gamma \mathcal{P}^a v_k.
 \end{align*}
-
 Podobno kot pri iterativnem ocenjevanju strategije pokažemo, da zgornja iteracija konvergira k 
 $v_*$.
 
@@ -841,7 +830,6 @@ tako dobimo oceno za $v_\pi(s) \text{ } \forall s \in \mathcal{S}$.
 
 Prostorsko zahtevnost lahko izboljšamo, če upoštevamo, da povprečje $\mu$ nekega zaporedja $X_1,
  X_2, \dots$ lahko izračunamo inkrementalno:
-
 \begin{align*}
     \mu_k &= \frac{1}{k} \sum_{i = 1}^k X_i \\
         &= \frac{1}{k} \left[X_k + \sum_{i = 1}^{k-1} X_i \right] \\
@@ -851,24 +839,20 @@ Prostorsko zahtevnost lahko izboljšamo, če upoštevamo, da povprečje $\mu$ ne
 
 Na podlagi te zveze lahko implementiramo inkrementalni Monte Carlo, tako da po končani epizodi 
 za vsako stanje $S_t$ s povračilom $G_t$ posodobimo: 
-
 \begin{align*}
     N(S_t) &\leftarrow N(S_t) + 1 \\
     V(S_t) &\leftarrow V(S_t) + \frac{1}{N(S_t)} (G_t - V(S_t)).
 \end{align*}
 
 Izkaže se, da lahko zgornje še malo posplošimo, in uporabimo:
-
 \begin{equation}\label{mc}
     V(S_t) \leftarrow V(S_t) + \alpha (G_t - V(S_t)),
 \end{equation}
-
 kjer $\alpha$ imenujemo \textbf{velikost koraka} oz. \textbf{hitrost učenja} (angl. 
 \textit{learning rate}).
 
 Posodobitveno pravilo \eqref{mc} je konkreten primer bistvene ideje spodbujevalnega učenja prek 
 vrednostne funkcije. Vsi ostali algoritmi nam dajo pravilo podobne oblike: 
-
 \begin{equation}\label{osnova}
     \textit{nova ocena} \leftarrow \textit{stara ocena} + \textit{korak } 
     (\textit{tarča} - \textit{stara ocena}).
@@ -884,11 +868,9 @@ končanih epizod za svoje delovanje.
 Najpreprostejši algoritem učenja s časovno razliko je $TD(0)$. Ideja je, da v stanju ocenimo
 povračilo kot $G_t \approx R_{t+1} + \gamma V(S_{t+1}).$ To potem uporabimo za \textit{tarčo}
 v pravilu \eqref{osnova}. To nam da pravilo: 
-
 \begin{equation}
     V(S_t) \leftarrow V(S_t) + \alpha (R_{t+1} + \gamma V(S_{t+1}) - V(S_t)).
 \end{equation}
-
 Iz tega zelo hitro ugotovimo, od kod pride poimenovanje. Algoritem za svoje posodabljanje uporablja 
 podatek iz naslednjega trenutka - torej se uči s časovno razliko. Pomembno je omeniti tudi, da  za 
 učenje uporablja oceno, torej ocenjuje na podalgi ocene. Temu pravimo \textit{zankanje} (angl. 
@@ -912,7 +894,6 @@ učenje uporablja oceno, torej ocenjuje na podalgi ocene. Temu pravimo \textit{z
 
     TD(0) pa konvergira k rešitvi modela največjega verjetja Markova; to je rešitev MDP-ja, ki se 
     najbolje prilega podatkom. Dobimo torej naslednji cenilki: (TO SI ŠE POGLEJ)
-    
     \begin{align*}
         \hat{\mathcal{P}}_{ss'}^a &= \frac{1}{N(s, a)} \sum_{k=1}^K \sum_{t=1}^{T_k} 
                 \mathbbm{1}(s_t^k, a_t^k, s_{t+1}^k = s, a, s') \\
@@ -993,12 +974,10 @@ Praktično pa je sled upravičenosti slučajna spremenljivka $E_t(s) \in \mathbb
 sta pomembni dve stvari: \textbf{čas}, ki je pretekel od obiska in \textbf{pogostost} obiska 
 stanja. Sledi upravičenosti združijo oboje. Za stanje tako lahko napišemo enostavno enačbo, 
 kjer je z $E_t(s)$ označena sled v času $t$ za stanje $s$:
-
 \begin{align*}
     E_0(s) &= 0 \\
     E_t(s) &= \gamma \lambda E_{t-1}(s) + \mathbbm{1}(S_t = s),
 \end{align*}
-
 kjer sta $\gamma$ in $\lambda$ že poznana parametra. Pomensko torej sled propada z oddaljevanjem 
 od obiska $s$, v primeru, da je $s$ ponovno obiskan, pa skoči za $1$. S tem lahko torej dodelimo 
 nagrade oz. kazni samo tistim stanjem, ki to zaslužijo. V tem pogledu je to res osnovni mehanizem 
@@ -1006,11 +985,9 @@ za dodeljevanje nagrad, ko smo dodatno vezani še na čas.
 
 S tem novim konceptom lahko posodobimo naš algoritem. Če označimo napako kot $\delta_t = R_{t+1} + 
 \gamma V(S_{t+1}) - V(S_t)$, potem zapišemo: 
-
 \begin{equation}\label{TDlambda}
     V(s) \leftarrow V(s) + \alpha \delta_t E_t(s).
 \end{equation}
-
 Poleg zgoraj definiranih sledi, ki jim pravimo \textit{akumulativne sledi}, obstajata še dve 
 alternativi:
 
@@ -1045,7 +1022,6 @@ in $MC$:
 
 \begin{proof} 
     Oglejmo si napako, pri $TD(\lambda)$ s pogledom nazaj:
-
     \begin{align*}
     G_t^\lambda - V(S_t) &= - V(S_t) \\
                          &+ (1 - \lambda) \lambda^0 (R_{t+1} + \gamma V(S_{t+1})) \\
@@ -1064,6 +1040,7 @@ in $MC$:
                          &= \delta_t + \gamma \lambda \delta_{t+1} + 
                                 (\gamma \lambda)^2 \delta_{t+2} + \dots
     \end{align*}
+
     Oglejmo si sedaj epizodo, kjer je stanje $s$ obiskano natanko enkrat, in sicer ob času $k$. 
     Sled upravičenosti je potem enaka 
     $$
@@ -1081,7 +1058,47 @@ in $MC$:
 
 \subsection{Posplošena iteracija strategije}
 Do sedaj smo se osredotočali samo na problem napovedovanja - o strategiji nismo veliko govorili, 
-smo pa ugotovili, kako ob dani strategiji dobimo pravo funkcijo vrednosti. 
+smo pa ugotovili, kako ob dani strategiji dobimo pravo funkcijo vrednosti. Pri dinamičnem 
+programiranju smo to reševali s pomočjo požrešne izboljšave strategije, ki bi tu imela enačbo
+$$
+\pi'(s) = \text{arg}\max_{a \in \mathcal{A}} \mathcal{R}_s^a + \mathcal{P}_{ss'}^a V(s'),
+$$
+a to sedaj ne pride v poštev, saj želimo problem rešiti, brez da poznamo MDP (torej brez da 
+poznamo $\mathcal{P}_{ss'}^a$ in $\mathcal{R}_s^a$). Opaizmo, da lahko prek zamenjave vrednostne 
+funkcije stanj v funkcijo akcij $Q(s, a)$ odpravimo potrebo po poznavanju in dobimo enačbo požrešne
+izboljšave strategije kot 
+\begin{equation}\label{PIS}
+    \pi'(s) = \text{arg}\max_{a \in \mathcal{A}} Q(s, a).
+\end{equation}
+Tako res lahko uporabimo enega od zgoraj opisanih algoritmov v kombinaciji s tem in rešimo problem 
+upravljanja, torej celoten problem spodbujevalnega učenja. Naletimo pa na novo težavo. Če se vedemo
+požrešno ni nujno, da raziščemo celoten prostor stanj $\mathcal{S}$. Prišli smo do problema 
+\textit{rasikovanja in izkoriščanja}. Na srečo pa ima problem enostavno rešitev. 
+
+Če se agent ne vede popolnoma požrešno, pač pa z verjetnostjo $\epsilon$ izbere naključno akcijo, 
+je zagotovljeno, da bo z neničelno verjetnostjo obiskal vsa stanja, hkrati pa se bo strategija 
+vseeno izboljševala. če bo le $\epsilon$ dovolj majhen. To nas pripelje do koncepta \textbf{
+$\epsilon$-požrešnega raziskovanja}, ki deterministično strategijo spremeni v stohastično, kot
+sledi:
+\begin{equation}
+    \pi(a|s) = \begin{cases}
+                \epsilon / m + 1 - \epsilon & \text{če } a^* = \text{arg}\max_{a \in 
+                    \mathcal{A}} Q(s, a) \\
+                    \epsilon / m & \text{sicer}
+               \end{cases}
+\end{equation}
+
+NE RAZUMEM POPOLNOMA ZGORNJEGA
+
+\begin{izrek}
+    Za vsako $\epsilon$-požrešno strategijo $\pi$, je $\epsilon$-požrešna strategija $\pi'$, 
+    pridobljena glede na $q_\pi$, izboljšava. Torej $v_{\pi'}(s) \geq v_\pi(s)$. 
+\end{izrek}
+
+\begin{proof}
+    
+\end{proof}
+
 
 \subsection{Prednosti $TD$ metod}
 
