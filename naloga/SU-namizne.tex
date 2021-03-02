@@ -1011,11 +1011,77 @@ S tem novim konceptom lahko posodobimo naš algoritem. Če označimo napako kot 
     V(s) \leftarrow V(s) + \alpha \delta_t E_t(s).
 \end{equation}
 
-V tej formulaciji pravila je tudi zelo očitno, zakaj ta algoritem poveže $TD(0)$ in $MC$:
+Poleg zgoraj definiranih sledi, ki jim pravimo \textit{akumulativne sledi}, obstajata še dve 
+alternativi:
 
 \begin{itemize}
-    \item Če je $\lambda = 0$
+    \item \textit{Nadomeščujoče sledi}, ki so podobne akumulativnim, le da ob obisku ni skoka za 
+            $1$, pač pa skok za $1$, drugače pa imajo enako lastnost propadanja kot akumulativne. 
+    \item \textit{Nizozemske sledi}, ki jih definiramo $E_t(s) = (1 - \alpha) \gamma \lambda 
+            E_{t-1}(s) + \mathbbm{1}(S_t = s)$. Torej podobno kot akumulativne, le da so dodatno 
+            pomnožene z $(1 - \alpha)$. Ideja je, da s tem dodatnim členom dobimo sled, ki je med 
+            akumulativno in nadomeščujočo.
 \end{itemize}
+
+V zgornji formulaciji pravila $TD(\lambda)$ je tudi bolj očitno, zakaj ta algoritem poveže $TD(0)$ 
+in $MC$:
+
+\begin{itemize}
+    \item Če je $\lambda = 0$, potem velja $E_t(s) = \mathbbm{1}(S_t = s)$, torej se posodobi samo
+            trenutno stanje: $V(S_t) \leftarrow V(s_t) + \alpha \delta_t$, kar pa je natančno 
+            posodobitev pri $TD(0)$.
+    \item Za $TD(1)$ pa je za nagrado zaslužno vsako stanje, tako kot pri $MC$. Pravo ekvivalenco 
+            nam pomaga videti naslednji izrek.
+\end{itemize}
+
+\begin{izrek}
+    Vsota posodobitev vrednosti ob koncu epizode je enaka za $TD(\lambda)$ s pogledom naprej in 
+    pogledom nazaj
+    $$
+    \sum_{t=1}^T \alpha \delta_t E_t(s) = \sum_{t=1}^T \alpha \left( G_t^\lambda - V(S_t) \right) 
+    \mathbbm{1}(S_t = s).
+    $$
+\end{izrek}
+
+\begin{proof} 
+    Oglejmo si napako, pri $TD(\lambda)$ s pogledom nazaj:
+
+    \begin{align*}
+    G_t^\lambda - V(S_t) &= - V(S_t) \\
+                         &+ (1 - \lambda) \lambda^0 (R_{t+1} + \gamma V(S_{t+1})) \\
+                         &+ (1 - \lambda) \lambda^1 (R_{t+1} + \gamma R_{t+2} + 
+                                \gamma^2 V(S_{t+2})) \\
+                         &+ \dots \\
+                         &= - V(S_t) \\
+                         &+ (\gamma \lambda)^0 (R_{t+1} + \gamma V(S_{t+1}) - 
+                                \gamma \lambda V(S_{t+1})) \\
+                         &+ (\gamma \lambda)^1 (R_{t+2} + \gamma V(S_{t+2}) - 
+                                \gamma \lambda V(S_{t+2})) \\
+                         &+ \dots \\
+                         &= (\gamma \lambda)^0 (R_{t+1} + \gamma V(S_{t+1}) - V(S_t)) \\
+                         &+ (\gamma \lambda)^1 (R_{t+2} + \gamma V(S_{t+2}) - V(S_{t+1})) \\
+                         &+ \dots \\
+                         &= \delta_t + \gamma \lambda \delta_{t+1} + 
+                                (\gamma \lambda)^2 \delta_{t+2} + \dots
+    \end{align*}
+    Oglejmo si sedaj epizodo, kjer je stanje $s$ obiskano natanko enkrat, in sicer ob času $k$. 
+    Sled upravičenosti je potem enaka 
+    $$
+    E_t(s) = \gamma \lambda E_{t-1}(s) + \mathbbm{1}(S_t = s) = (\gamma \lambda)^{t-k} 
+    \mathbbm{1}(t \geq k).
+    $$
+    Skozi celotno epizodo se napaka posodablja kot 
+    $$
+    \sum_{t=1}^T \alpha \delta_t E_t(s) = \alpha \sum_{t=1}^T (\gamma \lambda)^{t-k} \delta_t =
+    \alpha (G_k^\lambda - V(S_k)),
+    $$
+    kar pa je ravno enako kot $TD(\lambda)$ s pogledom naprej. Če je stanje obiskano večkrat, pa
+    se napaka akumulira v več takih napak pogleda naprej.
+\end{proof}
+
+\subsection{Posplošena iteracija strategije}
+Do sedaj smo se osredotočali samo na problem napovedovanja - o strategiji nismo veliko govorili, 
+smo pa ugotovili, kako ob dani strategiji dobimo pravo funkcijo vrednosti. 
 
 \subsection{Prednosti $TD$ metod}
 
