@@ -1,0 +1,237 @@
+\documentclass{beamer}    % 14pt je nenujen
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[slovene]{babel}
+\usepackage{pgfpages}           % privat zapiski
+\usepackage{amsfonts}
+\usepackage{amsmath,amsthm}     % pravilen izpis v "math mode"
+%\usepackage{hyperref}
+\usepackage{graphicx}           % za slike
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{ulem}
+\usepackage{bibentry}
+
+\usepackage{forest,calc}
+\forestset{
+  make tab/.style args={#1:#2:#3/#4:#5:#6/#7:#8:#9}{%
+    content={%
+      \tabcolsep=.6\tabcolsep
+      \begin{tabular}{p{\widthof{x}}|p{\widthof{x}}|p{\widthof{x}}}
+        #1 & #2 & #3\\\hline#4&#5&#6\\\hline#7&#8&#9
+      \end{tabular}}},
+  label position r/.initial=right,
+  label position b/.initial=below
+}
+
+%\hypersetup{hidelinks}
+
+\setbeamertemplate{theorems}[ams style]             % numbered da brez bold 
+
+\setbeameroption{hide notes}                        % samo prosojnice
+%\setbeameroption{show only notes}                   % samo zapiski
+%\setbeameroption{show notes on second screen=right}  % oboje
+
+\usepackage{palatino}
+\usefonttheme{serif}
+
+%\usecolortheme{beetle} %ali beetle morda ali seagull 
+
+\setbeamertemplate{navigation symbols}{} % izklop navigacije
+\setbeamertemplate{footline}[frame number]{} % oštevilčenje
+\setbeamertemplate{note page}{\pagecolor{yellow!5}\insertnote}
+
+\newtheorem{izrek}{Izrek}
+\newtheorem{trditev}[izrek]{Trditev}
+\newtheorem{posledica}[izrek]{Posledica}
+\newtheorem{definicija}[izrek]{Definicija}
+\newtheorem{naloga}[izrek]{Naloga}
+\newtheorem{resitev}[izrek]{Naloga}
+
+\author{Tim Kalan \\ \medskip
+        \footnotesize Mentor: izr.~prof.~dr. Marjetka Knez}
+\institute[FMF]{Fakulteta za matematiko in fiziko}
+\title{
+    Spodbujevano učenje pri igranju namiznih iger \\ 
+    \large (angl. \textit{Reinforcement learning in board games})}
+\date{30. marec 2021} 
+
+
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Okvir}
+    \begin{figure}
+        \includegraphics[scale=0.5]{slike/RLloop.png}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Primer 1 - Robot se uči hoje}
+    \begin{itemize}
+        \item \textbf{Situacija/Stanje}: položaj v sobi in stanje nog,
+        \item \textbf{Nagrada}: $1$ za doseg vrat, $2$ za ključ, $-0.5$ za časovni korak,
+        \item \textbf{Okolje}: soba in senzorji, ki govorijo o položaju,
+        \item \textbf{Akcija}: Premik noge.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+    \frametitle{Primer 2 - Križci in krožci}
+    \begin{columns}[T] % align columns
+    \begin{column}{.48\textwidth}
+    
+    \begin{itemize}
+        \item \textbf{Situacija/Stanje}: stanje na plošči,
+        \item \textbf{Nagrada}: $1$ za zmago, $-1$ za poraz, $x$ za izenačenje/korak,
+        \item \textbf{Okolje}: nasprotnik, plošča, sodnik, nagrajevalec,
+        \item \textbf{Akcija}: postavitev $X$ oz. $O$ na ploščo.
+    \end{itemize}
+
+    \end{column}%
+    \hfill%
+    \begin{column}{.48\textwidth}
+    
+        \begin{forest}
+            TTT/.style args={#1:#2}{
+              make tab/.expanded=\forestove{content},
+              label={\pgfkeysvalueof{/forest/label position #1}:$#2$}
+            },
+            TTT*/.style={
+              make tab=::/::/::,
+              content/.expand once=%
+              \expandafter\vphantom\expandafter{\romannumeral-`0\forestov{content}},
+              draw=none,
+              append after command={(\tikzlastnode.north) edge (\tikzlastnode.south)},
+              for descendants={before computing xy={l*=1.2}},
+            },
+            th/.style=thick,
+            for tree={node options=draw, inner sep=+0pt, parent anchor=south, child anchor=north}
+            [o:x:o/x:x:/x:o:, TTT=r:
+                [o:x:o/x:x:o/x:o:, TTT=b:
+                    [o:x:o/x:x:o/x:o:x, TTT=b: x]
+            ]
+                [o:x:o/x:x:/x:o:o, TTT=b:
+                    [o:x:o/x:x:x/x:o:o, TTT=b: 1]
+            ]
+            ]
+        \end{forest}
+
+    \end{column}%
+    \end{columns}
+    \end{frame}
+
+
+\begin{frame}
+    \frametitle{Formalizacija: Markovski proces odločanja 1}
+    \begin{definicija}[Markovska veriga]
+        Slučajni proces $(S_t)_{t=0}^T$ na končnem verjetnostnem prostoru 
+        $(\Omega, \mathcal{F},  P)$ je \textbf{Markovska veriga}, če velja Markovska lastnost
+        $$
+        P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}, ..., S_0 = s_0) = P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t})
+        $$
+    \end{definicija}
+    \pause
+    \medskip
+    \begin{itemize}
+        \item Prihodnost je neodvisna od preteklosti, če poznamo sedanjost
+        \pause
+        \item $p_{ss'} := P(S_{t+1} = s'~|~S_{t} = s) \rightarrow
+                \mathcal{P} := [p_{ss'}]_{s,s'\in \mathcal{S} }$, $\mathcal{S}$ 
+                je množica stanj
+        \item \emph{Markovska veriga} je torej dvojica $(\mathcal{S}, \mathcal{P})$
+    \end{itemize}
+    
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Formalizacija: Markovski proces odločanja 2}
+    \begin{definicija}[Markovski proces nagrajevanja]
+        \textbf{Markovski proces odločanja} je nabor 
+        $(\mathcal{S}, \mathcal{P}, \mathcal{R}, \gamma)$, kjer je
+        \begin{itemize}
+            \item $\mathcal{S}$ je (končna) množica stanj
+            \item $\mathcal{P}$ je prehodna matrika, kjer $p_{ss'} = P(S_{t+1} = s'~|~S_{t} = s)$
+            \item $\mathcal{R}$ je nagradna funkcija $\mathcal{R}_s = E[R_{t+1}~|~S_{t} = s]$
+            \item $\gamma \in [0, 1]$ je diskontni faktor
+        \end{itemize}
+    \end{definicija}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Formalizacija: Markovski proces odločanja 3}
+    \begin{definicija}[Markovski proces odločanja]
+        \textbf{Markovski proces odločanja} je nabor 
+        $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, kjer je
+        \begin{itemize}
+            \item $\mathcal{S}$ je (končna) množica stanj
+            \item $\mathcal{A}$ je (končna) množica akcij oz. dejanj
+            \item $\mathcal{P}$ je prehodna matrika, kjer $p_{ss'}^a = P(S_{t+1} = s'~|~S_{t} = s,
+                    \mathbf{A_t = a})$
+            \item $\mathcal{R}$ je nagradna funkcija $\mathcal{R}_s^a = E[R_{t+1}~|~S_{t} = s, 
+                    \mathbf{A_t = a}]$
+            \item $\gamma \in [0, 1]$ je diskontni faktor
+        \end{itemize}
+    \end{definicija}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Agent}
+    \begin{itemize}
+        \item Strategija (angl. \textit{Policy})
+        \item Vrednostna funkcija (angl. \textit{Value function})
+        \item (Model)
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Strategija}
+        Agentova \textbf{strategija} je takšna preslikava $\pi: S \rightarrow A$ da velja:
+            \begin{align*}
+            a &= \pi(s) \text{ oz.}\\
+            \pi(a | s) &= P(A_t = a~|~S_t = s). 
+            \end{align*}
+        Pri čemer prva formula definira \textit{deterministično} strategijo, druga pa 
+        \textit{stohastično}. $a$ in $s$ sta realizaciji akcije in stanja v času $t$.
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Vrednostna funkcija}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Literatura}
+    \begin{thebibliography}{9}
+        \bibitem{RLintro} 
+        Richard S. Sutton and Andrew G. Barto. 
+    \textit{Reinforcement Learning: An introduction}.
+    The MIT Press, 
+    2015.
+
+    \medskip
+    \medskip
+
+    \bibitem{RLboard}
+    Imran Ghory.
+    \textit{Reinforcement learning in board games}.
+    2004.
+
+    \end{thebibliography}
+\end{frame}
+
+
+\end{document}
