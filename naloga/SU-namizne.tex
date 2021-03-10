@@ -49,6 +49,7 @@
 \newtheorem{trditev}[definicija]{Trditev}
 \newtheorem{posledica}[definicija]{Posledica}
 \newtheorem{zgled}[definicija]{Zgled}
+\newtheorem{hipoteza}[definicija]{Hipoteza}
 
 
 % za stevilske mnozice uporabi naslednje simbole
@@ -148,7 +149,7 @@ lahko spravi računalnik. Izkazalo se je, da nam pri tem problemu (in mnogih dru
 koristi ">umetna inteligenca"< oz. metode strojnega učenja (SU). Eno izmed vej SU bomo 
 predstavili v tem delu in pogledali, kako nam lahko pomaga pri igranju namiznih iger.
 
-Ideja, da bi nek stroj igral igre ni nova, in kompleksnosti takega stroja so se zavedali ljudje
+Ideja, da bi nek stroj igral igre, ni nova, in kompleksnosti takega stroja so se zavedali ljudje
 že pred obstojem računalnika. 
 Za konec uvodnega dela morda zabeležimo še citat iz eseja ameriškega pisatelja in pesnika 
 Edgarja Allana Poea, ki govori o mehaničnem igralcu šaha: 
@@ -158,7 +159,7 @@ Edgarja Allana Poea, ki govori o mehaničnem igralcu šaha:
     %[Chess-Player] a pure machine we must be prepared to admit that it is, beyond all comparison, 
     %the most wonderful of the inventions of mankind.”
     ">Če prej omenjenemu [igralcu šaha] rečemo čisti stroj, moramo biti pripravljeni priznati, da je
-    zunaj vseh primerjav, najbolj čudovit izum človeštva.
+    zunaj vseh primerjav, najbolj čudovit izum človeštva."<
 \end{quotation}
 
 \subsection{Motivacija}
@@ -178,7 +179,7 @@ To relativno novo raziskovalno področje se deli na tri glavne veje:
     \item \textbf{Nadzorovano učenje} se ukvarja s tem, kako iz nekih označenih podatkov 
             naučimo računalnik, da prepoznava razne signale (slike, govor, tekst, ...)
             in to znanje uporabi za razpoznavo novih, neoznačenih podatkov.
-    \item \textbf{Nenadzorovano učenje} odstrani označevanje iz podatkov in v njih probava 
+    \item \textbf{Nenadzorovano učenje} odstrani označevanje iz podatkov in v njih poskuša 
             odkriti skrite vzorce.
     \item \textbf{Spodbujevalno učenje} se ukvarja z ">učenjem iz izkušenj"<.
 \end{itemize}
@@ -186,20 +187,20 @@ To relativno novo raziskovalno področje se deli na tri glavne veje:
 \subsection{Struktura naloge}
 % morda to malo oštevilči
 Naloga je razdeljena na štiri glavne dele. Na začetku so predstavljeni osnovni koncepti 
-spodbujevalnega učenja in nekateri glavni algoritmi s tega področja. Potem se fokus obrne 
-na namizne igre in ob nekaj malega teorije iger povzame osnovne koncepte, na katere naletimo
-tam. V naslednjem odseku potem združimo znanje iz prejšnjih dveh in predstavimo, kako nam
-teorija iger pripomore pri spodbujevalnem učenju v tem konteksu. Na koncu pa so predstavljeni 
-nekateri empirični rezultati, ki so posledica zgoraj navedene teorije.
+spodbujevalnega učenja in nekateri glavni algoritmi s tega področja. Potem se osredotočimo na 
+na namizne igre in ob nekaj malega teorije iger povzamemo osnovne koncepte, na katere naletimo. 
+V naslednjem odseku združimo znanje iz prejšnjih dveh in predstavimo, kako nam teorija iger 
+pripomore pri spodbujevalnem učenju v tem konteksu. Na koncu pa so predstavljeni nekateri empirični
+rezultati, ki sledijo iz zgoraj navedene teorije.
 
 \section{Spodbujevalno učenje}
-Spodbujevalno učenje se ukvarja s ti. učenjem iz interakcije oz. izkušenj. Čeprav se to na prvi 
+Spodbujevalno učenje se ukvarja s t. i. učenjem iz interakcije oz. izkušenj. Čeprav se to na prvi 
 pogled ne zdi kot računska metoda, pač pa stvar psihologije, bomo kmalu dognali, kako prevesti 
 to idejo v računalniku razumljiv jezik.
 
 \subsection{Osnovni koncepti}
 V osnovi nas zanima precej preprosta stvar: kako preslikati neko opazovano situacijo v akcijo na 
-tak način, da učenec, ki mu v spodbujevalnem učenju pravimo \textbf{agent}, maksimirizra neko 
+tak način, da učenec, ki mu v spodbujevalnem učenju pravimo \textbf{agent}, maksimizira neko 
 numerično nagrado. Pri tem ne obstaja opazovalec, ki bi agentu povedal ali pa namignil, katere 
 akcije so dobre, to mora ugotoviti sam, s poskušanjem in napakami. V tem dejstvu se skriva 
 bistvena razlika med spodbujevalnim učenjem in ostalimi vejami strojnega učenja. 
@@ -207,20 +208,20 @@ bistvena razlika med spodbujevalnim učenjem in ostalimi vejami strojnega učenj
 Pomembna razlika tiči tudi v pomembnosti časa pri spodbujevalnem učenju. Pri drugih oblikah 
 strojnega učenja se ponavadi ukvarjamo s tabelaričnimi podatki, tu pa ponavadi modeliramo nek 
 dinamičen proces, zato je naravno, da je pomemben čas. Čeprav se ga da v tem kontekstu 
-modelirati zvezno, je za naše namene dovolj, da ga jemljemo kot diskretne točke $t \in 
-{1, \dots, T}$, kjer $T$ označuje nek končni čas (v splošnem je lahko seveda $T = \infty$).
+modelirati zvezno, je za naše namene dovolj, da ga opazujemo kot diskretne točke $t \in 
+\{1, \dots, T\} $, kjer $T$ označuje nek končni čas (v splošnem je lahko seveda $T = \infty$).
 
 \subsubsection{Nagrada}
 Prvi pomemben koncept pri spodbujevanem učenju je nagrada. Kot smo že zgoraj omenili, to za nas 
-pomeni neko numerično vrednost, pozitivno število indicira pozitivno nagrado, negativno pa 
+pomeni neko numerično vrednost, kjer pozitivno število indicira ">pozitivno nagrado"<, negativno pa 
 ">kazen"<. S pomočjo tega koncepta formaliziramo \textit{cilj} učenja. Edini cilj agenta je 
 maksimizacija te nagrade, pri čemer je vredno omeniti, da na nagrado agent lahko vpliva samo 
 s svojimi akcijami (ne more recimo spremeniti načina, na katerega dobi nagrado). 
 
-Posebaj pomembno je na tem mestu poudariti, da akcije nimajo nujno neposredne nagrade. Le-te 
-lahko pridejo v poljubnem kasnejšem časovnem obdobju. To je smiselno, če pomislimo z vidika 
+Posebej pomembno je na tem mestu poudariti, da akcije nimajo nujno neposredne nagrade. Le-te 
+lahko pridejo v poljubnem kasnejšem časovnem obdobju. To je smiselno, če gledamo z vidika 
 namiznih iger: pri šahu ne razmišljamo samo o neposrednih akcijah, temveč razvijamo neko 
-dolgoročno strategijo ki nas na koncu nagradi z zmago. 
+dolgoročno strategijo, ki nas na koncu nagradi z zmago. 
 
 \begin{zgled}[Križci in krožci]
     Pri tej znani otroški igri (in pri mnogo drugih namiznih igrah) modeliramo nagrado na 
@@ -228,12 +229,11 @@ dolgoročno strategijo ki nas na koncu nagradi z zmago.
     situacijah, torej za izenačenje in po vsaki potezi, prejmemo nagrado $0$.
 \end{zgled}
 
-Zavedati se moramo tudi potencialnih omejitev oz. pomanjkljivosti takega modela. Razmislimo 
-malo o:
-\begin{definicija}[Hipoteza o nagradi]
+Zavedati se moramo tudi potencialnih omejitev oz. pomanjkljivosti takega modela. 
+\begin{hipoteza}[Hipoteza o nagradi]
     Vse cilje je mogoče opisati kot maksimizacijo neke kumulativne numerične 
     nagrade.
-\end{definicija}
+\end{hipoteza}
 
 \begin{zgled}[Protiprimera hipotezi o nagradi]
     Problem je, da hipoteza dovoljuje samo enodimezionalnost:
@@ -251,9 +251,9 @@ malo o:
 Okolje predstavlja del našega sistema, na katerega agent nima nobenega vpliva. Funkcija okolja
 je, da agentu pokaže \textbf{stanje} (angl. \textit{state}) in mu da nagrado glede na 
 \textbf{akcijo}, ki jo prejme od njega. Če se ponovno osredotočimo na namizne igre, bi lahko rekli, 
-da je okolje igralna plošča pri šahu \textit{in} nasprotnik  - tudi nanj namreč nimamo vpliva. 
-Okolje nam služi tudi kot sodnik akcij oz. stanj. V kontekstu programa za igranje iger torej 
-okolje izbira nasprotnikove akcije, odloča katero stanje pomeni zmago in dodeljuje nagrade.
+da je okolje igralna plošča \textit{in} nasprotnik  - tudi nanj namreč nimamo vpliva. Okolje nam 
+služi tudi kot sodnik akcij oz. stanj. V kontekstu programa za igranje iger torej okolje izbira 
+nasprotnikove akcije, odloča katero stanje pomeni zmago in dodeljuje nagrade.
 
 \begin{zgled}[Križci in krožci]
     Okolje za nas pomeni $3\times3$ igralno polje \textbf{in} našega nasprotnika.
@@ -262,7 +262,7 @@ okolje izbira nasprotnikove akcije, odloča katero stanje pomeni zmago in dodelj
 \subsubsection{Agent}
 Kot smo že omenili zgoraj, je agent naš učenec. Njegov cilj je torej maksimizacija numerične 
 nagrade, to težnjo pa dosega s pomočjo \textbf{strategije} (angl. \textit{policy}), ki mu pove, 
-katero akcijo naj izbere v določenem stanju. Za ocenjevanje stanja, si pomaga z \textbf{vrednostno 
+katero akcijo naj izbere v določenem stanju. Za ocenjevanje stanja si pomaga z \textbf{vrednostno 
 funkcijo} (angl. \textit{value function}). Kot ime implicira, je to funkcija, ki določa vrednosti 
 stanjem (in akcijam). 
 
@@ -273,14 +273,15 @@ da so tudi stanja, ki ne prinesejo takojšnje nagrade, lahko veliko vredna.
 Poleg tega je v splošnem lažje učenje prek vrednostnih funkcij kot prek strategij neposredno, 
 saj je ponavadi stanj mnogokrat manj kot možnih strategij agenta.
 
-Formalno gledano:
+Zapišimo zgoraj opisane pojme bolj formalno:
 
 \begin{definicija}
-    Naj $R_t, S_t, A_t$ zaporedoma označujejo nagrado, stanje in akcijo ob času $t$. Definiramo 
-    naslednje pojme: 
+    Naj $\mathcal{S}$ označuje množico vseh stanj, $\mathcal{A}$ pa množico vseh akcij. Naj $R_t,
+    S_t, A_t$ zaporedoma označujejo nagrado, stanje in akcijo ob času $t$. Definiramo naslednje 
+    pojme: 
     \begin{itemize}
-        \item Agentova \textbf{strategija} je takšna preslikava $\pi: S \rightarrow A$
-                da velja 
+        \item Agentova \textbf{strategija} je takšna preslikava 
+                $\pi: \mathcal{S} \rightarrow \mathcal{A}$, da velja 
                 \begin{align*}
                 a &= \pi(s) \text{ oz.}\\
                 \pi(a | s) &= P(A_t = a~|~S_t = s). 
@@ -290,8 +291,8 @@ Formalno gledano:
                 (to sta načeloma slučajni spremenljivki).
         
         \item Naj bodo $R_{t+1}, ...,R_T$ nagrade, ji jih bomo prejeli od trenutka 
-                $t$ do končnega časa. \textbf{Povračilo} (angl. \textit{return}) $G_t$ v splošnem 
-                definiramo za $T=\infty$
+                $t$ do končnega časa $T$. \textbf{Povračilo} (angl. \textit{return}) $G_t$ v splošnem
+                definiramo za $T=\infty$,
                 $$
                 G_t = R_{t+1} + \gamma R_{t+2} + ... = \sum_{k=0}^\infty \gamma^k R_{t + k + 1} ,
                 $$
@@ -308,7 +309,7 @@ Formalno gledano:
 
         \item Naj bo $\pi$ še vedno dana strategija agenta. \textbf{Vrednostna funkcija 
                 akcije} (tudi stanja-akcije) (angl. \textit{action value function}) glede na 
-                strategijo $\pi$ definiramo kot
+                strategijo $\pi$ je definirana kot
                 $$
                 q_\pi(s, a) = \mathrm{E} [G_t~|~S_t = s, A_t = a].
                 $$
@@ -324,16 +325,18 @@ Formalno gledano:
 
 \subsubsection{Model}
 Model je nenujen del našega sistema. Predstavlja znanje, ki ga ima agent o svojem okolju. 
-Če imamo model, da lahko uporabimo, da napovemo, kako se bo vedlo okolje in s tem premaknemo
+Če imamo model, da lahko uporabimo, ga napovemo, kako se bo vedlo okolje in s tem premaknemo
 agentovo učenje iz čistih poskusov in napak na \textit{načrtovanje} (angl. \textit{planning}).
 Model je torej poleg strategije in vrednostne funkcije še tretja komponenta agenta. Na podlagi 
 modela lahko agent ">preračuna"< smiselnost svojih akcij, brez da bi dejansko karkoli storil. 
 
 Prisotnost modela je glavna ločnica med dvema velikima, a zelo različnima vejama spodbujevalnega
-učenja.
+učenja. Če modela ni, govorimo o spodbujevalnem učenju brez modela (angl. \textit{model-free 
+reinforcement learning}), v nasprotnem primeru pa govorimo o učenju z modelom (angl. \textit
+{model-based reinfocement learning}).
 
 \subsection{Korak spodbujevalnega učenja}
-Spodbujevalno učenje se pogosto ukvarja s procesi, ki naravno razpadejo v ti. \textbf{epizode}. 
+Spodbujevalno učenje se pogosto ukvarja s procesi, ki naravno razpadejo v t. i. \textbf{epizode}. 
 Tak proces so recimo namizne igre, kjer so epizode precej naravno posamezne igre. Ni pa nujno, 
 da je delitev tako naravna (ali pa sploh možna oz. smiselna). Za namene te diplomske naloge lahko 
 privzamemo, da taka delitev obstaja.
@@ -342,10 +345,11 @@ Ideja učenja je, da agenta spustimo v okolje in mu dovolimo, da doživi (igra) 
 na nek način (bo razjasnjeno kasneje) ob nekih določenih časih (npr. po koncu epizode) posodobi 
 svojo strategijo (in/ali vrednostno funkcijo). 
 
-Dejanski korak (npr. poteza v namizni igri) v epizodi pa formalno gledano opredelimo: 
+Dejanski korak (npr. poteza v namizni igri) v epizodi pa formalno gledano opredelimo na naslednji 
+način.
 \begin{itemize}
     \item Agent naredi akcijo $A_t$ ob prejetem stanju $S_t$ in prejme nagrado $R_t$.
-    \item Okolje prejme akcijo $A_t$, posreduje agentu stanje $S_{t+1}$ in nagrado $R_{t+1}$
+    \item Okolje prejme akcijo $A_t$, posreduje agentu stanje $S_{t+1}$ in nagrado $R_{t+1}$.
 \end{itemize}
 
 \medspace
@@ -360,18 +364,18 @@ Dejanski korak (npr. poteza v namizni igri) v epizodi pa formalno gledano oprede
 \end{tikzpicture}
 
 \subsubsection{Raziskovanje in izkoriščanje}
-Eden izmed glavnih problemov, s katerim se srečamo pri spodbujevalnem učenju je problem 
-raziskovanja in izkoriščanja. Ko se agent uči, začne dojemati katere akcije ali pa kombinacije 
+Eden izmed glavnih problemov, s katerim se srečamo pri spodbujevalnem učenju, je problem 
+raziskovanja in izkoriščanja. Ko se agent uči, začne dojemati, katere akcije ali pa kombinacije 
 akcij mu pripeljejo nagrado. Ko to ugotovi, seveda lahko začne te akcije \textit{izkoriščati} 
-in prejemati vso nagrado, jim pripada. Pri tem pa naletimo na problem. Agent lahko izkorišča te 
+in prejemati vso nagrado, ki akcijam pripada. Pri tem pa naletimo na problem. Agent lahko izkorišča te 
 akcije in nikoli ne ugotovi, da neka druga akcija prinese še višjo nagrado; tega ne izve, ker ne
-\textit{raziskuje}. Če pa samo raziskuje pa nikoli ne izkoristi potencialnih nagrad, ki jih sreča, 
+\textit{raziskuje}. Če pa samo raziskuje, pa nikoli ne izkoristi potencialnih nagrad, ki jih sreča, 
 torej se ničesar ne nauči. 
 
 Uravnoteženje raziskovanja in izkoriščanja je pomemben problem, a se izkaže, da ima dokaj enostavno
-rešitev (ki deluje dovolj dobro). Spoznali jo bomo v kratkem.
+rešitev (ki deluje dovolj dobro). Spoznali jo bomo v madaljevanju.
 
-Morda se nekaterim bralcem zdi, da smo zaenkrat preceč ">mahali z rokami"<, to je zato, ker želimo, 
+Morda se nekaterim bralcem zdi, da smo zaenkrat preveč ">mahali z rokami"<. To je zato, ker želimo, 
 da se do te točke razvije intuicija o predstavljenih pojmih. V nadaljevanju bomo do sedaj opisane 
 stvari bolj formalizirali.
 
@@ -380,28 +384,28 @@ stvari bolj formalizirali.
 Spomnimo se najprej procesa spodbujevalnega učenja in ga poskusimo opisati bolj formalno: 
 imamo zaporedje časovnih korakov $t = 0, 1, 2, \dots$, ob katerih med sabo interaktirata agent 
 in okolje. Ob koraku $t$ agent prejme od okolja stanje (oz. reprezentacijo stanja) $S_t \in 
-\mathcal{S}$, kjer $\mathcal{S}$ označuje množico vseh stanj. Na podalagi stanja in strategije, 
+\mathcal{S}$, kjer $\mathcal{S}$ označuje množico vseh stanj. Na podlagi stanja in strategije, 
 ki jo ima, izbere akcijo $A_t \in \mathcal{A}(S_t)$, kjer $\mathcal{A}(S_t)$ predstavlja 
 množico akcij, ki jih ima agent na voljo v stanju $S_t$. Rezultat te akcije je nagrada $R_{t+1} 
-\in \mathcal{R}$ in novo stanje $S_{t+1}$.
+\in \mathcal{R}$, kjer $\mathcal{R} označuje mnoožico vseh nagrad$, in novo stanje $S_{t+1}$.
 
 Čeprav se da vse opisane koncepte posplošiti na števne in celo neštevne množice stanj in akcij, 
-se bomo mi omejili na končne množice. To je glede na problem, s katerim se ukvarajmo, dovolj.
+se bomo mi omejili na končne množice. To je pri namiznih igrah dovolj.
 
 \subsubsection{Markovska veriga}
-Dogajanje pri spodbujevalnem učenju lahko v grobem opišemo s slučajim procesom stanj 
-$(S_t)_{t=0}^T$. Zato je pomembno, da si natančno pogledamo nekaj lastnosti, ki jih 
-lahko pričakujemo. 
+Dogajanje pri spodbujevalnem učenju lahko v grobem opišemo z zaporedjem slučajnih spremenljivk $S_0,
+S_1, \dots$ v diskretnem času, to je, s slučajnim procesom stanj $(S_t)_{t=0}^T$. Zato je pomembno, 
+da si natančno pogledamo nekaj lastnosti, ki jih lahko pričakujemo. 
 
 \begin{definicija}[Markovska veriga]
     Slučajni proces $(S_t)_{t=0}^T$ na končnem verjetnostnem prostoru 
     $(\Omega, \mathcal{F}, P)$ je \textbf{Markovska veriga} oz. \textbf{Markovski proces} (angl. 
     \textit{Markov chain}), če zanj velja Markovska lastnost
     $$
-    P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}, ..., S_0 = s_0) = P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}).
+    P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}, \dots, S_0 = s_0) = P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}).
     $$
     Na kratko to \textit{prehodno verjetnost} označimo $p_{ss'} := P(S_{t+1} = s'~|~S_{t} = s)$.
-    Opazimo, da lahko te verjetnoti zložimo v matriko $\mathcal{P} := 
+    Opazimo, da lahko te verjetnsoti zložimo v matriko $\mathcal{P} := 
     [p_{ss'}]_{s,s'\in \mathcal{S} }$, ki ji pravimo \textit{prehodna matrika}.
 
     Zdaj Markovsko verigo predstavimo še na alternativni način: kot dvojico $(\mathcal{S}, 
@@ -411,19 +415,19 @@ lahko pričakujemo.
 
 Markovska lastnost pomeni, da je prihodnost neodvisna od preteklosti, če poznamo sedanjost. 
 Spodbujevalno učenje se ukvarja predvsem s problemi, kjer to dejstvo drži. Tudi pri našem 
-ciljnem problemu to načeloma velja: če pogledamo igralno ploščo na katerikoli točki pogosto 
+ciljnem problemu to načeloma velja: če pogledamo igralno ploščo na katerikoli točki, pogosto 
 izvemo enako o trenutnem stanju, kot če bi opazovali igro od začetka.
 
 \subsubsection{Markovski proces nagrajevanja}
-Podoben koncept, ki se malo bolj približa dejanski situaciji v spodbujevalnem učenju je \textit{
-Markovski proces nagrajevanja}. Kot že ime morda namigne, je precej podoben Markovski verigi, le 
-da v njem nastopajo \textit{nagrade}. 
+Podoben koncept, ki se malo bolj približa dejanski situaciji v spodbujevalnem učenju, je
+\textit{Markovski proces nagrajevanja}. Kot že ime morda namigne, je precej podoben Markovski 
+verigi, le da v njem nastopajo \textit{nagrade}. 
 
 \begin{definicija}[Markovski proces nagrajevanja]
-    Pričakovani nagradi glede na stanje $s$ in akcijo $a$ pravimo \textbf{nagradna funkcija} (angl.
-    \textit{reward function}) in označimo
+    Pričakovani nagradi glede na stanje $s$ pravimo \textbf{nagradna funkcija} (angl. \textit{reward 
+    function}) in jo označimo
     $$
-    \mathcal{R}_s^a = E[R_{t+1}~|~S_{t} = s, A_t = a].
+    \mathcal{R}_s = E[R_{t+1}~|~S_{t} = s].
     $$
     Naboru $(\mathcal{S}, \mathcal{P}, \mathcal{R}, \gamma)$, za katerega velja
     \begin{itemize}
@@ -437,7 +441,7 @@ da v njem nastopajo \textit{nagrade}.
 \end{definicija}
 
 Od navadne Markovske verige se torej razlikuje samo v prisotnosti nagrad ob vsakem koraku. Če te 
-nagrade postavimo na $R_t = 0 ~ \forall t$, dobimo navadno Markovsko verigo. Pomembna razlika je še 
+nagrade postavimo na $R_t = 0$ za vsak $t$, dobimo navadno Markovsko verigo. Pomembna razlika je še 
 prisotnost diskontnega faktorja $\gamma$. Če velja $\gamma < 1$, potem procesu pravimo \textit{
 diskontirani Markovski proces nagrajevanja}.
 
@@ -446,13 +450,13 @@ cikličnih procesov izognemo neomejenim povračilom. Poleg tega pa je diskontira
 naraven način za opis situacije: pogosto imamo raje nagrade, ki pridejo prej. Primer tega poznamo 
 recimo iz ekonomije; denar, ki ga dobimo kasneje nam pomeni manj, kot tisti, ki ga dobimo takoj. 
 
-Še vedno pa tovrsten proces ne opiše situacije v kateri se znajdemo pri spodbujevalnem učenju, saj 
+Še vedno pa tovrsten proces ne opiše situacije, v kateri se znajdemo pri spodbujevalnem učenju, saj 
 ne vsebuje koncepta akcij. Je pa že dovolj ">globok"<, da v njem lahko definiramo vrednostno 
 funkcijo $v(s) = \mathrm{E} [G_t~|~S_t = s]$, ki je v tem primeru neodvisna od strategije $\pi$, 
 saj strategija v tem modelu nima pomena. 
 
 Za vrednostno funkcijo lahko izpeljemo rekurzivno enačbo, s pomočjo katere lahko ">rešimo"< Markovski
-proces nagrajevanja. S tem mislimo, da vsakemu stanju dodelimo pravo vrednost.
+proces nagrajevanja. S tem mislimo, da vsakemu stanju dodelimo pravo vrednost:
 
 \begin{align*}
     v(s) &= \mathrm{E} [G_t~|~S_t = s] \\
@@ -460,18 +464,19 @@ proces nagrajevanja. S tem mislimo, da vsakemu stanju dodelimo pravo vrednost.
          &= \mathrm{E} [R_{t+1} + \sum_{k=1}^\infty \gamma^k R_{t + k + 1}~|~S_t = s] \\
          &= \mathrm{E} [R_{t+1} + \gamma(\sum_{k=1}^\infty \gamma^{k-1} R_{t + k + 1})~|~S_t = s] \\
          &= \mathrm{E} [R_{t+1} + \gamma G_{t+1}~|~S_t = s] \\
-         &= \mathrm{E} [R_{t+1} + \gamma v(S_{t+1})~|~S_t = s]
+         &= \mathrm{E} [R_{t+1} + \gamma v(S_{t+1})~|~S_t = s].
 \end{align*}
 
 Dobili smo torej 
-
-\begin{align}
-    v(s) &= \mathrm{E} [R_{t+1} + \gamma v(S_{t+1})~|~S_t = s] \text{ oz.} \\
-    v(s) &= \mathcal{R}_s + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'} v(s'),
-\end{align}
-
+$$
+v(s) = \mathrm{E} [R_{t+1} + \gamma v(S_{t+1})~|~S_t = s]
+$$
+oziroma 
+\begin{equation}\label{beMRP}
+    v(s) = \mathcal{R}_s + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'} v(s'),
+\end{equation} 
 kjer smo v drugi vrstici upoštevali aditivnost in idempotentnost pogojnega matematičnega upanja. 
-To je \textbf{Bellmanova enačba za Markovkse procese nagrajevanja}.
+Enačba \eqref{beMRP} je \textbf{Bellmanova enačba za Markovkse procese nagrajevanja}.
 
 Ker se ukvarjamo s primerom, ko je stanj končno mnogo, recimo $n$, jih lahko brez škode za 
 splošnost označimo kar $1, \dots, n$. Potem lahko Bellmanovo enačbo prepišemo v matrični obliki
@@ -497,22 +502,19 @@ splošnost označimo kar $1, \dots, n$. Potem lahko Bellmanovo enačbo prepišem
         v(1) \\ 
         \vdots \\ 
         v(n)
-    \end{bmatrix} 
-    \text{ ali krajše}\\
-    v &= \mathcal{R} + \gamma \mathcal{P}v
+    \end{bmatrix} \\
+    \intertext{ali krajše}
+    v &= \mathcal{R} + \gamma \mathcal{P}v.
 \end{align*}
-
 Opazimo, da je to \textit{linearna} enačba in da v splošnem eksplicitno rešitev: 
-
 \begin{align*}
     v &= \mathcal{R} + \gamma \mathcal{P}v \\
     (I - \gamma \mathcal{P}) v &= \mathcal{R} \\
-    v &= (I - \gamma \mathcal{P})^{-1} \mathcal{R} 
+    v &= (I - \gamma \mathcal{P})^{-1} \mathcal{R}.
 \end{align*}
-
 Ta rešitev predpostavlja obrnljivost matrike $(I - \gamma \mathcal{P})$ in računanje njenega 
 inverza, kar zahteva $O(n^3)$ operacij, zato je smiselna samo za majhne procese. Za večje 
-obstajajo iterativni algoritmi in metode, nekater izmed njih bomo spoznali v naslednjem odseku.
+obstajajo iterativni algoritmi in metode, nekatere izmed njih bomo spoznali v naslednjem odseku.
 
 TA DEL LAHKO MATEMATIZIRAŠ - ENOLIČNOST REŠITEV
 
@@ -521,6 +523,14 @@ Kot ime že nakazuje, \textit{Markovski proces odločanja (MDP)} razširja konce
 z dodatkom odločanja - akcij. S tem dodatkom imamo v popolnosti opisan problem spodbujevalnega 
 učenja: opisujemo torej nek proces, kjer ima agent možnost odločanja, izid pa je vsaj delno slučajen 
 in odvisen od okolja. 
+
+\begin{opomba}
+    Ker v Markovskem procesu odločanja nastopajo (in imajo poglavitno) vlogo akcije, seveda pomembno 
+    vplivajo na nagradno funkcijo, zato moramo ta koncept ustrezno prilagoditi:
+    $$
+    \mathcal{R}_s^a = E[R_{t+1}~|~S_{t} = s, A_t = a].
+    $$
+\end{opomba}
 
 \begin{definicija}[Markovski proces odločanja]
     Naboru $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, za katerega velja
@@ -536,11 +546,11 @@ in odvisen od okolja.
     pravimo \textbf{Markovski proces odločanja} (angl. \textit{Markov decision process}).
 \end{definicija}
 
-Prehodna matrika in nagradna funkcija sta sedaj seveda odvisna tudi od akcije. V kontekstu MDP-jev
+Prehodna matrika in nagradna funkcija sta sedaj seveda odvisni tudi od akcije. V kontekstu MDP-jev
 lahko sedaj formalno definiramo strategijo agenta $\pi$, ki je zahvaljujoč Markovski lastnosti 
-odvisna od enega stanja in ne celotne zgodovine procesa. Definiramo tudi vrednostno funkcijo stanja 
-$v_{\pi}(s)$ in vrednostno funkcijo akcije $q_{\pi}(s, a)$. Njihove definicije se ne spremenijo, so 
-pa sedaj formalno umeščene v model.
+odvisna od enega stanja in ne od celotne zgodovine procesa. Definiramo tudi vrednostno funkcijo 
+stanja $v_{\pi}(s)$ in vrednostno funkcijo akcije $q_{\pi}(s, a)$. Njihove definicije se ne 
+spremenijo, so pa sedaj formalno umeščene v model.
 
 Opazimo tudi, da je v MDP-ju pri fiksni strategiji $\pi$ zaporedje oz. proces stanj $S_1, S_2, 
 \dots$ Markovska veriga $(\mathcal{S}, \mathcal{P}^\pi)$. Če v zaporedje stanj pomešamo še nagrade, 
@@ -563,38 +573,35 @@ MDP-ji so splošna orodja za obravnavo stohastičnih procesov, ki vključujejo o
 programiranja, zato morda ni presenetljivo, da nam prav dinamično programiranje poda osnovo za 
 njihovo reševanje.
 Kot pri procesih nagrajevanja, lahko tudi tu izpeljemo Bellmanovo enačbo. Najprej zapišemo 
-rekurzivni zvezi za vrednostni funkciji stanjja in akcije: 
+rekurzivni zvezi za vrednostni funkciji stanja in akcije: 
 
 \begin{align*}
-    v_\pi(s) &= \mathrm{E} [R_{t+1} + \gamma v_\pi(S_{t+1})~|~S_t = s] \\
+    v_\pi(s) &= \mathrm{E} [R_{t+1} + \gamma v_\pi(S_{t+1})~|~S_t = s], \\
     q_\pi(s, a) &= \mathrm{E} [R_{t+1} + \gamma q_\pi(S_{t+1}, A_{t+1})~|~S_t = s, A_t = a].
 \end{align*}
-
-Opazimo, da $v_\pi$ in $q_\pi$ povezujta zvezi:
+Opazimo, da $v_\pi$ in $q_\pi$ povezujta zvezi
 
 \begin{align*}
-    v_\pi(s) &= \sum_{a \in \mathcal{A}} \pi(a|s)q_\pi(s, a) \\
+    v_\pi(s) &= \sum_{a \in \mathcal{A}} \pi(a|s)q_\pi(s, a), \\
     q_\pi(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s').
 \end{align*}
+Če zvezi združimo, dobimo
 
-Če zvezi združimo, dobimo: 
-
-\begin{align*}
+\begin{align}
     v_\pi(s) &= \sum_{a \in \mathcal{A}} \pi(a|s) \left[\mathcal{R}_s^a + 
-    \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s') \right] \\
+    \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s') \right], \label{bepMDP} \\
     q_\pi(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} 
     \mathcal{P}_{ss'}^a \left[\sum_{a' \in \mathcal{A}} \pi(a'|s')q_\pi(s', a') \right].
-\end{align*}
-
-Prvo enačbo (dej to un reference) imenujemo \textbf{Bellmanova enačba pričakovanja} (angl. 
-\textit{Bellman expectation equation}), ki ima ponovno matrično obliko in eksplicitno (ENOLIČNO - 
-ZAKAJ) rešitev: 
+\end{align}
+Enačbo \eqref{bepMDP} imenujemo \textbf{Bellmanova enačba pričakovanja} (angl. \textit{Bellman 
+expectation equation}), ki ima ponovno matrično obliko in eksplicitno (ENOLIČNO - ZAKAJ, TU 
+DODATNA RAZLAGA) rešitev: 
 \begin{align*}
     v_\pi &= \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_\pi \\
     v_\pi &= (I - \gamma \mathcal{P}^\pi)^{-1} \mathcal{R}^\pi
 \end{align*}
 
-Ta enačba je sicer pomembna, a nas najbolj zanima ">rešitev"< MDP-ja. Želimo najti torej optimalno 
+Ta enačba je sicer pomembna, a nas najbolj zanima ">rešitev"< MDP-ja. Želimo namreč najti optimalno 
 strategijo. Pri tem nam pomaga naslednje: 
 
 \begin{definicija}
@@ -612,14 +619,13 @@ strategijo. Pri tem nam pomaga naslednje:
                 $$
         \item Na množici vseh možnih strategij $\Pi$ definiramo delno urejenost na naslednji način:
                 $$
-                \pi \geq \pi', \text{če } v_\pi(s) \geq v_{\pi'}(s) ~ \forall s. 
+                \pi \geq \pi', \medspace \text{če } v_\pi(s) \geq v_{\pi'}(s) ~ \forall s. 
                 $$
                 Če za strategiji velja kot zgoraj, pravimo, da je $\pi$ \textit{boljša ali enaka} 
                 kot $\pi'$.
     \end{itemize}
 \end{definicija}
-
-Do konca nas potem pripelje naslednji izrek. 
+Sedaj lahko uporabimo naslenji izrek.
 
 \begin{izrek}\label{optim}
     Za vsak Markovski proces odločanja velja: 
@@ -627,7 +633,8 @@ Do konca nas potem pripelje naslednji izrek.
         \item Obstaja \textit{optimalna} strategija $\pi_*$, ki je boljša ali enaka kot vse ostale 
                 strategije; $\pi_* \geq \pi \text{ } \forall \pi \in \Pi$. 
         
-        \item Vedno obstaja \textit{deterministična} optimalna stragegija. 
+        \item Vedno obstaja \textit{deterministična} optimalna strategija. PREJ RAZLOŽI NATANČNO 
+                STRATEGIJE
         \item Vse optimalne strategije določajo optimalno vrednostno funkcijo stanja in optimalno 
                 vrednostno funkcijo akcije; 
                 \begin{align*}
@@ -637,76 +644,82 @@ Do konca nas potem pripelje naslednji izrek.
     \end{itemize} 
 \end{izrek}
 
+OPOMBA: SKLIC NA DOKAZ
+
 Izrek nam pove, da če poznamo $q_*(s, a)$, poznamo tudi optimalno deterministično strategijo, 
 ki jo dobimo kot $\pi_*(a|s) = \mathbbm{1} (a =\text{arg}\max_{a \in \mathcal{A}} q_*(s, a))$.
 
-Podobno, kot za poljubne vrednostne funkcije, lahko tudi za optimalne vrednostne funkcije 
+Podobno kot za poljubne vrednostne funkcije, lahko tudi za optimalne vrednostne funkcije 
 izpeljemo Bellmanovo enačbo, ki jo sedaj imenujemo \textbf{Bellmanova enačba optimalnosti} (angl. 
 \textit{Bellman optimality equation}). Sprva opazimo zvezi med $q_*$ in $v_*$:
+
+IZPELJI TI DVE ZVEZI
+
 \begin{align*}
-    v_*(s) &= \max_a q_*(s, a) \\
+    v_*(s) &= \max_a q_*(s, a), \\
     q_*(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_*(s).
 \end{align*}
-
 Ti zvezi nato vstavimo eno v drugo, in dobimo enačbi: 
-\begin{align}\label{beo}
-    v_*(s) &= \max_a \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_*(s) \\
-    q_*(s, a) &= \mathcal{R}_s^a + 
-                \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a \max_{a'} q_*(s', a')
-\end{align}
 
+\begin{align}\label{beo}
+    v_*(s) &= \max_a \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_*(s), \\
+    q_*(s, a) &= \mathcal{R}_s^a + 
+                \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a \max_{a'} q_*(s', a').
+\end{align}
 Opazimo, da sta enačbi tokrat nelinearni, kar močno oteži direktno reševanje. Na srečo pa tudi 
 v tem primeru pridejo prav metode iz naslednjega odseka.
 
 \section{Algoritmi pri spodbujevalnem učenju}
 Algoritmov za reševanje MDP-jev je precej. Mi se bomo omejili predvsem na algoritme, ki se učijo 
 prek vrednostne funkcije in izhajajo iz dinamičnega programiranja, a naj na tem mestu omenimo, 
-da obstajajo tudi algoritmi, ki posodabljajo strategijo neposredno (mogoče kakšen reference al 
-pa kej).
+da obstajajo tudi algoritmi, ki posodabljajo strategijo neposredno (MOGOČE KAKŠEN REFERENCE ALI 
+PA KEJ).
 
-Še en pomemben razlikovalec pri reševanju MDP-jev je, ali je MDP \textit{poznan}, ali ne. Poznan 
-MDP pomeni, da so nam znane vse komponente - dobro je definirana prehodna matrika $\mathcal{P}$.
-Pogosto se pojavijo problemi, kjer te matrike ne poznamo, eden izmed takih problemov je tudi 
-igranje namiznih iger.
+Izjemnega pomena pri reševanju je tudi dejstvo, ali je znana matrika $\mathcal{P}$ in nagradna 
+funkcija $\mathcal{R_s^a}$. Izkaže se, da je večina problemov takih, da ti dve stvari nista znani. 
+Eden izmed takih problemov je tudi igranje namiznih iger -- ne poznamo strategije našega nasprotnika, 
+zato ne poznamo verjetnosti prehodov med stanji.
 
 Poleg tega naj na tem mestu omenimo, da reševanju celotnega problema spodbujevalnega učenja 
 pravimo \textbf{načrtovanje} (angl. \textit{planning}), le-ta pa se deli na dve stopnji: 
 
 \begin{itemize}
     \item \textbf{Napovedovanje} - pri tem podproblemu podamo nek MDP in strategijo, algoritem nam 
-            vrne vrednsotno funkcijo stanja (glede na strategijo).   
+            vrne vrednostno funkcijo stanja (glede na strategijo).   
     \item \textbf{Upravljanje} - to je bolj poln problem: podan je MDP, algoritem pa nam vrne 
             optimalno vrednostno funkcijo in optimalno strategijo.
 \end{itemize}
 
-\subsection{Dinamično programiranje - Reševanje poznanih MDP-jev}
-Dinamično programiranje je optimizacijska metoda deluje na principu deljenja velikega problema 
+\subsection{Dinamično programiranje - reševanje poznanih MDP-jev}
+Dinamično programiranje je optimizacijska metoda, ki deluje na principu deljenja velikega problema 
 na manjše prekrivajoče podprobleme. V jedru reševanja je \textbf{Bellmanova enačba}, ki opisuje 
-odnos med vrednostmi podproblemov in glavnega problema. Ker je idejo dinamičnega programiranja 
-(DP) in MDP-jev dobil Bellman ob istem času, je naravno, da je DP metoda, ki je prilagojena prav 
-situaciji v MDP-ju.
+odnos med vrednostmi podproblemov in vrednostjo glavnega problema. Ker je idejo dinamičnega 
+programiranja (DP) in MDP-jev dobil Bellman ob istem času, je naravno, da je DP metoda, ki je 
+prilagojena prav situaciji v MDP-ju.
 
-Problem mora v splošnem zadoščati dvem lastnostim, da je zanj primerno reševanje z dinamičnim 
-programiranjem. Prvi pravimo \textbf{lastnost optimalne podstrukture}, ki pravi, da problem 
-lahko razstavimo na podprobleme in rešitve podproblemov lahko potem sestavimo nazaj v rešitev
-celotnega problema. Druga pomembna lastnost pa so \textbf{prekrivajoči podproblemi}, ki 
-implicira, da lahko že poznane rešitve podproblemov večkrat uporabimo.
+Problem mora v splošnem zadoščati dvema lastnostima, da je zanj primerno reševanje z dinamičnim 
+programiranjem. Prvi pravimo \textbf{lastnost optimalne podstrukture}, ki pravi, da lahko problem 
+razstavimo na podprobleme in rešitve podproblemov lahko potem sestavimo nazaj v rešitev celotnega 
+problema. Druga pomembna lastnost pa so \textbf{prekrivajoči podproblemi}, ki implicira, da lahko 
+že poznane rešitve podproblemov večkrat uporabimo.
 
 Opazimo, da obe lastnosti veljata za MDP-je; Bellmanova enačba, nam razdeli problem na 
 podprobleme, vrednostna funkcija pa hrani in ponovno uporablja rešitve. Lastnosti veljata tudi 
 za MRP-je in tudi metode, ki jih bomo spoznali so aplikativne na njih, a mi se bomo posvetili 
 predvsem procesom odločanja.
 
-(Morda formalno bolj o bellmanovih enačbah?)
+(MORDA BOLJ FORMALNO O BELLMANOVIH ENAČBAH - NI TREBA?)
 
 \subsubsection{Iterativno ocenjevanje strategije}
-Podatki so tu poznan MDP in strategija $\pi$. Za algoritmom stoji Bellmanova enačba pričakovanja, 
-z njo na vsakem koraku posodobimo $v_k(s) \rightarrow v_{k+1}(s)$ s pomočjo $v(s')$, kjer je $s'$
+Algoritem deluje na MDP-ju, katerega prehodna matrika je znan podatek. Poleg tega potrebuje tudi 
+fiksno strategijo $\pi$. Algoritem torej rešuje zgorlj parcialni problem, to je problem 
+napovedovanja. V ozadju je glavna ideja Bellmanova enačba pričakovanja, z njo na vsakem koraku 
+posodobimo $v_k(s)$ v $v_{k+1}(s)$ s pomočjo $v(s')$, kjer je $s'$
 naslednje stanje od $s$. Enačba iteracije se potem glasi 
 \begin{align*}
     v_{k+1}(s) &= \sum_{a \in \mathcal{A}} \pi(a|s) \left[ \mathcal{R}_s^a + 
         \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] \text{ ali na kratko}\\
-    v_{k+1} &= \mathcal{R}_\pi + \gamma \mathcal{P}_\pi v_k.
+    v_{k+1} &= \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_k.
 \end{align*}
 
 \begin{izrek}
@@ -716,20 +729,22 @@ naslednje stanje od $s$. Enačba iteracije se potem glasi
 
 \begin{proof}
     Pokazali bomo, da iz iteracije lahko pridobimo skrčitev, iz izrekov o fiksni točki potem sledi 
-    naš rezultat (MOGOČE DEJMO NAVEST IZREK? - BANACH, CONTRACTION MAPPING).
+    naš rezultat (MOGOČE DEJMO NAVEST IZREK? - BANACH, CONTRACTION MAPPING) - LAHKO SKLIC NA 
+    LITERATURO.
 
     Definiramo \textbf{Bellmanov operator pričakovanja} kot 
     $$
     T_\pi(v) = \mathcal{R}_\pi + \gamma \mathcal{P}_\pi v.
     $$
 
+    POVEŠ KAKO JE DEFINIRANA OPERATORSKA NESKONČNA NORMA
     Naj bosta $u$ in $v$ vrednostni funkciji. Potem je zgornji operator skrčitev glede na neskončno 
     normo: 
     \begin{align*}
         ||T_\pi(v) - T_\pi(u)||_\infty &= ||\mathcal{R}_\pi + \gamma \mathcal{P}_\pi v - 
                                             \mathcal{R}_\pi + \gamma \mathcal{P}_\pi u||_\infty \\  
         &= ||\gamma \mathcal{P}_\pi (v - u)||_\infty \\
-        &\leq ||\gamma \mathcal{P}_\pi ||v - u||_\infty||_\infty \\
+        &\leq ||\gamma \mathcal{P}_\pi||_\infty ||v - u||_\infty \\
         &\leq \gamma ||v - u||_\infty,
     \end{align*}
     kjer smo upoštevali, da velja $||\mathcal{P}_\pi||_\infty \leq 1$, saj so elementi 
@@ -737,7 +752,7 @@ naslednje stanje od $s$. Enačba iteracije se potem glasi
 
 \end{proof}
 
-S tem procesom tako res dobimo vrednsotno funkcijo, ki jo določa strategija, a strategija je 
+S tem procesom tako res dobimo vrednostno funkcijo, ki jo določa strategija, a strategija je 
 statična; to reši problem napovedovanja. 
 
 Da rešimo problem upravljanja, uporabimo enostavno idejo: strategijo izboljšamo \textbf{požrešno}. 
@@ -763,18 +778,17 @@ lahko sedaj rešimo problem upravljanja in s tem celoten problem poznanega MDP-j
     $$
     q_\pi(s, \pi'(s)) = \max_{a \in \mathcal{A}} q_\pi(s, a) \geq q_\pi(s, \pi(s)) = v_\pi(s).
     $$
-
     Posledično izboljša tudi vrednostno funkcijo: 
     \begin{align*}
         v_\pi(s) &\leq q_\pi(s, \pi'(s)) = \mathrm{E}_{\pi'} [R_{t+1} + 
             \gamma v_\pi(S_{t+1})~|~S_t = s] \\
-        &\leq \mathrm{E}_{\pi'} [R_{t+1} + \gamma q_\pi(S_{t+1}. \pi'(S_{t+1}))~|~S_t = s] \\
+        &\leq \mathrm{E}_{\pi'} [R_{t+1} + \gamma q_\pi(S_{t+1} \pi'(S_{t+1}))~|~S_t = s] \\
         &\leq \mathrm{E}_{\pi'} [R_{t+1} + \gamma R_{t+2} + 
-            \gamma^2 q_\pi(S_{t+2}. \pi'(S_{t+2}))~|~S_t = s] \\
-        &\leq \mathrm{E}_{\pi'} [R_{t+1} + \gamma R_{t+2} + \dots~|~S_t = s] = v_{\pi'}(s)
+            \gamma^2 q_\pi(S_{t+2} \pi'(S_{t+2}))~|~S_t = s] \\
+        &\leq \mathrm{E}_{\pi'} [R_{t+1} + \gamma R_{t+2} + \dots~|~S_t = s] = v_{\pi'}(s).
     \end{align*}
 
-Če se izboljšave nehajo, dobimo 
+Če vrednost preneha rasti, dobimo 
 $$
 q_\pi(s, \pi'(s)) = \max_{a \in \mathcal{A}} q_\pi(s, a) = q_\pi(s, \pi(s)) = v_\pi(s).
 $$
@@ -791,6 +805,7 @@ pri iterativnem ocenjevanju strategije, le da imamo drugačno enačbo za iteraci
 \begin{align*}
     v_{k+1}(s) &= \max_{a \in \mathcal{A}} \left[ \mathcal{R}_s^a + 
         \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] \\
+    \intertext{oziroma}
     v_{k+1} &= \max_{a \in \mathcal{A}} \mathcal{R}^a + \gamma \mathcal{P}^a v_k.
 \end{align*}
 Podobno kot pri iterativnem ocenjevanju strategije pokažemo, da zgornja iteracija konvergira k 
