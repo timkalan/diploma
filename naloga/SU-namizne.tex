@@ -280,15 +280,25 @@ Zapišimo zgoraj opisane pojme bolj formalno:
     S_t, A_t$ zaporedoma označujejo nagrado, stanje in akcijo ob času $t$. Definiramo naslednje 
     pojme: 
     \begin{itemize}
-        \item Agentova \textbf{strategija} je takšna preslikava 
-                $\pi: \mathcal{S} \rightarrow \mathcal{A}$, da velja 
-                \begin{align*}
-                a &= \pi(s) \text{ oz.}\\
-                \pi(a | s) &= P(A_t = a~|~S_t = s). 
-                \end{align*}
-                Pri čemer prva formula definira \textit{deterministično} strategijo, druga pa 
-                \textit{stohastično}. $a$ in $s$ sta realizaciji akcije in stanja v času $t$ 
-                (to sta načeloma slučajni spremenljivki).
+        \item   Agentova \textbf{strategija} (angl. \textit{policy}) je v osnovi preslikava, ki 
+                agentu pove, katero akcijo naj izbere v katerem stanju. Strategije delimo v dve 
+                skupini:
+                \begin{itemize}
+                    \item \textbf{Deterministična strategija} je preslikava $\pi: \mathcal{S} 
+                    \rightarrow \mathcal{A}$, ki za vsako stanje pove, katero akcijo agent v njem 
+                    izbere
+                    $$
+                    a = \pi(s).
+                    $$
+                    \item \textbf{Stohastična strategija} je preslikava $\pi: \mathcal{A} \times 
+                    \mathcal{S} \rightarrow [0, 1]$ ki za vsako stanje pove verjetnost, da se igra 
+                    določena akcija. To označimo 
+                    $$
+                    \pi(a | s) = P(A_t = a~|~S_t = s).
+                    $$
+                \end{itemize}
+                Seveda lahko vsako deterministično strategijo predstavimo kot stohastično, kjer je 
+                verjetnost akcije $a$ $1$, verjetnosti ostalih akcij pa so enake $0$.
         
         \item Naj bodo $R_{t+1}, ...,R_T$ nagrade, ji jih bomo prejeli od trenutka 
                 $t$ do končnega časa $T$. \textbf{Povračilo} (angl. \textit{return}) $G_t$ v splošnem
@@ -818,13 +828,19 @@ da sedaj pridemo do časovne zahtevnosti $O(m^2n^2)$.
 
 \subsection{Monte Carlo}
 Do sedaj smo se ukvarjali s poznanim MDP-jem, kar pa ni naš končen cilj. V nadaljevanju se bomo 
-posvetili nepoznanim. Metode, ki jih bomo spoznali so tako bolj splošno aplikativne. Svoje 
-bistvo pa črpajo pri dosedaj poznanem.
+posvetili nepoznanim. Metode, ki jih bomo spoznali so tako bolj splošno aplikativne, svoje 
+bistvo pa črpajo pri do sedaj poznanem.
 
 Prva taka metoda je Monte Carlo. Spopada se s problemom napovedovanja z dodatno izboljšavo, da 
 ne rabi poznati matrike $\mathcal{P}$. Potrebujemo pa strategijo $\pi$, na podlagi katere opazujemo 
-epizode dogajanja. Ideja delovanja je, da se namesto na direktno računanje pričakovanega povračilo, 
-osredotočimo na računanje \textit{empiričnega} povračila: 
+epizode dogajanja. Ideja delovanja je, da se namesto na direktno računanje pričakovanega povračila
+$G_t = \sum_{k=0}^\infty \gamma^k R_{t + k + 1}$, osredotočimo na računanje \textit{empiričnega} 
+povračila. To storimo tako, da za vsako stanje $s$ definiramo števec $N(s)$, ki beleži, kolikokrat 
+je bilo stanje obiskano. Ta števec ne beleži zgolj obiskov znotraj epizode, temveč skozi celoten 
+proces učenja. Za vsako stanje hranimo še $S(s)$, ki mu ob vsakem obisku prištejemo pričakovano 
+povračilo. To seveda pomeni, da se vrednost stanja ne more posodobiti takoj po obisku, ampak šele 
+ob koncu epizode, ko je $G_t$ znan. Po koncu učenja enostavno za vsako stanje delimo $S(s)$ z $N(s)$
+in tako dobimo vzorčno povprečje za dejanski $v(s)$.
 
 \begin{itemize}
     \item Ob vsakem (ali samo prvem) obisku stanja $s$: 
@@ -837,14 +853,14 @@ osredotočimo na računanje \textit{empiričnega} povračila:
         V(s) \leftarrow S(s) / N(s)
         $$
 \end{itemize}
-
+TOLE MALO BOLJ RAZDELAJ
 Opazimo, da vrednost $V(s)$ konvergira proti $v_\pi(s)$, ko gre $N(s) \rightarrow \infty$ po 
 krepkem zakonu velikih števil. Opazimo tudi, da metoda deluje samo za probleme, ki imajo končne 
 epizode, saj šele takrat lahko poznamo $G_t$. Če za vsako stanje $s$ hranimo $N(s)$ in $S(s)$, 
-tako dobimo oceno za $v_\pi(s) \text{ } \forall s \in \mathcal{S}$.
+tako dobimo oceno za $v_\pi(s)$ za vsak $s \in \mathcal{S}$.
 
-Prostorsko zahtevnost lahko izboljšamo, če upoštevamo, da povprečje $\mu$ nekega zaporedja $X_1,
- X_2, \dots$ lahko izračunamo inkrementalno:
+Prostorsko zahtevnost lahko izboljšamo, če upoštevamo, da povprečje $\mu$ nekega zaporedja slučajnih 
+spremenljivk $X_1, X_2, \dots$ izračunamo inkrementalno:
 \begin{align*}
     \mu_k &= \frac{1}{k} \sum_{i = 1}^k X_i \\
         &= \frac{1}{k} \left[X_k + \sum_{i = 1}^{k-1} X_i \right] \\
@@ -853,27 +869,27 @@ Prostorsko zahtevnost lahko izboljšamo, če upoštevamo, da povprečje $\mu$ ne
 \end{align*}
 
 Na podlagi te zveze lahko implementiramo inkrementalni Monte Carlo, tako da po končani epizodi 
-za vsako stanje $S_t$ s povračilom $G_t$ posodobimo: 
+za vsako stanje $S_t$ s povračilom $G_t$ posodobimo (ODLOČI SE ZA $S_t$ ALI s): 
+
 \begin{align*}
-    N(S_t) &\leftarrow N(S_t) + 1 \\
+    N(S_t) &\leftarrow N(S_t) + 1, \\
     V(S_t) &\leftarrow V(S_t) + \frac{1}{N(S_t)} (G_t - V(S_t)).
 \end{align*}
+Izkaže se, da lahko zgornje še malo posplošimo in uporabimo
 
-Izkaže se, da lahko zgornje še malo posplošimo, in uporabimo:
 \begin{equation}\label{mc}
     V(S_t) \leftarrow V(S_t) + \alpha (G_t - V(S_t)),
 \end{equation}
 kjer $\alpha$ imenujemo \textbf{velikost koraka} oz. \textbf{hitrost učenja} (angl. 
-\textit{learning rate}).
-
-Posodobitveno pravilo \eqref{mc} je konkreten primer bistvene ideje spodbujevalnega učenja prek 
-vrednostne funkcije. Vsi ostali algoritmi nam dajo pravilo podobne oblike: 
+\textit{learning rate}). Posodobitveno pravilo \eqref{mc} je konkreten primer bistvene ideje 
+spodbujevalnega učenja prek vrednostne funkcije. Vsi ostali algoritmi nam dajo pravilo podobne 
+oblike: 
 \begin{equation}\label{osnova}
     \textit{nova ocena} \leftarrow \textit{stara ocena} + \textit{korak } 
     (\textit{tarča} - \textit{stara ocena}).
 \end{equation}
 
-\subsection{$TD(0)$}
+\subsection{Algoritem $TD(0)$}
 V spodbujevalnem učenju obstaja skupina algoritmov, ki se imenujejo \textbf{algoritmi učenja s 
 časovno razliko} (angl. \textit{temporal-difference learning}). Delujejo v podobnih pogojih kot 
 Monte Carlo in tudi dosegajo enak cilj. Pomembna razlika je, da ne potrebujejo povračila pri 
@@ -882,7 +898,7 @@ končanih epizod za svoje delovanje.
 
 Najpreprostejši algoritem učenja s časovno razliko je $TD(0)$. Ideja je, da v stanju ocenimo
 povračilo kot $G_t \approx R_{t+1} + \gamma V(S_{t+1}).$ To potem uporabimo za \textit{tarčo}
-v pravilu \eqref{osnova}. To nam da pravilo: 
+v pravilu \eqref{osnova}. To nam da pravilo
 \begin{equation}
     V(S_t) \leftarrow V(S_t) + \alpha (R_{t+1} + \gamma V(S_{t+1}) - V(S_t)).
 \end{equation}
@@ -904,11 +920,13 @@ učenje uporablja oceno, torej ocenjuje na podalgi ocene. Temu pravimo \textit{z
 
     \item Razlika je tudi v tem, kam konvergirata algoritma, če imamo na voljo samo končno 
     količino epizod. Naj $K$ označuje število epizod in $k$ nakazuje, v kateri epizodi smo. Potem 
-    MC konvergira k rešitvi z minimalno povprečno kvadratno napako (MSE) $\sum_{k=1}^K 
-    \sum_{t=1}^{T_k} (G_t^k - V(s_t^k))^2$ - najbolje se prilega opazovanim povračilom.
-
-    TD(0) pa konvergira k rešitvi modela največjega verjetja Markova; to je rešitev MDP-ja, ki se 
-    najbolje prilega podatkom. Dobimo torej naslednji cenilki: (TO SI ŠE POGLEJ)
+    MC konvergira k rešitvi z minimalno povprečno kvadratno napako (MSE) 
+    $$
+    \sum_{k=1}^K \sum_{t=1}^{T_k} (G_t^k - V(s_t^k))^2,
+    $$
+    torej se najbolje prilega opazovanim povračilom. TD(0) pa konvergira k rešitvi modela največjega 
+    verjetja Markova; to je rešitev MDP-ja, ki se najbolje prilega podatkom. Dobimo torej naslednji 
+    cenilki: (TO SI ŠE POGLEJ)
     \begin{align*}
         \hat{\mathcal{P}}_{ss'}^a &= \frac{1}{N(s, a)} \sum_{k=1}^K \sum_{t=1}^{T_k} 
                 \mathbbm{1}(s_t^k, a_t^k, s_{t+1}^k = s, a, s') \\
