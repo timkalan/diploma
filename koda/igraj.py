@@ -2,7 +2,7 @@ import time
 import numpy as np
 
 from okolje import hiperparametri, Okolje
-from agent import Agent, MonteCarlo, TD
+from agent import Agent, MonteCarlo, TD, TDn
 
 
 class Clovek:
@@ -58,20 +58,20 @@ class Nakljucni:
 
 
 
-def main(p1=Agent('p1', epsilon=0.01), 
-         p2=Agent('p2', epsilon=0.1), 
-         m=3,
-         n=3,
-         k=3,
-         gravitacija=False,
+def main(p1=TD('p1', epsilon=0.05), 
+         p2=TD('p2', epsilon=0.05), 
+         m=6,
+         n=7,
+         k=4,
+         gravitacija=True,
          trening=True,
-         epizode=2000,
+         epizode=1000,
          nalozi=False,
          nalozi_iz='454g', 
          shrani=True, 
-         shrani_v='333',
-         nasprotnik=Clovek('p2'), 
-         strategija='333',
+         shrani_v='674g',
+         nasprotnik=Nakljucni('p2'), 
+         strategija='674g',
          zacne=True):
     """
     p1 = Agent
@@ -94,7 +94,7 @@ def main(p1=Agent('p1', epsilon=0.01),
 
         igra = Okolje(p1, p2)
         tik = time.perf_counter()
-        igra.treniraj_online(epizode)
+        igra.treniraj(epizode)
         tok = time.perf_counter()
 
         # izmerimo čas treniranja
@@ -104,9 +104,8 @@ def main(p1=Agent('p1', epsilon=0.01),
             p1.shrani_strategijo(shrani_v)
             p2.shrani_strategijo(shrani_v + '-2')
 
-    #igraj
+    #pripravimo p1 na igro
     p1.epsilon = 0
-    p1.nalozi_strategijo(strategija)
 
     # naložimo ustrezno strategijo
     if zacne:
@@ -114,21 +113,28 @@ def main(p1=Agent('p1', epsilon=0.01),
     else:
         p1.nalozi_strategijo(strategija + '-2')
 
+    #igranje
     p2 = nasprotnik
     igra = Okolje(p1, p2)
+    #p2.nalozi_strategijo(strategija + '-2')
 
-    igra.igraj_clovek(zacne)
+    p2.nalozi_strategijo(strategija + '-2')
+    p2.epsilon = 0
+
+    a = igra.testiraj_sebi(st_iger=200)
+    return a
 
 
 if __name__ == '__main__':
     main()
 
 
+
+
 # TODO: vse dobro dokumentiraj
-# TODO: implementiraj boljše algoritme
 # TODO: implementiraj nevronske mreže
 # TODO: refaktorizacija
-# TODO: online vs offline učenje
 # TODO: treniraj proti drugim vrstam nasprotnika
 # TODO: prepiši vse z numpy, da bo hitreje
 # TODO: decaying epsilon 
+# TODO: online trening ne dela!!

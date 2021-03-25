@@ -449,6 +449,7 @@ class Okolje:
                         self.ponastavi()
                         break
         print(rezultati)
+        return rezultati
 
 
     def testiraj_sebi(self, st_iger=1000):
@@ -505,6 +506,7 @@ class Okolje:
                         self.ponastavi()
                         break
         print(rezultati)
+        return rezultati
 
 
 
