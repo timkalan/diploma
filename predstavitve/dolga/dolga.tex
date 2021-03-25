@@ -66,6 +66,32 @@
 
 
 \begin{frame}
+    \frametitle{Napovednik}
+    \begin{itemize}
+        \item Motivacija, 
+        \item problem spodbujevalnega učenja, 
+        \item algoritmi, 
+        \item namizne igre.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Motivacija: Instrumentalno pogojevanje}
+    \begin{itemize}
+        \item Psihološko motivirana podlaga. 
+        \item \textbf{Nagrade in kazni}.
+    \end{itemize}
+
+    \begin{figure}[b]
+        \includegraphics[scale=0.47]{slike/macka.jpg}
+        \includegraphics[scale=0.5]{slike/miska.jpg}
+    \end{figure}
+            
+\end{frame}
+
+
+\begin{frame}
     \frametitle{Okvir}
     \begin{figure}
         \includegraphics[scale=0.5]{slike/RLloop.png}
@@ -74,7 +100,7 @@
 
 
 \begin{frame}
-    \frametitle{Primer 1 - Robot se uči hoje}
+    \frametitle{Primer 1: robot se uči hoje}
     \begin{itemize}
         \item \textbf{Situacija/Stanje}: položaj v sobi in stanje nog,
         \item \textbf{Nagrada}: $1$ za doseg vrat, $2$ za ključ, $-0.5$ za časovni korak,
@@ -85,7 +111,7 @@
 
 
 \begin{frame}[fragile]
-    \frametitle{Primer 2 - Križci in krožci}
+    \frametitle{Primer 2: križci in krožci}
     \begin{columns}[T] % align columns
     \begin{column}{.48\textwidth}
     
@@ -127,6 +153,19 @@
 
     \end{column}%
     \end{columns}
+    \end{frame}
+
+
+    \begin{frame}
+        \frametitle{Ideja}
+        \begin{itemize}
+            \item Agent ">pade"< v okolje. 
+            \item S poskušanjem se nauči pravilnih akcij.
+            \item Svoje znanje izkoristi za maksimizacijo nagrade.
+        \end{itemize}
+        
+        hipoteza o nagradi??
+
     \end{frame}
 
 
@@ -187,7 +226,12 @@
 
 
 \begin{frame}
-    \frametitle{Agent}
+    \frametitle{Primer: MDP}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Agent 1}
     \begin{itemize}
         \item Strategija (angl. \textit{Policy})
         \item Vrednostna funkcija (angl. \textit{Value function})
@@ -197,19 +241,122 @@
 
 
 \begin{frame}
-    \frametitle{Strategija}
-        Agentova \textbf{strategija} je takšna preslikava $\pi: S \rightarrow A$ da velja:
-            \begin{align*}
-            a &= \pi(s) \text{ oz.}\\
-            \pi(a | s) &= P(A_t = a~|~S_t = s). 
-            \end{align*}
-        Pri čemer prva formula definira \textit{deterministično} strategijo, druga pa 
-        \textit{stohastično}. $a$ in $s$ sta realizaciji akcije in stanja v času $t$.
+    \frametitle{Agent 2: strategija}
+    \begin{definicija}
+        \begin{itemize}
+            \item \textbf{Deterministična strategija} stanju $s$ priredi akcijo $a$, 
+                    $$
+                    \pi(s) = a.
+                    $$ 
+            \item \textbf{Stohastična strategija} za vsako stanje $s$ pove verjetnosti vseh 
+                    možnih akcij $a$, 
+                    $$
+                    \pi(a | s) = P(A_t = a~|~S_t = s).
+                    $$
+        \end{itemize}
+    \end{definicija}
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{Vrednostna funkcija}
+    \frametitle{Agent 3: povračilo}
+    \begin{definicija}[Povračilo]
+        $$
+        G_t = R_{t+1} + \gamma R_{t+2} + ... = \sum_{k=0}^\infty \gamma^k R_{t + k + 1}
+        $$
+    \end{definicija}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Agent 4: vrednostna funkcija}
+    \begin{definicija}[Vrednostna funkcija]
+        \begin{itemize}
+            \item \textbf{Vrednostna funkcija stanja} je pričakovana vrednost povračila, če se 
+                    vedemo skladno s strategijo $\pi$ 
+                    $$
+                    v_\pi(s) = \mathrm{E} [G_t~|~S_t = s].
+                    $$
+            \item \textbf{Vrednostna funkcija akcije} je podobna prejšnji, le da sprosti prvo akcijo 
+                    $$
+                    q_\pi(s, a) = \mathrm{E} [G_t~|~S_t = s, A_t = a].
+                    $$
+        \end{itemize}
+    \end{definicija}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Primer - križci in krožci}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Algoritmi - dinamično programiranje}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Algoritmi - Monte Carlo}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Algoritmi - TD($0$)}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Algoritmi - TD($\lambda$)}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Primer - kje se zatakne?}
+    \begin{itemize}
+        \item velike plošče
+        \item pri zgornjih algoritmih hranimo vse v tabeli
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Nevronske mreže}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Motivacija - namizne igre}
+    \begin{itemize}
+        \item Abstraktno mišljenje.
+        \item Model življenja.
+        \item Testiranje algoritmov.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Namizne igre - postanja}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Namizne igre - trening}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Namizne igre - tradicionalne metode}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Namizne igre - združevanje}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Nekaj rezultatov}
 \end{frame}
 
 
