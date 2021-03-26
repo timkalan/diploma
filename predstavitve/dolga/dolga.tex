@@ -11,6 +11,7 @@
 \usepackage{multicol}
 \usepackage{ulem}
 \usepackage{bibentry}
+\usepackage{bbm}
 
 \usepackage{forest,calc}
 \forestset{
@@ -47,6 +48,7 @@
 \newtheorem{definicija}[izrek]{Definicija}
 \newtheorem{naloga}[izrek]{Naloga}
 \newtheorem{resitev}[izrek]{Naloga}
+\newtheorem{hipoteza}[izrek]{Hipoteza}
 
 \author{Tim Kalan \\ \medskip
         \footnotesize Mentor: izr.~prof.~dr. Marjetka Knez}
@@ -163,8 +165,14 @@
             \item S poskušanjem se nauči pravilnih akcij.
             \item Svoje znanje izkoristi za maksimizacijo nagrade.
         \end{itemize}
+
+        \pause
+        \medskip
         
-        hipoteza o nagradi??
+        \begin{hipoteza}[Hipoteza o nagradi]
+            Vse cilje je mogoče opisati kot maksimizacijo neke kumulativne numerične 
+            nagrade.
+        \end{hipoteza}
 
     \end{frame}
 
@@ -292,22 +300,144 @@
 
 
 \begin{frame}
-    \frametitle{Algoritmi - dinamično programiranje}
+    \frametitle{Algoritmi}
+    \begin{itemize}
+        \item Učenje prek strategije ali \textbf{vrednostne funkcije}. 
+        \item Celoten problem je \textbf{načrtovanje}:
+        \begin{itemize}
+            \item Napovedovanje - ugotvaljanje vrednosti.
+            \item Upravljanje - iskanje optimalne strategije. 
+        \end{itemize}
+    \end{itemize}
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{Algoritmi - Monte Carlo}
+    \frametitle{Algoritmi: dinamično programiranje}
+    \begin{itemize}
+        \item Poznamo $\mathcal{P}$ in $\mathcal{R}$, 
+        \item Bellmanove enačbe, 
+        \item vrednostna funkcija - ponovna uporaba rešitev,  
+    \end{itemize}
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{Algoritmi - TD($0$)}
+    \frametitle{Algoritmi: DP - iterativno ocenjevanje strategije}
+    \begin{itemize}
+        \item   
+    \end{itemize}
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{Algoritmi - TD($\lambda$)}
+    \frametitle{Algoritmi: Monte Carlo 1}
+    \begin{itemize}
+        \item Nepoznan epizodični MDP, 
+        \item problem napovedovanja, 
+        \item empirično povračilo, 
+        \item štejemo obiske stanj.
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Algoritmi: Monte Carlo 2}
+    \begin{itemize}
+        \item Ob \textbf{prvem} obisku stanja $s$: 
+        \begin{align*}
+            N(s) &\leftarrow N(s) + 1 \\
+            S(s) &\leftarrow S(s) + G_t
+        \end{align*}
+        \item Po koncu učenja: 
+        $$
+        V(s) \leftarrow S(s) / N(s)
+        $$
+       \item Pomni: Računanje povprečja zaporedja $(X_i)_{i \in \mathbb{N}}$
+       $$
+       \mu_k = \frac{1}{k} \sum_{j=1}^k X_j = \mu_{k-1} + \frac{1}{k} (X_k - \mu_{k-1})
+       $$
+       \item Inkrementalni Monte Carlo:
+       $$
+       V(s) \leftarrow V(s) + \frac{1}{N(t)} (G_t - V(S_t))
+       $$
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Algoritmi: Monte Carlo 3}
+    \begin{itemize}
+        \item Inkrementalni Monte Carlo:
+                $$
+                V(s) \leftarrow V(s) + \alpha (G_t - V(S_t)).
+                $$
+        \item Splošni obrazec: 
+                $$
+                \textit{nova ocena} \leftarrow \textit{stara ocena} + \textit{korak } 
+                (\textit{tarča} - \textit{stara ocena}).
+                $$
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Algoritmi: TD($0$)}
+    \begin{itemize}
+        \item Učenje s časovno razliko.
+        \item \textit{Bootstrapping}. 
+        \item Ne potrebujejo povračila.
+        \item $G_t \approx R_{t+1} + \gamma V(S_{t+1})$.
+    \end{itemize}
+
+    \medskip
+    $$
+    V(S_t) \leftarrow V(S_t) + \alpha (R_{t+1} + \gamma V(S_{t+1}) - V(S_t)).
+    $$
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Algoritmi: TD($\lambda$) 1}
+    \begin{itemize}
+        \item Povezava med MC in TD($0$).
+        \item $G_t^{(n)} = R_{t+1} + \dots + \gamma^{n-1} R_{t+n} + \gamma^n V(S_{t+1}).$
+        \item Povprečenje različnih $G_t^{(n)}$: $G_t^\lambda = (1 - \lambda) \sum_{n=1}^\infty 
+                                                 \lambda^{(n-1)} G_t^{(n)}.$
+    \end{itemize}
+
+    \medskip
+    \medskip
+    \medskip
+    TD($\lambda$) s pogledom naprej: 
+    $$
+    V(S_t) \leftarrow V(S_t) + \alpha (G_t^\lambda - V(S_t)).
+    $$
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Algoritmi: TD($\lambda$) 2}
+    \begin{itemize}
+        \item \textbf{Sledi upravičenosti} (angl. \textit{eligibility traces}):
+        \begin{align*}
+            E_0(s) &= 0 \\
+            E_t(s) &= \gamma \lambda E_{t-1}(s) + \mathbbm{1}(S_t = s),
+        \end{align*}
+    \end{itemize}
+
+    \medskip
+    \medskip
+    \medskip
+    TD($\lambda$) s pogledom nazaj: 
+    $$
+    V(S_t) \leftarrow V(S_t) + \alpha (G_t^\lambda - V(S_t)).
+    $$
+\end{frame}
+
+
+\begin{frame}
+    SLIKE BACKUPOV
 \end{frame}
 
 
@@ -321,7 +451,7 @@
 
 
 \begin{frame}
-    \frametitle{Nevronske mreže}
+    \frametitle{Aproksimacija}
 \end{frame}
 
 
