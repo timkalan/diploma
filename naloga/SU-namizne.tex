@@ -826,6 +826,8 @@ Za korak obeh iteracij je potrebnih $O(mn^2)$ operacij, kjer je $m$ število akc
 stanj. Popolnoma enake algoritme lahko uporabimo za iteracijo $q_\pi(s, a)$ oz. $q_*(s, a)$, le 
 da sedaj pridemo do časovne zahtevnosti $O(m^2n^2)$.
 
+\subsubsection{a sm js pozabu na generalised policy evaluation}
+
 \subsection{Monte Carlo}
 Do sedaj smo se ukvarjali s poznanim MDP-jem, kar pa ni naš končen cilj. V nadaljevanju se bomo 
 posvetili nepoznanim. Metode, ki jih bomo spoznali so tako bolj splošno aplikativne, svoje 
@@ -853,7 +855,7 @@ in tako dobimo vzorčno povprečje za dejanski $v(s)$.
         V(s) \leftarrow S(s) / N(s)
         $$
 \end{itemize}
-TOLE MALO BOLJ RAZDELAJ
+TOLE MALO BOLJ RAZDELAJ - MONTE CARLO IMA KVADRATIČNO KONVERGENCO, SUTTON BARTO
 Opazimo, da vrednost $V(s)$ konvergira proti $v_\pi(s)$, ko gre $N(s) \rightarrow \infty$ po 
 krepkem zakonu velikih števil. Opazimo tudi, da metoda deluje samo za probleme, ki imajo končne 
 epizode, saj šele takrat lahko poznamo $G_t$. Če za vsako stanje $s$ hranimo $N(s)$ in $S(s)$, 
@@ -1003,9 +1005,9 @@ je, da za vsako stanje hranimo njegovo sled upravičenosti. Konceptualno to za n
 ugotavljamo, kako zasluženo je stanje za morebitno nagrado - koliko je pripomoglo k njeni 
 pridobitvi.
 
-Praktično pa je sled upravičenosti slučajna spremenljivka $E_t(s) \in \mathbb{R}^+$. Pri sledeh 
-sta pomembni dve stvari: \textbf{čas}, ki je pretekel od obiska in \textbf{pogostost} obiska 
-stanja. Sledi upravičenosti združijo oboje. Za stanje tako lahko napišemo enostavno enačbo, 
+Praktično pa je sled upravičenosti slučajna spremenljivka $E_t: \mathcal{S} \rightarrow \mathbb{R}^+$. 
+Pri sledeh sta pomembni dve stvari: \textbf{čas}, ki je pretekel od obiska in \textbf{pogostost} 
+obiska stanja. Sledi upravičenosti združijo oboje. Za stanje tako lahko napišemo enostavno enačbo, 
 kjer je z $E_t(s)$ označena sled v času $t$ za stanje $s$:
 \begin{align*}
     E_0(s) &= 0 \\
