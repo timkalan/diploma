@@ -94,6 +94,15 @@
 
 
 \begin{frame}
+    \frametitle{Umestitev}
+    \begin{figure}[b]
+        \includegraphics[scale=0.31]{slike/uvod-ml.png}
+        \includegraphics[scale=0.31]{slike/uvod-rl.png}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}
     \frametitle{Okvir}
     \begin{figure}
         \includegraphics[scale=0.5]{slike/RLloop.png}
@@ -207,7 +216,7 @@
         $(\mathcal{S}, \mathcal{P}, \mathcal{R}, \gamma)$, kjer je
         \begin{itemize}
             \item $\mathcal{S}$ je (končna) množica stanj
-            \item $\mathcal{P}$ je prehodna matrika, kjer $p_{ss'} = P(S_{t+1} = s'~|~S_{t} = s)$
+            \item $\mathcal{P}$ je prehodna matrika, kjer $\mathcal{P}_{ss'} = P(S_{t+1} = s'~|~S_{t} = s)$
             \item $\mathcal{R}$ je nagradna funkcija $\mathcal{R}_s = E[R_{t+1}~|~S_{t} = s]$
             \item $\gamma \in [0, 1]$ je diskontni faktor
         \end{itemize}
@@ -223,7 +232,7 @@
         \begin{itemize}
             \item $\mathcal{S}$ je (končna) množica stanj
             \item $\mathcal{A}$ je (končna) množica akcij oz. dejanj
-            \item $\mathcal{P}$ je prehodna matrika, kjer $p_{ss'}^a = P(S_{t+1} = s'~|~S_{t} = s,
+            \item $\mathcal{P}$ je prehodna matrika, kjer $\mathcal{P}_{ss'}^a = P(S_{t+1} = s'~|~S_{t} = s,
                     \mathbf{A_t = a})$
             \item $\mathcal{R}$ je nagradna funkcija $\mathcal{R}_s^a = E[R_{t+1}~|~S_{t} = s, 
                     \mathbf{A_t = a}]$
@@ -235,6 +244,9 @@
 
 \begin{frame}
     \frametitle{Primer: MDP}
+    \begin{figure}[b]
+        \includegraphics[scale=0.6]{slike/mdp.png}
+    \end{figure}
 \end{frame}
 
 
@@ -295,7 +307,10 @@
 
 
 \begin{frame}
-    \frametitle{Primer - križci in krožci}
+    \frametitle{Primer: strategija in vrednostna funkcija}
+    \begin{figure}[b]
+        \includegraphics[scale=0.6]{slike/strat-vrednost.png}
+    \end{figure}
 \end{frame}
 
 
@@ -315,7 +330,7 @@
 \begin{frame}
     \frametitle{Algoritmi: dinamično programiranje}
     \begin{itemize}
-        \item Poznamo $\mathcal{P}$ in $\mathcal{R}$, 
+        \item Poznamo $\mathcal{P}_{ss'}^a$ in $\mathcal{R}_s^a$, 
         \item Bellmanove enačbe, 
         \item vrednostna funkcija - ponovna uporaba rešitev,  
     \end{itemize}
@@ -369,9 +384,12 @@
     \frametitle{Algoritmi: Monte Carlo 3}
     \begin{itemize}
         \item Inkrementalni Monte Carlo:
-                $$
-                V(s) \leftarrow V(s) + \alpha (G_t - V(S_t)).
-                $$
+                %$$
+                %V(s) \leftarrow V(s) + \alpha (G_t - V(S_t)).
+                %$$
+                \begin{figure}[b]
+                    \includegraphics[scale=0.45]{slike/backup-mc.png}
+                \end{figure}
         \item Splošni obrazec: 
                 $$
                 \textit{nova ocena} \leftarrow \textit{stara ocena} + \textit{korak } 
@@ -390,10 +408,13 @@
         \item $G_t \approx R_{t+1} + \gamma V(S_{t+1})$.
     \end{itemize}
 
-    \medskip
-    $$
-    V(S_t) \leftarrow V(S_t) + \alpha (R_{t+1} + \gamma V(S_{t+1}) - V(S_t)).
-    $$
+    %\medskip
+    %$$
+    %V(S_t) \leftarrow V(S_t) + \alpha (R_{t+1} + \gamma V(S_{t+1}) - V(S_t)).
+    %$$
+    \begin{figure}[b]
+        \includegraphics[scale=0.45]{slike/backup-td.png}
+    \end{figure}
 \end{frame}
 
 
@@ -409,10 +430,13 @@
     \medskip
     \medskip
     \medskip
-    TD($\lambda$) s pogledom naprej: 
+    TD($\lambda$) s \textbf{pogledom naprej}: 
     $$
     V(S_t) \leftarrow V(S_t) + \alpha (G_t^\lambda - V(S_t)).
     $$
+    \begin{figure}[b]
+        \includegraphics[scale=0.45]{slike/pogled-naprej.png}
+    \end{figure}
 \end{frame}
 
 
@@ -421,37 +445,58 @@
     \begin{itemize}
         \item \textbf{Sledi upravičenosti} (angl. \textit{eligibility traces}):
         \begin{align*}
-            E_0(s) &= 0 \\
+            E_0(s) &= 0, \\
             E_t(s) &= \gamma \lambda E_{t-1}(s) + \mathbbm{1}(S_t = s),
         \end{align*}
+        \item $\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t).$
     \end{itemize}
 
     \medskip
     \medskip
     \medskip
-    TD($\lambda$) s pogledom nazaj: 
+    TD($\lambda$) s \textbf{pogledom nazaj}: 
     $$
-    V(S_t) \leftarrow V(S_t) + \alpha (G_t^\lambda - V(S_t)).
+    V(s) \leftarrow V(s) + \alpha \delta_t E_t(s).
     $$
+    \begin{figure}[b]
+        \includegraphics[scale=0.45]{slike/pogled-nazaj.png}
+    \end{figure}
 \end{frame}
 
 
 \begin{frame}
-    SLIKE BACKUPOV
+    \frametitle{Ekvivalenca pogledov}
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{Primer - kje se zatakne?}
+    \frametitle{Spreminjanje strategije - upravljanje}
     \begin{itemize}
-        \item velike plošče
-        \item pri zgornjih algoritmih hranimo vse v tabeli
+        \item Potrebujemo vrednostno funkcijo akcij. 
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Težave}
+    \begin{itemize}
+        \item Veliki MDP-ji:
+                \begin{itemize}
+                    \item Križci in krožci: $3^9$ / $4578$ / $765$, 
+                    \item Go: $10^{170}$ stanj, 
+                \end{itemize}
+        \item Vsi zgornji algoritmi so tabelarični.
+        \item Počasno učenje.
     \end{itemize}
 \end{frame}
 
 
 \begin{frame}
     \frametitle{Aproksimacija}
+    \begin{itemize}
+        \item Linearna Aproksimacija, 
+        \item Nevronske mreže.
+    \end{itemize}
 \end{frame}
 
 
@@ -466,22 +511,28 @@
 
 
 \begin{frame}
-    \frametitle{Namizne igre - postanja}
+    \frametitle{Namizne igre: posebnosti}
+    \begin{itemize}
+        \item ">Postanja"<. 
+        \item Trening: 
+                \begin{itemize}
+                    \item Fiksiran nasprotnik, 
+                    \item naključni nasprotnik,
+                    \item samoigra.
+                \end{itemize}
+        \item Iskanje.
+    \end{itemize}
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{Namizne igre - trening}
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Namizne igre - tradicionalne metode}
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Namizne igre - združevanje}
+    \frametitle{m,n,k-igra}
+    \begin{itemize}
+        \item $m \times n$ plošča, 
+        \item $k$ v vrsto, 
+        \item pravila križcev in krožcev (3,3,3-igra),
+        \item prilagoditve: gravitacija.
+    \end{itemize}
 \end{frame}
 
 
