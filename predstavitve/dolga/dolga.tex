@@ -54,7 +54,7 @@
         \footnotesize Mentor: izr.~prof.~dr. Marjetka Knez}
 \institute[FMF]{Fakulteta za matematiko in fiziko}
 \title{
-    Spodbujevano učenje pri igranju namiznih iger \\ 
+    Spodbujevalno učenje pri igranju namiznih iger \\ 
     \large (angl. \textit{Reinforcement learning in board games})}
 \date{30. marec 2021} 
 
@@ -79,6 +79,15 @@
 
 
 \begin{frame}
+    \frametitle{Umestitev}
+    \begin{figure}[b]
+        \includegraphics[scale=0.31]{slike/uvod-ml.png}
+        \includegraphics[scale=0.31]{slike/uvod-rl.png}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}
     \frametitle{Motivacija: Instrumentalno pogojevanje}
     \begin{itemize}
         \item Psihološko motivirana podlaga. 
@@ -90,15 +99,6 @@
         \includegraphics[scale=0.5]{slike/miska.jpg}
     \end{figure}
             
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Umestitev}
-    \begin{figure}[b]
-        \includegraphics[scale=0.31]{slike/uvod-ml.png}
-        \includegraphics[scale=0.31]{slike/uvod-rl.png}
-    \end{figure}
 \end{frame}
 
 
@@ -128,7 +128,7 @@
     
     \begin{itemize}
         \item \textbf{Situacija/Stanje}: stanje na plošči,
-        \item \textbf{Nagrada}: $1$ za zmago, $-1$ za poraz, $x$ za izenačenje/korak,
+        \item \textbf{Nagrada}: $1$ za zmago, $-1$ za poraz, $x$ za izenačenje/potezo,
         \item \textbf{Okolje}: nasprotnik, plošča, sodnik, nagrajevalec,
         \item \textbf{Akcija}: postavitev $X$ oz. $O$ na ploščo.
     \end{itemize}
@@ -212,13 +212,13 @@
 \begin{frame}
     \frametitle{Formalizacija: Markovski proces odločanja 2}
     \begin{definicija}[Markovski proces nagrajevanja]
-        \textbf{Markovski proces odločanja} je nabor 
+        \textbf{Markovski proces nagrajevanja} je nabor 
         $(\mathcal{S}, \mathcal{P}, \mathcal{R}, \gamma)$, kjer je
         \begin{itemize}
-            \item $\mathcal{S}$ je (končna) množica stanj
-            \item $\mathcal{P}$ je prehodna matrika, kjer $\mathcal{P}_{ss'} = P(S_{t+1} = s'~|~S_{t} = s)$
-            \item $\mathcal{R}$ je nagradna funkcija $\mathcal{R}_s = E[R_{t+1}~|~S_{t} = s]$
-            \item $\gamma \in [0, 1]$ je diskontni faktor
+            \item $\mathcal{S}$ (končna) množica stanj,
+            \item $\mathcal{P}$ prehodna matrika, kjer $\mathcal{P}_{ss'} = P(S_{t+1} = s'~|~S_{t} = s)$,
+            \item $\mathcal{R}$ nagradna funkcija $\mathcal{R}_s = E[R_{t+1}~|~S_{t} = s]$,
+            \item $\gamma \in [0, 1]$ je diskontni faktor.
         \end{itemize}
     \end{definicija}
 \end{frame}
@@ -227,16 +227,16 @@
 \begin{frame}
     \frametitle{Formalizacija: Markovski proces odločanja 3}
     \begin{definicija}[Markovski proces odločanja]
-        \textbf{Markovski proces odločanja} je nabor 
+        \textbf{Markovski proces odločanja (MDP)} je nabor 
         $(\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, kjer je
         \begin{itemize}
-            \item $\mathcal{S}$ je (končna) množica stanj
-            \item $\mathcal{A}$ je (končna) množica akcij oz. dejanj
-            \item $\mathcal{P}$ je prehodna matrika, kjer $\mathcal{P}_{ss'}^a = P(S_{t+1} = s'~|~S_{t} = s,
-                    \mathbf{A_t = a})$
-            \item $\mathcal{R}$ je nagradna funkcija $\mathcal{R}_s^a = E[R_{t+1}~|~S_{t} = s, 
-                    \mathbf{A_t = a}]$
-            \item $\gamma \in [0, 1]$ je diskontni faktor
+            \item $\mathcal{S}$ (končna) množica stanj,
+            \item $\mathcal{A}$ (končna) množica akcij oz. dejanj,
+            \item $\mathcal{P}$ prehodna matrika, kjer $\mathcal{P}_{ss'}^a = P(S_{t+1} = s'~|~S_{t} = s,
+                    \mathbf{A_t = a})$,
+            \item $\mathcal{R}$ nagradna funkcija $\mathcal{R}_s^a = E[R_{t+1}~|~S_{t} = s, 
+                    \mathbf{A_t = a}]$,
+            \item $\gamma \in [0, 1]$ diskontni faktor.
         \end{itemize}
     \end{definicija}
 \end{frame}
@@ -279,17 +279,12 @@
 
 
 \begin{frame}
-    \frametitle{Agent 3: povračilo}
+    \frametitle{Agent 3: vrednostna funkcija}
     \begin{definicija}[Povračilo]
         $$
         G_t = R_{t+1} + \gamma R_{t+2} + ... = \sum_{k=0}^\infty \gamma^k R_{t + k + 1}
         $$
     \end{definicija}
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Agent 4: vrednostna funkcija}
     \begin{definicija}[Vrednostna funkcija]
         \begin{itemize}
             \item \textbf{Vrednostna funkcija stanja} je pričakovana vrednost povračila, če se 
@@ -328,20 +323,28 @@
 
 
 \begin{frame}
-    \frametitle{Algoritmi: dinamično programiranje}
+    \frametitle{Algoritmi: dinamično programiranje 1}
     \begin{itemize}
         \item Poznamo $\mathcal{P}_{ss'}^a$ in $\mathcal{R}_s^a$, 
         \item Bellmanove enačbe, 
         \item vrednostna funkcija - ponovna uporaba rešitev,  
+        \begin{align*}
+            v_\pi(s) &= \mathrm{E} [G_t~|~S_t = s] \\
+                 &= \mathrm{E} [\sum_{k=0}^\infty \gamma^k R_{t + k + 1}~|~S_t = s] \\
+                 &= \mathrm{E} [R_{t+1} + \sum_{k=1}^\infty \gamma^k R_{t + k + 1}~|~S_t = s] \\
+                 &= \mathrm{E} [R_{t+1} + \gamma(\sum_{k=1}^\infty \gamma^{k-1} R_{t + k + 1})~|~S_t = s] \\
+                 &= \mathrm{E} [R_{t+1} + \gamma G_{t+1}~|~S_t = s] \\
+                 &= \mathrm{E} [R_{t+1} + \gamma v_\pi(S_{t+1})~|~S_t = s].
+        \end{align*}
     \end{itemize}
 \end{frame}
 
 
 \begin{frame}
-    \frametitle{Algoritmi: DP - iterativno ocenjevanje strategije}
-    \begin{itemize}
-        \item   
-    \end{itemize}
+    \frametitle{Algoritmi: dinamično programiranje 2}
+    \begin{figure}
+        \includegraphics[scale=0.45]{slike/backup-dp.png}
+    \end{figure}
 \end{frame}
 
 
@@ -374,7 +377,7 @@
        $$
        \item Inkrementalni Monte Carlo:
        $$
-       V(s) \leftarrow V(s) + \frac{1}{N(t)} (G_t - V(S_t))
+       V(S_t) \leftarrow V(S_t) + \frac{1}{N(t)} (G_t - V(S_t))
        $$
     \end{itemize}
 \end{frame}
@@ -448,6 +451,9 @@
             E_0(s) &= 0, \\
             E_t(s) &= \gamma \lambda E_{t-1}(s) + \mathbbm{1}(S_t = s),
         \end{align*}
+    \begin{figure}
+        \includegraphics[scale=0.25]{slike/et.png}
+    \end{figure}
         \item $\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t).$
     \end{itemize}
 
@@ -459,13 +465,8 @@
     V(s) \leftarrow V(s) + \alpha \delta_t E_t(s).
     $$
     \begin{figure}[b]
-        \includegraphics[scale=0.45]{slike/pogled-nazaj.png}
+        \includegraphics[scale=0.35]{slike/pogled-nazaj.png}
     \end{figure}
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Ekvivalenca pogledov}
 \end{frame}
 
 
@@ -473,6 +474,36 @@
     \frametitle{Spreminjanje strategije - upravljanje}
     \begin{itemize}
         \item Potrebujemo vrednostno funkcijo akcij. 
+        \item raziskovanje in izkoriščanje.
+        \item $\epsilon$-požrešna izbira akcij:
+        \begin{equation*}
+            \pi(a|s) = \begin{cases}
+                        \epsilon / m + 1 - \epsilon & \text{če } a^* = \text{arg}\max_{a \in 
+                            \mathcal{A}} Q(s, a) \\
+                            \epsilon / m & \text{sicer}
+                       \end{cases}
+        \end{equation*}
+    \end{itemize}
+    \begin{figure}
+        \includegraphics[scale=0.2]{slike/policy-iteration.png}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Konvergenca}
+    \begin{itemize}
+        \item \textbf{GLIE}:
+                \begin{align*}
+                    \lim_{k \rightarrow \infty} N_k(s, a) &= \infty, \\
+                    \lim_{k \rightarrow \infty} \pi_k(a|s) &= \mathbbm{1}(a =
+                             \text{arg}\max_{a' \in \mathcal{A}}Q_k(s, a')).
+                \end{align*}
+        \item \textbf{Robbins-Monro} zaporedje \textit{korakov} $\alpha_t$:
+                \begin{align*}
+                    \sum_{t=1}^\infty \alpha_t &= \infty, \\
+                    \sum_{t=1}^\infty \alpha_t^2 &< \infty
+                \end{align*}
     \end{itemize}
 \end{frame}
 
@@ -482,7 +513,9 @@
     \begin{itemize}
         \item Veliki MDP-ji:
                 \begin{itemize}
-                    \item Križci in krožci: $3^9$ / $4578$ / $765$, 
+                    \item Križci in krožci: $3^9$ / $4578$ / $765$ stanj, 
+                    \item Štiri v vrsto: $4.531.985.219.092$ stanj,
+                    \item Šah: približno $10^{46}$ stanj, 
                     \item Go: $10^{170}$ stanj, 
                 \end{itemize}
         \item Vsi zgornji algoritmi so tabelarični.
@@ -494,19 +527,12 @@
 \begin{frame}
     \frametitle{Aproksimacija}
     \begin{itemize}
-        \item Linearna Aproksimacija, 
+        \item Linearna Aproksimacija.
         \item Nevronske mreže.
     \end{itemize}
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Motivacija - namizne igre}
-    \begin{itemize}
-        \item Abstraktno mišljenje.
-        \item Model življenja.
-        \item Testiranje algoritmov.
-    \end{itemize}
+    \begin{figure}
+        \includegraphics[scale=0.5]{slike/aproksimacija.png}
+    \end{figure}
 \end{frame}
 
 
@@ -520,7 +546,14 @@
                     \item naključni nasprotnik,
                     \item samoigra.
                 \end{itemize}
+        \item Več agentov: $\pi = \langle \pi^1, \pi ^2 \rangle$.
         \item Iskanje.
+        
+        \medskip
+        \medskip
+        $$
+        v_*(s) = \max_{\pi^1} \min_{\pi^2} v_\pi(s)
+        $$
     \end{itemize}
 \end{frame}
 
@@ -528,6 +561,7 @@
 \begin{frame}
     \frametitle{m,n,k-igra}
     \begin{itemize}
+        \item Dva igralca, vsota nič, ekstenzivna,
         \item $m \times n$ plošča, 
         \item $k$ v vrsto, 
         \item pravila križcev in krožcev (3,3,3-igra),
@@ -537,28 +571,54 @@
 
 
 \begin{frame}
-    \frametitle{Nekaj rezultatov}
+    \frametitle{3,3,3-igra 1}
+    \begin{figure}
+        \includegraphics[scale=0.4]{slike/ag-ag_500_200_10.png}
+    \end{figure}
 \end{frame}
 
 
 \begin{frame}
+    \frametitle{3,3,3-igra 2}
+    \begin{figure}
+        \includegraphics[scale=0.29]{slike/td-bulsit.png}
+        \includegraphics[scale=0.29]{slike/semi-razumljiv-agent.png}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{4,4,3-igra}
+    \begin{figure}
+        \includegraphics[scale=0.29]{slike/443-agent.png}
+        \includegraphics[scale=0.29]{slike/443g-agent.png}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{4,4,4-igra}
+    \begin{figure}
+        \includegraphics[scale=0.29]{slike/444-agent.png}
+        \includegraphics[scale=0.29]{slike/444g-agent.png}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{5,5,4-igra}
+    \begin{figure}
+        \includegraphics[scale=0.29]{slike/554-agent.png}
+        \includegraphics[scale=0.29]{slike/554g-agent.png}
+    \end{figure}
+\end{frame}
+
+
+\begin{frame}[t, allowframebreaks]
     \frametitle{Literatura}
-    \begin{thebibliography}{9}
-        \bibitem{RLintro} 
-        Richard S. Sutton and Andrew G. Barto. 
-    \textit{Reinforcement Learning: An introduction}.
-    The MIT Press, 
-    2015.
-
-    \medskip
-    \medskip
-
-    \bibitem{RLboard}
-    Imran Ghory.
-    \textit{Reinforcement learning in board games}.
-    2004.
-
-    \end{thebibliography}
+    \nocite{*}
+    \bibliographystyle{plain}
+    \bibliography{literatura}
 \end{frame}
 
 
