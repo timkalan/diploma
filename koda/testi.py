@@ -4,32 +4,53 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 igre = []
+igralec = agent.Agent
+igra = '444'
 
-a = igraj.main(epizode=10, nasprotnik=agent.TD('p2'), nalozi=False)
+a = igraj.main(p1=igralec('p1', epsilon=0.05), 
+               p2=igralec('p2', epsilon=0.05), 
+               m=4,
+               n=4,
+               k=4,
+               gravitacija=False,
+               trening=True,
+               epizode=10,
+               nalozi=False,
+               nalozi_iz=igra, 
+               shrani=True, 
+               shrani_v=igra,
+               nasprotnik=igralec('p2'), 
+               strategija=igra,
+               zacne=True)
 igre.append(a)
 
 for i in range(1000):
-    #main(p1=TD('p1', epsilon=0.05), 
-    #     p2=TD('p2', epsilon=0.05), 
-    #     m=3,
-    #     n=3,
-    #     k=3,
-    #     gravitacija=False,
-    #     trening=True,
-    #     epizode=1000,
-    #     nalozi=False,
-    #     nalozi_iz='454g', 
-    #     shrani=True, 
-    #     shrani_v='333',
-    #     nasprotnik=Clovek('p2'), 
-    #     strategija='333',
-    #     zacne=True):
+    epsilon = 1 / (i + 1)
+    alfa = 1 / (i + 1)
 
-    a = igraj.main(epizode=10, nasprotnik=agent.TD('p2'), nalozi=True, nalozi_iz='674g')
+    a = igraj.main(p1=igralec('p1', epsilon=epsilon, alfa=alfa), 
+               p2=igralec('p2', epsilon=epsilon, alfa=alfa), 
+               m=4,
+               n=4,
+               k=4,
+               gravitacija=False,
+               trening=True,
+               epizode=10,
+               nalozi=True,
+               nalozi_iz=igra, 
+               shrani=True, 
+               shrani_v=igra,
+               nasprotnik=igralec('p2'), 
+               strategija=igra,
+               zacne=True)
+
     igre.append(a)
+
+
 
 print(igre)
 df = pd.DataFrame(igre)
 print(df)
 df.plot.line()
+plt.xlabel("Število iger x 10")
 plt.show()
