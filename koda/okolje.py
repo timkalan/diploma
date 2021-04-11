@@ -261,7 +261,7 @@ class Okolje:
         pozicije = self.legalne_pozicije()
         agent_akcija = igralec.izberi_akcijo(pozicije, self.plosca, self.simbol)
         self.igraj(agent_akcija)
-        stanje = self.pridobi_stanje()
+        stanje = igralec.pridobi_stanje(self.plosca)
         igralec.dodaj_stanje(stanje)
 
     
@@ -292,7 +292,7 @@ class Okolje:
             return True
 
 
-    def treniraj(self, epizode):
+    def treniraj(self, epizode, decay=True):
         """
         Vsak igralec:
         poišče možne pozicije, 
@@ -302,7 +302,13 @@ class Okolje:
         """
         for i in range(epizode):
             if i % 100 == 0:
-                print(f'Epizoda {i+1}')
+                print(f'Epizoda {i}')
+            
+                if decay:
+                    self.p1.epsilon = np.exp(-i / 1)
+                    self.p1.alfa = np.exp(-i / 1)
+                    self.p2.epsilon = np.exp(-i / 1)
+                    self.p2.alfa = np.exp(-i / 1)
             
             while not self.konec:
                 # 1. igralec
@@ -401,7 +407,7 @@ class Okolje:
 
 
 
-    def testiraj_nakljucni(self, st_iger=1000):
+    def testiraj_nakljucni(self, st_iger=1000, zacne=True):
         """
         Metoda za igranje agent - naključni igralec.
         """
@@ -417,7 +423,13 @@ class Okolje:
 
             while not self.konec:
                 # 1. igralec
-                self.poteza_agent(self.p1)
+                if zacne:
+                    self.poteza_agent(self.p1)
+                else: 
+                    pozicije = self.legalne_pozicije()
+                    p2_akcija = self.p2.izberi_akcijo(pozicije)
+                    self.igraj(p2_akcija)
+
 
                 zmaga = self.zmagovalec()
                 if zmaga is not None:
@@ -433,9 +445,13 @@ class Okolje:
 
                 else:
                     # 2. igralec
-                    pozicije = self.legalne_pozicije()
-                    p2_akcija = self.p2.izberi_akcijo(pozicije)
-                    self.igraj(p2_akcija)
+                    if zacne:
+                        pozicije = self.legalne_pozicije()
+                        p2_akcija = self.p2.izberi_akcijo(pozicije)
+                        self.igraj(p2_akcija)
+                        
+                    else: 
+                        self.poteza_agent(self.p1)
 
                     zmaga = self.zmagovalec()
                     if zmaga is not None:

@@ -2,7 +2,7 @@ import time
 import numpy as np
 
 from okolje import hiperparametri, Okolje
-from agent import Agent, MonteCarlo, TD, TDn
+from agent import Agent, MonteCarlo, TD, TDn, AgentLin
 
 
 class Clovek:
@@ -58,21 +58,21 @@ class Nakljucni:
 
 
 
-def main(p1=TD('p1', epsilon=0.05), 
-         p2=TD('p2', epsilon=0.05), 
+def main(p1=Agent('p1', epsilon=0.05, alfa=0.05), 
+         p2=Agent('p2', epsilon=0.05), 
          m=6,
          n=7,
          k=4,
          gravitacija=True,
          trening=True,
-         epizode=1000,
+         epizode=10000,
          nalozi=False,
-         nalozi_iz='454g', 
+         nalozi_iz='333', 
          shrani=True, 
          shrani_v='674g',
          nasprotnik=Nakljucni('p2'), 
          strategija='674g',
-         zacne=True):
+         zacne=False):
     """
     p1 = Agent
     p2 = nasprotnik za namene treninga
@@ -91,10 +91,11 @@ def main(p1=TD('p1', epsilon=0.05),
     if trening:
         if nalozi:
             p1.nalozi_strategijo(nalozi_iz)
+            p2.nalozi_strategijo(nalozi_iz + '-2')
 
         igra = Okolje(p1, p2)
         tik = time.perf_counter()
-        igra.treniraj(epizode)
+        igra.treniraj(epizode, decay=True)
         tok = time.perf_counter()
 
         # izmerimo čas treniranja
@@ -116,13 +117,25 @@ def main(p1=TD('p1', epsilon=0.05),
     #igranje
     p2 = nasprotnik
     igra = Okolje(p1, p2)
-    #p2.nalozi_strategijo(strategija + '-2')
 
-    p2.nalozi_strategijo(strategija + '-2')
-    p2.epsilon = 0
+    if isinstance(p2, Agent):
+        if zacne:
+            p2.nalozi_strategijo(strategija + '-2') 
+        else:
+            p2.nalozi_strategijo(strategija) 
 
-    a = igra.testiraj_sebi(st_iger=200)
-    return a
+        p2.epsilon = 0
+        a = igra.testiraj_sebi(st_iger=200)
+        return a
+
+    elif isinstance(p2, Clovek):
+        a = igra.igraj_clovek(zacne)
+        return a
+
+    elif isinstance(p2, Nakljucni):
+        a = igra.testiraj_nakljucni(st_iger=200, zacne=zacne)
+        return a
+
 
 
 if __name__ == '__main__':
@@ -131,10 +144,11 @@ if __name__ == '__main__':
 
 
 
+
 # TODO: vse dobro dokumentiraj
 # TODO: implementiraj nevronske mreže
 # TODO: refaktorizacija
 # TODO: treniraj proti drugim vrstam nasprotnika
-# TODO: prepiši vse z numpy, da bo hitreje
 # TODO: decaying epsilon 
 # TODO: online trening ne dela!!
+# TODO: pogled nazaj

@@ -1,7 +1,15 @@
 import pickle
 import os
+import ast
 import numpy as np
-from okolje import hiperparametri 
+
+#from keras.models import Sequential
+#from keras.layers import Dense
+#import keras.backend as K
+#import keras
+
+from okolje import hiperparametri, Okolje
+#from mreza import Mreza
 
 
 
@@ -49,8 +57,8 @@ class Agent:
                 naslednji = self.pridobi_stanje(naslednje_stanje)
 
                 if self.vrednosti_stanj.get(naslednji) is None:
-                    #vrednost = 0 
-                    vrednost = np.random.uniform(-1, 1)
+                    vrednost = 0 
+                    #vrednost = np.random.uniform(-1, 1)
                     #vrednost = 0.5
                 else:
                     vrednost = self.vrednosti_stanj.get(naslednji)
@@ -159,7 +167,7 @@ class MonteCarlo(Agent):
     ki gleda en korak.
     """
     
-    def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=0.9):
+    def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=1):
         Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
 
         self.gama = gama
@@ -188,7 +196,7 @@ class TDn(Agent):
     """
     Agent, ki uporablja n-step return.
     """
-    def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=0.9, n=3):
+    def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=1, n=3):
         Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
 
         self.gama = gama
@@ -221,7 +229,7 @@ class TD(Agent):
     """
     Agent, ki za učenje uporablja tabelarični TD(lambda).
     """
-    def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=0.9, lamb=0.9):
+    def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=1, lamb=0.9):
         Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
 
         self.gama = gama
@@ -243,10 +251,151 @@ class TD(Agent):
 
 
     
-    def nagradi_naprej(self, nagrada):
-        pass
+    def nagradi(self, nagrada):
+        """
+        ti. firward-view TD(lambda), ki omogoča tudi online učenje, v tej funkciji pa je implementiran 
+        kot offline algoritem.
+        """
+        # nastavimo sledi upravičenosti na 0
+        sledi = {stanje: 0 for stanje in self.stanja}
+        multiplikator = 1
+
+        for stanje in reversed(self.stanja):
+            # poskrbimo za primer, ko stanja še nismo videli
+            if self.vrednosti_stanj.get(stanje) is None:
+                self.vrednosti_stanj[stanje] = 0
+                #self.vrednosti_stanj[stanje] = np.random.uniform(-1, 1)
+
+            sledi[stanje] = multiplikator
+            multiplikator = self.gama * self.lamb
+
+            self.vrednosti_stanj[stanje] += self.alfa * (
+                nagrada - self.vrednosti_stanj[stanje]) * sledi[stanje]
+
+            nagrada = self.gama * self.vrednosti_stanj[stanje]
 
 
 
-class DeepAgent(Agent):
-        pass
+class AgentLin(Agent):
+    def __init__(self, ime, epsilon=0.1, alfa=0.2):
+        Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
+
+        self.utezi = [np.random.uniform(-1, 1)] * (hiperparametri['VRSTICE'] * hiperparametri['STOLPCI'] * 3)
+
+
+    def pridobi_stanje(self, plosca):
+        """
+        Agent mora dobiti stanje od plošče in ga spremeniti v
+        njemu razumljivo obliko.
+        """
+        plosca = list(plosca.reshape(hiperparametri['VRSTICE'] * hiperparametri['STOLPCI']))
+        prvi = [1 if el == 1 else 0 for el in plosca]
+        drugi = [1 if el == -1 else 0 for el in plosca]
+        tretji = [1 if el == 0 else 0 for el in plosca]
+        return str(np.array(prvi + drugi + tretji))
+        
+
+
+    def vrednost_stanja(self, stanje):
+        """
+        Vrednost izračunamo kot skalarni produkt med vektorjem stanja in 
+        vektorjem uteži.
+        """
+        stanje = [float(s) for s in stanje[1:-1].split(' ') if s != '']
+        return (1 / len(self.utezi)) * sum([i*j for (i, j) in zip(self.utezi, stanje)])
+
+    
+    def nagradi(self, nagrada):
+        
+        for stanje in reversed(self.stanja):
+            
+            # stanje pretvorimo začasno stran iz stringa
+            vmes = [float(s) for s in stanje[1:-1].split(' ') if s != '']
+
+            drugi = [x * self.alfa * (nagrada - self.vrednost_stanja(stanje)) for x in vmes]
+            self.utezi = [a + b for a, b in zip(self.utezi, drugi)]
+
+            nagrada = self.vrednost_stanja(stanje)
+
+
+    def izberi_akcijo(self, pozicije, stanje, simbol):
+        """
+        epsilon-požrešno izbere akcijo in jo vrne.
+
+        pozicije = možne pozicije, ki jih lahko igramo
+        """
+        # izberemo naključno
+        if np.random.uniform(0, 1) <= self.epsilon:
+            indeks =  np.random.choice(len(pozicije))
+            akcija = pozicije[indeks]
+
+        else:
+            najvecja_vrednost = -10
+            akcija = pozicije[0]
+            for pozicija in pozicije:
+                naslednje_stanje = stanje.copy()
+                naslednje_stanje[pozicija] = simbol
+                naslednji = self.pridobi_stanje(naslednje_stanje)
+
+                if self.vrednost_stanja(naslednji) is None:
+                    vrednost = 0 
+                    #vrednost = np.random.uniform(-1, 1)
+                    #vrednost = 0.5
+                else:
+                    vrednost = self.vrednost_stanja(naslednji)
+
+                if vrednost >= najvecja_vrednost:
+                    najvecja_vrednost = vrednost
+                    akcija = pozicija
+        
+        return akcija
+
+
+    def shrani_strategijo(self, datoteka):
+        """
+        Shrani slovar vrednosti stanj za kasnejšo uporabo.
+        """
+        with open('koda/strategije/' + datoteka, 'wb') as f:
+            pickle.dump(self.utezi, f)
+    
+
+    def nalozi_strategijo(self, datoteka):
+        """
+        Naloži slovar naučenih vrednosti.
+        """
+        with open('koda/strategije/' + datoteka, 'rb') as f:
+            self.utezi = pickle.load(f)
+    
+
+
+
+    
+#class AgentNN(Agent):
+#    """
+#    Verzija agenta, ki za reprezentacijo vrednostne funkcije uporabi funkcijski 
+#    aprosksimator - nevronsko mrežo.
+#    """
+#
+#    def __init__(self, ime, epsilon=0.3, alfa=0.2, na_koliko=10):
+#        Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
+#
+#        self.na_koliko
+#
+#        # začetne vrednosti uteži
+#        li = keras.initializers.RandomUniform(minval=-1, maxval=1, seed=None)
+#        dim = hiperparametri['VRSTICE'] * hiperparametri['STOLPCI']
+#
+#        # naredimo našo mrežo
+#        self.cm = Sequential()
+#        self.cm.add(Dense(dim, input_dim=dim, activation='sigmoid', kernel_initializer=li, use_bias=True))
+#        self.cm.add(Dense(36, activation='relu', kernel_initializer=li, use_bias=True))
+#        self.cm.add(Dense(1, activation='sigmoid', kernel_initializer=li, use_bias=False))
+#
+#        # optimizacije in kreacija modela
+#        self.opt_cm = keras.optimizers.Adam(lr=0.01, beta_1=0.9, beta_2=0.999, amsgrad=False)
+#        self.cm.compile(loss='mean_squared_error', optimizer=self.opt_cm)
+#
+#
+#    def nagradi(self, nagrada):
+#        pass
+
