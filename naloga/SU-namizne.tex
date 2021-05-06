@@ -680,6 +680,7 @@ Opazimo, da sta enačbi tokrat nelinearni, kar močno oteži direktno reševanje
 v tem primeru pridejo prav metode iz naslednjega odseka.
 
 \section{Algoritmi pri spodbujevalnem učenju}
+\label{algoritmi}
 Algoritmov za reševanje MDP-jev je precej. Mi se bomo omejili predvsem na algoritme, ki se učijo 
 prek vrednostne funkcije in izhajajo iz dinamičnega programiranja, a naj na tem mestu omenimo, 
 da obstajajo tudi algoritmi, ki posodabljajo strategijo neposredno (MOGOČE KAKŠEN REFERENCE ALI 
@@ -966,7 +967,7 @@ učenje uporablja oceno, torej ocenjuje na podalgi ocene. Temu pravimo \textit{z
     markovski proces.
 \end{zgled}
 
-\subsection{$TD(\lambda)$}
+\subsection{TD($\lambda$)}
 Algoritma, ki smo ju spoznali do sedaj mogoče na prvi pogled nista najbolj podobna, a bomo kmalu 
 videli, da pripadata isti družini algoritmov. V ta namen si poglejmo povračila, ki gledajo $n$-
 korakov v prihodnost. Tarča se primerno prilagodi v: 
@@ -989,8 +990,8 @@ $$
 G_t^\lambda = (1 - \lambda) \sum_{n=1}^\infty \lambda^{(n-1)} G_t^{(n)}.
 $$
 
-Od tu takoj sledi algoritem \textbf{$TD(\lambda)$ s pogledom naprej} (angl. \textit{forward-view 
-$TD(\lambda)$}). To poimenovanje izhaja iz dejstva, da kot MC, tudi ta algoritem potrebuje znanje
+Od tu takoj sledi algoritem \textbf{TD($\lambda$) s pogledom naprej} (angl. \textit{forward-view 
+TD($\lambda$)}). To poimenovanje izhaja iz dejstva, da kot MC, tudi ta algoritem potrebuje znanje
 prihodnosti, da posodobi vrednsoti; z drugimi besedami, uči se lahko samo iz popolnih epizod.
 
 Čeprav je teoretično zanimiv algoritem, je v praksi veliko bolj uporaben algoritem, ki ne potrebuje
@@ -1035,7 +1036,7 @@ alternativi:
             akumulativno in nadomeščujočo.
 \end{itemize}
 
-V zgornji formulaciji pravila $TD(\lambda)$ je tudi bolj očitno, zakaj ta algoritem poveže $TD(0)$ 
+V zgornji formulaciji pravila TD($\lambda$) je tudi bolj očitno, zakaj ta algoritem poveže $TD(0)$ 
 in $MC$:
 
 \begin{itemize}
@@ -1047,7 +1048,7 @@ in $MC$:
 \end{itemize}
 
 \begin{izrek}
-    Vsota posodobitev vrednosti ob koncu epizode je enaka za $TD(\lambda)$ s pogledom naprej in 
+    Vsota posodobitev vrednosti ob koncu epizode je enaka za TD($\lambda$) s pogledom naprej in 
     pogledom nazaj
     $$
     \sum_{t=1}^T \alpha \delta_t E_t(s) = \sum_{t=1}^T \alpha \left( G_t^\lambda - V(S_t) \right) 
@@ -1056,7 +1057,7 @@ in $MC$:
 \end{izrek}
 
 \begin{proof} 
-    Oglejmo si napako, pri $TD(\lambda)$ s pogledom nazaj:
+    Oglejmo si napako, pri TD($\lambda$) s pogledom nazaj:
     \begin{align*}
     G_t^\lambda - V(S_t) &= - V(S_t) \\
                          &+ (1 - \lambda) \lambda^0 (R_{t+1} + \gamma V(S_{t+1})) \\
@@ -1087,7 +1088,7 @@ in $MC$:
     \sum_{t=1}^T \alpha \delta_t E_t(s) = \alpha \sum_{t=1}^T (\gamma \lambda)^{t-k} \delta_t =
     \alpha (G_k^\lambda - V(S_k)),
     $$
-    kar pa je ravno enako kot $TD(\lambda)$ s pogledom naprej. Če je stanje obiskano večkrat, pa
+    kar pa je ravno enako kot TD($\lambda$) s pogledom naprej. Če je stanje obiskano večkrat, pa
     se napaka akumulira v več takih napak pogleda naprej.
 \end{proof}
 
@@ -1119,11 +1120,10 @@ sledi:
     \pi(a|s) = \begin{cases}
                 \epsilon / m + 1 - \epsilon & \text{če } a^* = \text{arg}\max_{a \in 
                     \mathcal{A}} Q(s, a) \\
-                    \epsilon / m & \text{sicer}
+                    \epsilon / m & \text{sicer},
                \end{cases}
 \end{equation}
-
-NE RAZUMEM POPOLNOMA ZGORNJEGA
+kjer $m$ označuje število akcij, ki so na voljo v stanju $s$.
 
 \begin{izrek}
     Za vsako $\epsilon$-požrešno strategijo $\pi$, je $\epsilon$-požrešna strategija $\pi'$, 
@@ -1134,13 +1134,88 @@ NE RAZUMEM POPOLNOMA ZGORNJEGA
     
 \end{proof}
 
+\subsection{Funkcijska aproksimacija}
+Glavni problem zgornjih algoritmov je shranjevanje v tabele. Vsi delujejo na principu grajenja 
+velihih tabel; en vnos za vsako stanje (oz. en vnos za vsako kombinacijo stanja in akcije). To pri 
+velikih MDP-jih ne pride v poštev, saj učenje postane zelo prostorsko zahtevno in pa tudi 
+dolgotrajno - stanje, ki ni obiskano, nima dodeljene vrednosti, torej o njem ne vemo nič. 
 
-\subsection{Prednosti $TD$ metod}
+Zato je pomembna nadgradnja algoritmov uporaba funkcijskih aproskimatorjev. Ideja je, da z nekaj 
+utežmi opišemo funkcijo vrednosti, nato pa namesto funkcije neposredno, prilagajamo te uteži. To 
+zmanjša prostorsko zahtevnost algoritmov in pa tudi omogoča, da dodelimo neke (smiselne) vrednosti
+stanjem, ki še niso bila obiskana. Ocene za funkcije vrednsoti stanja in stanja-akcije sedaj 
+zapišemo
+\begin{align*}
+    \hat{v}(s, w) &\approx v_\pi(s), \\
+    \hat{q}(s, a, w) &\approx q_\pi(s, a), 
+\end{align*}
+kjer $w$ zdaj predstavlja vektor uteži, ki ga bomo dejansko spreminjali. Videli bomo, da so koristni
+predvsem funkcijski aproksimatorji, ki so odvedljivi po parametru $w$. Najpogosteje sta tako v 
+uporabi linearna aproksimacija in nevronske mreže. 
 
+\subsubsection{Gradientni spust}
+Najpogosteje uporabljena metoda ">treniranja"< aproksimatorjev je gradientni spust. Ideja je, da 
+imamo neko funkcijo $J(w)$, ki je odvedljiva po vektorju parametrov $w$. Poiskati želimo njen 
+(lokalni) minimum. To storimo tako, da izračunamo njen gradient $\nabla_wJ(w)$ in nato premaknemo $w$
+v negativni smeri tega gradienta
+$$
+\Delta w = - \alpha \nabla_wJ(w)
+$$
+kjer je $\alpha$ parameter hitrossti učenja (oz. velikost koraka). 
 
-\subsection{Izboljšave}
+V našem primeru je smiselno minimizirati srednjo kvadratično napako med pravo vrednostjo stanja in 
+ocenjeno vrednostjo oz. 
+$$
+J(w) = E_\pi [(v_\pi(s) - \hat{v}(s, w))^2]
+$$
+in tako premikati uteži v skladu z 
+$$
+\Delta w = \alpha E_\pi [(v_\pi(s) - \hat{v}(s, w)) \nabla_w \hat{v}(s, w)], 
+$$
+kjer smo pri odvajanju pridobljeno $1/2$ skrili v parameter $\alpha$.
+
+Seveda pa tu pridemo do dveh težav. Prva je uporaba pričakovane vrednosti, ki bi spet pomenila polno 
+znanje o sistemu. To odpravimo z uporabo \textbf{stohastičnega gradientnega spusta} tako, da 
+enostavno vzorčimo gradient 
+$$
+\Delta w = \alpha (v_\pi(s) - \hat{v}(s, w)) \nabla_w \hat{v}(s, w). 
+$$
+V povprečju vseeno dobimo enako posodobitev uteži. 
+
+Druga težava je zahteva po poznavanju $v_\pi(s)$, kar seveda pri problemu spodbujevalnega učenja ni 
+možno. To težavo rešimo z dosedaj podano teorijo: $v_pi(s)$ zamenjamo z eno izmed tarč, ki smo jih 
+spoznali v poglavju \ref{algoritmi}. Najbolj pogosto je to tarča algoritma TD($\lambda$), ki nam 
+posodablja uteži v skladu z 
+$$
+\Delta w = \alpha (G_t^\lambda - \hat{v}(s, w)) \nabla_w \hat{v}(s, w). 
+$$
+
+\subsubsection{Linearna aproksimacija}
+Najbolj enostaven način aproksimacije funkcij je seveda linerana aproksimacija. Ideja je, da stanje 
+predstavimo z vektorjem 
+$$
+x(S) = \begin{bmatrix}
+    x_{1}(S) \\
+    x_{2}(S) \\
+    \vdots \\
+    x_{n}(S)
+  \end{bmatrix}
+$$
+
+\begin{zgled}[Vektor $X(S)$ pri križcih in krožcih]
+    Igralno ploščo križcev in krožcev lahko predstavimo kot vektor devetih števil, kjer 
+    $1$ pomeni križec, $0$ pomeni prazno polje in $-1$ pomeni krožec.
+\end{zgled}
+
+Sedaj lahko predstavimo vrednost stanja kot linearno kombinacijo komponent vektorja stanja
+$$
+\hat{v}(s, w) = x(S)^T w = \sum_{i=1}^n x_i(S) w_i.
+$$
+V tej situaciji stohastićni gradientni spust konvergira k globalnemu minimumu (CITIRAJ!!!). Dobimo 
+tudi zelo enostavno pravilo posodabljanja, saj velja $\nabla_w \hat{v}(s, w) = x(S)$.
+
 \subsubsection{Nevronske mreže}
-
+Pri nevronskih mrežah težave s konvergenco.
 
 \section{Namizne igre}
 

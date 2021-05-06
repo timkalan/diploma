@@ -58,27 +58,32 @@ class Nakljucni:
 
 
 
-def main(p1=Agent('p1', epsilon=0.05, alfa=0.05), 
-         p2=Agent('p2', epsilon=0.05), 
-         m=6,
-         n=7,
-         k=4,
-         gravitacija=True,
+def main(p1=AgentLin('p1', epsilon=0.05, alfa=0.2), 
+         p2=AgentLin('p2', epsilon=0.05, alfa=0.2), 
+         m=3,
+         n=3,
+         k=3,
+         gravitacija=False,
          trening=True,
-         epizode=10000,
+         epizode=50000,
          nalozi=False,
          nalozi_iz='333', 
          shrani=True, 
-         shrani_v='674g',
+         shrani_v='333lin',
          nasprotnik=Nakljucni('p2'), 
-         strategija='674g',
-         zacne=False):
+         strategija='333lin',
+         zacne=True):
     """
     p1 = Agent
     p2 = nasprotnik za namene treninga
+    m, n, k = specifikacije igre
+    gravitacija = pomožno dodamo pogoje iz connect-4
     trening = treniramo ali samo igramo
     epizode = število iger, ki se odigrajo med treningom
-    nasprotnik = tip igralca za igrati proti
+    nalozi, nalozi_iz = pomožno predhodno naložimo strategijo
+    shrani, shrani_v = ali želimo shraniti stratecijo
+    nasprotnik = tip igralca za testiranje
+    strategija = katero strategijo uporabi
     zacne = True, če začne agent in False sicer
     """
 
@@ -95,7 +100,7 @@ def main(p1=Agent('p1', epsilon=0.05, alfa=0.05),
 
         igra = Okolje(p1, p2)
         tik = time.perf_counter()
-        igra.treniraj(epizode, decay=True)
+        igra.treniraj(epizode, decay=False)
         tok = time.perf_counter()
 
         # izmerimo čas treniranja
@@ -114,10 +119,11 @@ def main(p1=Agent('p1', epsilon=0.05, alfa=0.05),
     else:
         p1.nalozi_strategijo(strategija + '-2')
 
-    #igranje
+    ##igranje
     p2 = nasprotnik
     igra = Okolje(p1, p2)
 
+    # pripravimo igro glede na tip nasprotnika
     if isinstance(p2, Agent):
         if zacne:
             p2.nalozi_strategijo(strategija + '-2') 
@@ -125,7 +131,7 @@ def main(p1=Agent('p1', epsilon=0.05, alfa=0.05),
             p2.nalozi_strategijo(strategija) 
 
         p2.epsilon = 0
-        a = igra.testiraj_sebi(st_iger=200)
+        a = igra.testiraj_sebi(st_iger=10)
         return a
 
     elif isinstance(p2, Clovek):
@@ -133,7 +139,7 @@ def main(p1=Agent('p1', epsilon=0.05, alfa=0.05),
         return a
 
     elif isinstance(p2, Nakljucni):
-        a = igra.testiraj_nakljucni(st_iger=200, zacne=zacne)
+        a = igra.testiraj_nakljucni(st_iger=1000, zacne=zacne)
         return a
 
 
@@ -149,6 +155,4 @@ if __name__ == '__main__':
 # TODO: implementiraj nevronske mreže
 # TODO: refaktorizacija
 # TODO: treniraj proti drugim vrstam nasprotnika
-# TODO: decaying epsilon 
 # TODO: online trening ne dela!!
-# TODO: pogled nazaj

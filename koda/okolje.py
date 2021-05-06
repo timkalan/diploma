@@ -305,10 +305,11 @@ class Okolje:
                 print(f'Epizoda {i}')
             
                 if decay:
-                    self.p1.epsilon = np.exp(-i / 1)
-                    self.p1.alfa = np.exp(-i / 1)
-                    self.p2.epsilon = np.exp(-i / 1)
-                    self.p2.alfa = np.exp(-i / 1)
+                    # v praksi se alfa pogosto ne manjša
+                    self.p1.epsilon = np.exp(-i / 10)
+                    #self.p1.alfa = np.exp(-i / 10)
+                    self.p2.epsilon = np.exp(-i / 10)
+                    #self.p2.alfa = np.exp(-i / 10)
             
             while not self.konec:
                 # 1. igralec

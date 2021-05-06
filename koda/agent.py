@@ -9,8 +9,24 @@ import numpy as np
 #import keras
 
 from okolje import hiperparametri, Okolje
+from math import comb
 #from mreza import Mreza
 
+
+def ponovitve(seznam):
+    """
+    Funkcija v seznamu poišče, če se simbol kje ponovi st_ponovitev-krat.
+    Uporabljeno pri metodi zmagovalec, da je bila posplošena na nxn plošče.
+    """
+    st_ponovitev=hiperparametri['V_VRSTO']-1
+    i = 0
+    while i < len(seznam):
+        if seznam[i] in [-1, 1]:
+            if [seznam[i]] * st_ponovitev == seznam[i:i+st_ponovitev]:
+                return 1
+                break
+        i += 1
+    return 0
 
 
 class Agent:
@@ -277,22 +293,46 @@ class TD(Agent):
 
 
 class AgentLin(Agent):
-    def __init__(self, ime, epsilon=0.1, alfa=0.2):
+    def __init__(self, ime, epsilon=0.1, alfa=0.2, gama=1, lamb=0.9):
         Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
 
-        self.utezi = [np.random.uniform(-1, 1)] * (hiperparametri['VRSTICE'] * hiperparametri['STOLPCI'] * 3)
+        self.gama = gama
+        self.lamb = lamb
+        self.utezi = [np.random.uniform(-1, 1)] * (hiperparametri['VRSTICE'] * hiperparametri['STOLPCI'] * 3 + 8)
 
 
     def pridobi_stanje(self, plosca):
         """
         Agent mora dobiti stanje od plošče in ga spremeniti v
-        njemu razumljivo obliko.
+        njemu razumljivo obliko. Pri agentu z linearno aproksimacijo 
+        to pomeni narediti čim daljši vektor.
         """
+        dodatki = []
+        for vrstica in plosca:
+            dodatki.append(ponovitve(list(vrstica)))
+
+        for stolpec in np.transpose(plosca):
+            dodatki.append(ponovitve(list(stolpec)))
+
+        diag1 = list(plosca.diagonal())
+        diag2 = list(np.fliplr(plosca).diagonal())
+
+        dodatki += [ponovitve(diag1), ponovitve(diag2)]
+
         plosca = list(plosca.reshape(hiperparametri['VRSTICE'] * hiperparametri['STOLPCI']))
         prvi = [1 if el == 1 else 0 for el in plosca]
         drugi = [1 if el == -1 else 0 for el in plosca]
         tretji = [1 if el == 0 else 0 for el in plosca]
-        return str(np.array(prvi + drugi + tretji))
+
+        vektor = prvi + drugi + tretji
+
+        #dodatki = []
+        #for el1 in vektor:
+        #    for el2 in vektor:
+        #        dodatki.append(el1 * el2)
+
+        # dodamo 1 na konec vektorja kot nek "bias neuron"
+        return str(np.array(vektor + dodatki + [1]))
         
 
 
@@ -305,7 +345,7 @@ class AgentLin(Agent):
         return (1 / len(self.utezi)) * sum([i*j for (i, j) in zip(self.utezi, stanje)])
 
     
-    def nagradi(self, nagrada):
+    def nagradi2(self, nagrada):
         
         for stanje in reversed(self.stanja):
             
@@ -316,6 +356,32 @@ class AgentLin(Agent):
             self.utezi = [a + b for a, b in zip(self.utezi, drugi)]
 
             nagrada = self.vrednost_stanja(stanje)
+
+
+
+
+    def nagradi(self, nagrada):
+
+        sledi = {stanje: 0 for stanje in self.stanja}
+        multiplikator = 1
+
+        for stanje in reversed(self.stanja):
+            vmes = [float(s) for s in stanje[1:-1].split(' ') if s != '']
+
+            sledi[stanje] = multiplikator
+            multiplikator = self.gama * self.lamb
+
+            drugi = [x * self.alfa * (nagrada - self.vrednost_stanja(stanje)) * sledi[stanje] for x in vmes]
+            self.utezi = [a + b for a, b in zip(self.utezi, drugi)]
+
+            nagrada = self.gama * self.vrednost_stanja(stanje)
+
+
+
+
+
+
+
 
 
     def izberi_akcijo(self, pozicije, stanje, simbol):
@@ -337,12 +403,7 @@ class AgentLin(Agent):
                 naslednje_stanje[pozicija] = simbol
                 naslednji = self.pridobi_stanje(naslednje_stanje)
 
-                if self.vrednost_stanja(naslednji) is None:
-                    vrednost = 0 
-                    #vrednost = np.random.uniform(-1, 1)
-                    #vrednost = 0.5
-                else:
-                    vrednost = self.vrednost_stanja(naslednji)
+                vrednost = self.vrednost_stanja(naslednji)
 
                 if vrednost >= najvecja_vrednost:
                     najvecja_vrednost = vrednost
