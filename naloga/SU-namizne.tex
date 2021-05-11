@@ -1153,6 +1153,10 @@ kjer $w$ zdaj predstavlja vektor uteži, ki ga bomo dejansko spreminjali. Videli
 predvsem funkcijski aproksimatorji, ki so odvedljivi po parametru $w$. Najpogosteje sta tako v 
 uporabi linearna aproksimacija in nevronske mreže. 
 
+%\subsubsection{Tipi funkcijskega aproksimiranja}
+%Vsem tipom je skupno, da uporabljajo vektor uteži $w$, do sprememb pride pa pri vhodnih in izhodnih 
+%podatkih. 
+
 \subsubsection{Gradientni spust}
 Najpogosteje uporabljena metoda ">treniranja"< aproksimatorjev je gradientni spust. Ideja je, da 
 imamo neko funkcijo $J(w)$, ki je odvedljiva po vektorju parametrov $w$. Poiskati želimo njen 
@@ -1202,7 +1206,7 @@ x(S) = \begin{bmatrix}
   \end{bmatrix}
 $$
 
-\begin{zgled}[Vektor $X(S)$ pri križcih in krožcih]
+\begin{zgled}[Vektor $x(S)$ pri križcih in krožcih]
     Igralno ploščo križcev in krožcev lahko predstavimo kot vektor devetih števil, kjer 
     $1$ pomeni križec, $0$ pomeni prazno polje in $-1$ pomeni krožec.
 \end{zgled}
@@ -1217,9 +1221,36 @@ tudi zelo enostavno pravilo posodabljanja, saj velja $\nabla_w \hat{v}(s, w) = x
 \subsubsection{Nevronske mreže}
 Pri nevronskih mrežah težave s konvergenco.
 
+\subsubsection{Konvergenca pri funkcijskem aproksimiranju}
+
+\subsubsection{Serijsko učenje}
+
+
 \section{Namizne igre}
+Namizne igre (npr. šah, Go, križci in krožci, \dots) so proces, ki se zelo lepo poda modeliranju z 
+Markovskim procesom odločanja. Množico stanj $\mathcal{S}$ enostavno zapolnimo z vsemi možnimi 
+konfiguracijami igralne plošče. Množico akcij $\mathcal{A}$ sestavljajo vse legalne poteze, ki jih 
+definirajo pravila igre in trenutno stanje. Prehodno matriko definirajo akcije našega nasprotnika oz. 
+okolja, če je igra stohastične narave (npr. Backgammon - met kocke). Torej vidimo, da so namizne igre
+okolje, kjer je prehodna matrika neznana in zato učenje prek dinamičnega programiranja ne pride v 
+poštev. Prav tako samo delno poznamo nagradno funkcijo, saj je tudi ta odvisna od dinamike okolja.  
+
+\subsection{Nagrajevanje}
+Pri namiznih igrah je najpogosteje uporabljena zelo enostavna struktura nagrad. Zmagi in porazu sta 
+dodeljeni vrednosti $1$ oz. $-1$, za izenačenje se vzame vrednost $0$. Vsem ostalim ne-končnim stanjem
+se prav tako dodeli vrednost $0$ in tako se doseže, da imamo opravka z igro z vsoto nič tudi znotraj 
+MDP-ja. Občasne spremembe te strukture nagrad so možne, najpogosteje se dodeli neko negativno nagrado 
+vsem stanjem (npr. $-0,1$). Konceptualno naj bi to pomenilo pritisk na agenta da naj čim prej pride do 
+konca igre, t.j. naj čim prej zmaga. Glede na posamezno igro se lahko prilagodi tudi nagrada za 
+izenačenje (če je to želen rezultat, potem ima lahko pozitivno nagrado).
+
+Posebnost pri namiznih igrah je tudi v diskontnem faktorju. Čeprav so vseeno zaželene nagrade, ki 
+pridejo prej, torej krajše igre, se zaradi pojavitve neničelnih nagrad samo ob koncu igre pogosto 
+uporablja diskontni faktor $\gamma = 1$.
 
 \subsection{Pregled konceptov teorije iger}
+Teortetično imamo pri namiznih igrah opravka z
+
 \subsubsection{Nashevo ravnotežje}
 \subsubsection{Igre z vsoto nič}
 \subsubsection{Ekstenzivne igre}
@@ -1239,6 +1270,7 @@ Pri nevronskih mrežah težave s konvergenco.
 \subsubsection{Samoigra}
 \subsubsection{Igre iz podatkovnih baz}
 \subsubsection{Naključni nasprotnik}
+\subsubsection{Fiksiran nasprotnik}
 
 \subsection{Kombinacija z iskanjem - generalised policy eval?}
 
