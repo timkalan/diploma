@@ -2,7 +2,7 @@ import time
 import numpy as np
 
 from okolje import hiperparametri, Okolje
-from agent import Agent, MonteCarlo, TD, TDn, AgentLin
+from agent import Agent, MonteCarlo, TD, TDn, AgentLin, AgentNN
 
 
 class Clovek:
@@ -58,20 +58,20 @@ class Nakljucni:
 
 
 
-def main(p1=AgentLin('p1', epsilon=0.05, alfa=0.2), 
-         p2=AgentLin('p2', epsilon=0.05, alfa=0.2), 
+def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.1), 
+         p2=AgentNN('p2', epsilon=0.05, alfa=0.1), 
          m=3,
          n=3,
          k=3,
          gravitacija=False,
-         trening=True,
-         epizode=50000,
+         trening=False,
+         epizode=10000,
          nalozi=False,
          nalozi_iz='333', 
          shrani=True, 
-         shrani_v='333lin',
-         nasprotnik=Nakljucni('p2'), 
-         strategija='333lin',
+         shrani_v='333nn',
+         nasprotnik=Clovek('p2'), 
+         strategija='333nn',
          zacne=True):
     """
     p1 = Agent

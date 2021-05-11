@@ -3,14 +3,8 @@ import os
 import ast
 import numpy as np
 
-#from keras.models import Sequential
-#from keras.layers import Dense
-#import keras.backend as K
-#import keras
-
+from torch import nn, FloatTensor, save, load, optim
 from okolje import hiperparametri, Okolje
-from math import comb
-#from mreza import Mreza
 
 
 def ponovitve(seznam):
@@ -269,7 +263,7 @@ class TD(Agent):
     
     def nagradi(self, nagrada):
         """
-        ti. firward-view TD(lambda), ki omogoča tudi online učenje, v tej funkciji pa je implementiran 
+        ti. forward-view TD(lambda), ki omogoča tudi online učenje, v tej funkciji pa je implementiran 
         kot offline algoritem.
         """
         # nastavimo sledi upravičenosti na 0
@@ -298,7 +292,8 @@ class AgentLin(Agent):
 
         self.gama = gama
         self.lamb = lamb
-        self.utezi = [np.random.uniform(-1, 1)] * (hiperparametri['VRSTICE'] * hiperparametri['STOLPCI'] * 3 + 8)
+        # alt: np.random.uniform(-1, 1)
+        self.utezi = [0] * (hiperparametri['VRSTICE'] * hiperparametri['STOLPCI'] * 3 + 9)
 
 
     def pridobi_stanje(self, plosca):
@@ -335,7 +330,6 @@ class AgentLin(Agent):
         return str(np.array(vektor + dodatki + [1]))
         
 
-
     def vrednost_stanja(self, stanje):
         """
         Vrednost izračunamo kot skalarni produkt med vektorjem stanja in 
@@ -345,43 +339,35 @@ class AgentLin(Agent):
         return (1 / len(self.utezi)) * sum([i*j for (i, j) in zip(self.utezi, stanje)])
 
     
-    def nagradi2(self, nagrada):
+    def nagradi(self, nagrada):
         
         for stanje in reversed(self.stanja):
             
             # stanje pretvorimo začasno stran iz stringa
-            vmes = [float(s) for s in stanje[1:-1].split(' ') if s != '']
+            num_stanje = [float(s) for s in stanje[1:-1].split(' ') if s != '']
 
-            drugi = [x * self.alfa * (nagrada - self.vrednost_stanja(stanje)) for x in vmes]
-            self.utezi = [a + b for a, b in zip(self.utezi, drugi)]
+            delta = [self.alfa * (nagrada - self.vrednost_stanja(stanje)) * x for x in num_stanje]
+            self.utezi = [a + b for a, b in zip(self.utezi, delta)]
 
             nagrada = self.vrednost_stanja(stanje)
 
 
+    def nagradi_tdl(self, nagrada):
 
-
-    def nagradi(self, nagrada):
-
-        sledi = {stanje: 0 for stanje in self.stanja}
-        multiplikator = 1
+        # inicializacija sledi upravičenosti
+        vmes = [float(s) for s in self.stanja[0][1:-1].split(' ') if s != '']
+        sledi = np.zeros((len(vmes),))
 
         for stanje in reversed(self.stanja):
             vmes = [float(s) for s in stanje[1:-1].split(' ') if s != '']
+            vmes = np.array(vmes)
 
-            sledi[stanje] = multiplikator
-            multiplikator = self.gama * self.lamb
+            sledi = self.gama * self.lamb * (sledi + vmes)
 
-            drugi = [x * self.alfa * (nagrada - self.vrednost_stanja(stanje)) * sledi[stanje] for x in vmes]
-            self.utezi = [a + b for a, b in zip(self.utezi, drugi)]
+            delta = self.alfa * (nagrada - self.vrednost_stanja(stanje)) * sledi
+            self.utezi = [a + b for a, b in zip(self.utezi, delta.tolist())]
 
             nagrada = self.gama * self.vrednost_stanja(stanje)
-
-
-
-
-
-
-
 
 
     def izberi_akcijo(self, pozicije, stanje, simbol):
@@ -428,35 +414,136 @@ class AgentLin(Agent):
             self.utezi = pickle.load(f)
     
 
+  
+class AgentNN(Agent):
+    """
+    Verzija agenta, ki za reprezentacijo vrednostne funkcije uporabi funkcijski 
+    aprosksimator - nevronsko mrežo.
+    """
+
+    def __init__(self, ime, epsilon=0.3, alfa=0.05, hidden_dim=128):
+        Agent.__init__(self, ime, epsilon=epsilon, alfa=alfa)
+
+        input_dim = 1 + hiperparametri['VRSTICE'] * hiperparametri['STOLPCI'] * 3
+        self.hidden_dim = hidden_dim
+
+        self.mreza = nn.Sequential(nn.Linear(input_dim, self.hidden_dim),
+                                   nn.Sigmoid(),
+                                   nn.Linear(self.hidden_dim, 1),
+                                   nn.Sigmoid())
+
+        self.kriterij = nn.MSELoss()
+
+        self.optimizer = optim.SGD(self.mreza.parameters(), lr=self.alfa)
 
 
+    def pridobi_stanje(self, plosca):
+        """
+        Stanje predstavimo kot binarni vektor.
+        """
+        plosca = list(plosca.reshape(hiperparametri['VRSTICE'] * hiperparametri['STOLPCI']))
+        prvi = [1 if el == 1 else 0 for el in plosca]
+        drugi = [1 if el == -1 else 0 for el in plosca]
+        tretji = [1 if el == 0 else 0 for el in plosca]
+
+        vektor = prvi + drugi + tretji
+
+        return str(np.array(vektor + [1]))
+
+
+    def vrednost_stanja(self, stanje):
+        """
+        Vrednost stanja nam da naša nevronska mreža.
+        """
+        # pretvorimo stanje v ustrzen vektor
+        stanje = [float(s) for s in stanje[1:-1].split(' ') if s != '']
+        stanje = FloatTensor(stanje)
+
+        return self.mreza(stanje)
+
+
+    def nagradi(self, nagrada):
+        
+        for stanje in reversed(self.stanja):
+            
+            # stanje pretvorimo začasno stran iz stringa
+            num_stanje = [float(s) for s in stanje[1:-1].split(' ') if s != '']
+            tenzor = FloatTensor(num_stanje)
+            
+            # pripravimo za backward pass
+            self.optimizer.zero_grad()
+
+            output = self.mreza(tenzor)
+            napaka = self.kriterij(output, FloatTensor([nagrada]))
+            napaka.backward()
+            self.optimizer.step()
+
+            nagrada = self.vrednost_stanja(stanje)
+
+
+    def izberi_akcijo(self, pozicije, stanje, simbol):
+        """
+        epsilon-požrešno izbere akcijo in jo vrne.
+
+        pozicije = možne pozicije, ki jih lahko igramo
+        """
+        # izberemo naključno
+        if np.random.uniform(0, 1) <= self.epsilon:
+            indeks =  np.random.choice(len(pozicije))
+            akcija = pozicije[indeks]
+
+        else:
+            najvecja_vrednost = -10
+            akcija = pozicije[0]
+            for pozicija in pozicije:
+                naslednje_stanje = stanje.copy()
+                naslednje_stanje[pozicija] = simbol
+                naslednji = self.pridobi_stanje(naslednje_stanje)
+
+                vrednost = self.vrednost_stanja(naslednji)
+
+                if vrednost >= najvecja_vrednost:
+                    najvecja_vrednost = vrednost
+                    akcija = pozicija
+        
+        return akcija
+
+
+    def shrani_strategijo(self, datoteka):
+        """
+        Shrani slovar vrednosti stanj za kasnejšo uporabo.
+        """
+        save(self.mreza.state_dict(), datoteka)
     
-#class AgentNN(Agent):
-#    """
-#    Verzija agenta, ki za reprezentacijo vrednostne funkcije uporabi funkcijski 
-#    aprosksimator - nevronsko mrežo.
-#    """
-#
-#    def __init__(self, ime, epsilon=0.3, alfa=0.2, na_koliko=10):
-#        Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
-#
-#        self.na_koliko
-#
-#        # začetne vrednosti uteži
-#        li = keras.initializers.RandomUniform(minval=-1, maxval=1, seed=None)
-#        dim = hiperparametri['VRSTICE'] * hiperparametri['STOLPCI']
-#
-#        # naredimo našo mrežo
-#        self.cm = Sequential()
-#        self.cm.add(Dense(dim, input_dim=dim, activation='sigmoid', kernel_initializer=li, use_bias=True))
-#        self.cm.add(Dense(36, activation='relu', kernel_initializer=li, use_bias=True))
-#        self.cm.add(Dense(1, activation='sigmoid', kernel_initializer=li, use_bias=False))
-#
-#        # optimizacije in kreacija modela
-#        self.opt_cm = keras.optimizers.Adam(lr=0.01, beta_1=0.9, beta_2=0.999, amsgrad=False)
-#        self.cm.compile(loss='mean_squared_error', optimizer=self.opt_cm)
-#
-#
-#    def nagradi(self, nagrada):
-#        pass
 
+    def nalozi_strategijo(self, datoteka):
+        """
+        Naloži slovar naučenih vrednosti.
+        """
+        self.mreza.load_state_dict(load(datoteka))
+
+
+
+
+
+class Network(nn.Module):
+    def __init__(self, input_dim, skrit_dim):
+        super().__init__()
+        
+        # Inputs to hidden layer linear transformation
+        self.hidden = nn.Linear(input_dim, skrit_dim)
+        # Output layer, 10 units - one for each digit
+        self.output = nn.Linear(skrit_dim, 1)
+        
+        # Define sigmoid activation and softmax output 
+        self.sigmoid = nn.Sigmoid()
+        self.softmax = nn.Softmax(dim=1)
+        
+    def forward(self, x):
+        # Pass the input tensor through each of our operations
+        x = self.skrita(x)
+        x = self.sigmoid(x)
+        x = self.output(x)
+        x = self.sigmoid(x)
+        
+        return x
