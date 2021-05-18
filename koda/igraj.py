@@ -1,5 +1,6 @@
 import time
 import numpy as np
+import matplotlib.pyplot as plt
 
 from okolje import hiperparametri, Okolje
 from agent import Agent, MonteCarlo, TD, TDn, AgentLin, AgentNN
@@ -58,14 +59,14 @@ class Nakljucni:
 
 
 
-def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.1), 
-         p2=AgentNN('p2', epsilon=0.05, alfa=0.1), 
+def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.01), 
+         p2=AgentNN('p2', epsilon=0.05, alfa=0.01), 
          m=3,
          n=3,
          k=3,
          gravitacija=False,
-         trening=False,
-         epizode=10000,
+         trening=True,
+         epizode=200000,
          nalozi=False,
          nalozi_iz='333', 
          shrani=True, 
@@ -100,11 +101,15 @@ def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.1),
 
         igra = Okolje(p1, p2)
         tik = time.perf_counter()
-        igra.treniraj(epizode, decay=False)
+        porazi = igra.treniraj(epizode)
         tok = time.perf_counter()
 
         # izmerimo čas treniranja
         print(f'\nTrening je trajal: {tok - tik} sekund')
+
+        # narišemo graf kumulativnih porazov
+        plt.plot(porazi)
+        plt.show()
 
         if shrani:
             p1.shrani_strategijo(shrani_v)
@@ -142,8 +147,6 @@ def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.1),
         a = igra.testiraj_nakljucni(st_iger=1000, zacne=zacne)
         return a
 
-
-
 if __name__ == '__main__':
     main()
 
@@ -156,3 +159,6 @@ if __name__ == '__main__':
 # TODO: refaktorizacija
 # TODO: treniraj proti drugim vrstam nasprotnika
 # TODO: online trening ne dela!!
+# TODO: branje dimenzije za input v nevronsko mrežo
+# TODO: a gre čas pri učenju v napačno smer?
+# TODO: povprečna napaka model

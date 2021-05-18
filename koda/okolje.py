@@ -224,14 +224,17 @@ class Okolje:
         # nagrade pridejo samo ob koncu igre
         rezultat = self.zmagovalec()
         if rezultat == 1:
-            self.p1.nagradi(hiperparametri['NAGRADA_ZMAGA'])
+            loss = self.p1.nagradi(hiperparametri['NAGRADA_ZMAGA'])
             self.p2.nagradi(hiperparametri['NAGRADA_PORAZ'])
+            return loss
         elif rezultat == -1:
-            self.p1.nagradi(hiperparametri['NAGRADA_PORAZ'])
+            loss = self.p1.nagradi(hiperparametri['NAGRADA_PORAZ'])
             self.p2.nagradi(hiperparametri['NAGRADA_ZMAGA'])
+            return loss
         else:
-            self.p1.nagradi(hiperparametri['NAGRADA_REMI'])
+            loss = self.p1.nagradi(hiperparametri['NAGRADA_REMI'])
             self.p2.nagradi(hiperparametri['NAGRADA_REMI'])
+            return loss
 
 
     def daj_nagrado_online(self):
@@ -292,7 +295,7 @@ class Okolje:
             return True
 
 
-    def treniraj(self, epizode, decay=True):
+    def treniraj(self, epizode, decay=False):
         """
         Vsak igralec:
         poišče možne pozicije, 
@@ -300,6 +303,9 @@ class Okolje:
         posodobi ploščo in zabeleži stanje, 
         počaka razsodbo o koncu
         """
+        porazi = [0]
+        kum_loss = 0
+
         for i in range(epizode):
             if i % 100 == 0:
                 print(f'Epizoda {i}')
@@ -318,10 +324,13 @@ class Okolje:
                 zmaga = self.zmagovalec()
                 if zmaga is not None:
                     # zmagal je prvi ali remi
-                    self.daj_nagrado()
+                    loss = self.daj_nagrado()
                     self.p1.ponastavi()
                     self.p2.ponastavi()
                     self.ponastavi()
+                    porazi.append(porazi[-1])
+
+                    kum_loss += loss
                     break
 
                 else:
@@ -331,11 +340,23 @@ class Okolje:
                     zmaga = self.zmagovalec()
                     if zmaga is not None:
                         # zmagal je drugi ali remi
-                        self.daj_nagrado()
+                        loss = self.daj_nagrado()
                         self.p1.ponastavi()
                         self.p2.ponastavi()
                         self.ponastavi()
+                        if zmaga == -1:
+                            porazi.append(porazi[-1] + 1)
+                        else:
+                            porazi.append(porazi[-1])
+
+                        kum_loss += loss
                         break
+
+            if i % 1000 == 0:
+                print(f'povp. napaka: {kum_loss / 1000}')
+                kum_loss = 0
+
+        return porazi 
 
 
     def treniraj_online(self, epizode):
@@ -485,11 +506,7 @@ class Okolje:
             
             while not self.konec:
                 # 1. igralec
-                pozicije = self.legalne_pozicije()
-                p1_akcija = self.p1.izberi_akcijo(pozicije, self.plosca, self.simbol)
-                self.igraj(p1_akcija)
-                stanje = self.pridobi_stanje()
-                self.p1.dodaj_stanje(stanje)
+                self.poteza_agent(self.p1)
 
                 zmaga = self.zmagovalec()
                 if zmaga is not None:
@@ -505,11 +522,7 @@ class Okolje:
 
                 else:
                     # 2. igralec
-                    pozicije = self.legalne_pozicije()
-                    p2_akcija = self.p2.izberi_akcijo(pozicije, self.plosca, self.simbol)
-                    self.igraj(p2_akcija)
-                    stanje = self.pridobi_stanje()
-                    self.p2.dodaj_stanje(stanje)
+                    self.poteza_agent(self.p2)
 
                     zmaga = self.zmagovalec()
                     if zmaga is not None:
@@ -525,7 +538,3 @@ class Okolje:
         print(rezultati)
         return rezultati
 
-
-
-    def igraj_splosni(self, p1, p2):
-        pass

@@ -1,9 +1,11 @@
 import pickle
 import os
-import ast
 import numpy as np
+import random
+import torch
 
 from torch import nn, FloatTensor, save, load, optim
+from collections import namedtuple, deque
 from okolje import hiperparametri, Okolje
 
 
@@ -239,14 +241,14 @@ class TD(Agent):
     """
     Agent, ki za učenje uporablja tabelarični TD(lambda).
     """
-    def __init__(self, ime, epsilon=0.3, alfa=0.2, gama=1, lamb=0.9):
+    def __init__(self, ime, epsilon=0.01, alfa=0.2, gama=1, lamb=0.9):
         Agent.__init__(self, ime, epsilon=0.3, alfa=0.2)
 
         self.gama = gama
         self.lamb = lamb
 
     
-    def nagradi_nazaj(self, nagrada):
+    def nagradi_naprej(self, nagrada):
         """
         ti. backward-view TD(lambda), ki omogoča samo offline učenje.
         """
@@ -350,6 +352,8 @@ class AgentLin(Agent):
             self.utezi = [a + b for a, b in zip(self.utezi, delta)]
 
             nagrada = self.vrednost_stanja(stanje)
+        
+        return nagrada
 
 
     def nagradi_tdl(self, nagrada):
@@ -421,20 +425,27 @@ class AgentNN(Agent):
     aprosksimator - nevronsko mrežo.
     """
 
-    def __init__(self, ime, epsilon=0.3, alfa=0.05, hidden_dim=128):
+    def __init__(self, ime, epsilon=0.3, alfa=0.05, hidden_dim=512):
         Agent.__init__(self, ime, epsilon=epsilon, alfa=alfa)
 
-        input_dim = 1 + hiperparametri['VRSTICE'] * hiperparametri['STOLPCI'] * 3
+        self.input_dim = hiperparametri['STOLPCI'] * hiperparametri['VRSTICE'] * 3 + 1
         self.hidden_dim = hidden_dim
 
-        self.mreza = nn.Sequential(nn.Linear(input_dim, self.hidden_dim),
-                                   nn.Sigmoid(),
-                                   nn.Linear(self.hidden_dim, 1),
-                                   nn.Sigmoid())
+        self.mreza = nn.Sequential(nn.Linear(self.input_dim, self.hidden_dim),
+                                   nn.Tanh(),
+                                   nn.Linear(self.hidden_dim, self.hidden_dim // 2),
+                                   nn.Tanh(),
+                                   nn.Linear(self.hidden_dim // 2, 1))
+                                   #nn.Tanh())
 
+        # kritejiska funkcija - srednja kvd. napaka
         self.kriterij = nn.MSELoss()
 
+        # dejanski algoritem - stohastični gradientni spust
         self.optimizer = optim.SGD(self.mreza.parameters(), lr=self.alfa)
+
+        # spomin iger - izboljšava in boljše učenje
+        self.buffer = []
 
 
     def pridobi_stanje(self, plosca):
@@ -448,6 +459,7 @@ class AgentNN(Agent):
 
         vektor = prvi + drugi + tretji
 
+        # dodamo 1 na zadnje mesto kot "bias" nevron
         return str(np.array(vektor + [1]))
 
 
@@ -463,10 +475,16 @@ class AgentNN(Agent):
 
 
     def nagradi(self, nagrada):
+
+        # izrabimo GPU, če je na voljo
+        use_cuda = torch.cuda.is_available()
+        device = torch.device("cuda" if use_cuda else "cpu")
+        #print(device)
+        self.mreza = self.mreza.to(device)
         
         for stanje in reversed(self.stanja):
             
-            # stanje pretvorimo začasno stran iz stringa
+            # stanje pretvorimo stran iz stringa v tenzor
             num_stanje = [float(s) for s in stanje[1:-1].split(' ') if s != '']
             tenzor = FloatTensor(num_stanje)
             
@@ -475,10 +493,14 @@ class AgentNN(Agent):
 
             output = self.mreza(tenzor)
             napaka = self.kriterij(output, FloatTensor([nagrada]))
+            #print(napaka.item())
             napaka.backward()
             self.optimizer.step()
 
+            # TODO: TDlambda
             nagrada = self.vrednost_stanja(stanje)
+        
+        return napaka.item()
 
 
     def izberi_akcijo(self, pozicije, stanje, simbol):
@@ -513,37 +535,40 @@ class AgentNN(Agent):
         """
         Shrani slovar vrednosti stanj za kasnejšo uporabo.
         """
-        save(self.mreza.state_dict(), datoteka)
+        save(self.mreza.state_dict(), 'koda/strategije/' + datoteka)
     
 
     def nalozi_strategijo(self, datoteka):
         """
         Naloži slovar naučenih vrednosti.
         """
-        self.mreza.load_state_dict(load(datoteka))
+        self.mreza.load_state_dict(load('koda/strategije/' + datoteka))
 
 
 
+class NNER(AgentNN):
+    """
+    Nadgradnja agenta, ki uporablja nevronsko mrežo s "spominom".
+    """
+
+    def __init__(self, ime, epsilon=0.3, alfa=0.01, hidden_dim=512, velikost=10000):
+        super().__init__(ime, epsilon=epsilon, alfa=alfa, hidden_dim=hidden_dim)
+
+        # hranimo spomin - replay memory
+        self.spomin = deque([], maxlen=velikost)
 
 
-class Network(nn.Module):
-    def __init__(self, input_dim, skrit_dim):
-        super().__init__()
-        
-        # Inputs to hidden layer linear transformation
-        self.hidden = nn.Linear(input_dim, skrit_dim)
-        # Output layer, 10 units - one for each digit
-        self.output = nn.Linear(skrit_dim, 1)
-        
-        # Define sigmoid activation and softmax output 
-        self.sigmoid = nn.Sigmoid()
-        self.softmax = nn.Softmax(dim=1)
-        
-    def forward(self, x):
-        # Pass the input tensor through each of our operations
-        x = self.skrita(x)
-        x = self.sigmoid(x)
-        x = self.output(x)
-        x = self.sigmoid(x)
-        
-        return x
+    def __len__(self):
+        return len(self.spomin)
+
+
+    def zapomni(self, *args):
+        """
+        Shranimo tranzicijo v spomin.
+        """
+        Tranzicija = namedtuple('Tranzicija',('stanje', 'naslednje_stanje', 'nagrada'))
+        self.spomin.append(Tranzicija(*args))
+
+
+    def vzorec(self, batch_size=200):
+        return random.sample(self.spomin, batch_size)
