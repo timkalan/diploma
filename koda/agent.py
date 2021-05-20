@@ -425,16 +425,18 @@ class AgentNN(Agent):
     aprosksimator - nevronsko mrežo.
     """
 
-    def __init__(self, ime, epsilon=0.3, alfa=0.05, hidden_dim=512):
+    def __init__(self, ime, epsilon=0.3, alfa=0.05, hidden_dim=64):
         Agent.__init__(self, ime, epsilon=epsilon, alfa=alfa)
 
         self.input_dim = hiperparametri['STOLPCI'] * hiperparametri['VRSTICE'] * 3 + 1
-        self.hidden_dim = hidden_dim
+        #self.hidden_dim = hidden_dim
+        self.hidden_dim = 2 * self.input_dim
 
         self.mreza = nn.Sequential(nn.Linear(self.input_dim, self.hidden_dim),
-                                   nn.Tanh(),
+                                   nn.ReLU(),
                                    nn.Linear(self.hidden_dim, self.hidden_dim // 2),
-                                   nn.Tanh(),
+                                   nn.ReLU(),
+                                   # zadnji sloj ni relu, saj imamo lahko negativne vrednosti
                                    nn.Linear(self.hidden_dim // 2, 1))
                                    #nn.Tanh())
 
@@ -443,9 +445,6 @@ class AgentNN(Agent):
 
         # dejanski algoritem - stohastični gradientni spust
         self.optimizer = optim.SGD(self.mreza.parameters(), lr=self.alfa)
-
-        # spomin iger - izboljšava in boljše učenje
-        self.buffer = []
 
 
     def pridobi_stanje(self, plosca):

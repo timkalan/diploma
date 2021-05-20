@@ -22,16 +22,27 @@ class Clovek:
         in jo igramo.
         """
         while True:
-            vrstica = int(input('Izberi vrstico: '))
-            stolpec = int(input('Izberi stolpec: '))
+            if hiperparametri['GRAVITACIJA']:
+                stolpec = int(input('Izberi stolpec: '))
 
-            akcija = (vrstica, stolpec)
+                if naravno: 
+                    stolpec = stolpec - 1
+                
+                for (i, j) in legalne:
+                    if j == stolpec:
+                        return (i, j)
 
-            if naravno:
-                akcija = (vrstica - 1, stolpec - 1)
+            else:
+                vrstica = int(input('Izberi vrstico: '))
+                stolpec = int(input('Izberi stolpec: '))
 
-            if akcija in legalne:
-                return akcija
+                akcija = (vrstica, stolpec)
+
+                if naravno:
+                    akcija = (vrstica - 1, stolpec - 1)
+
+                if akcija in legalne:
+                    return akcija
 
 
 
@@ -61,18 +72,18 @@ class Nakljucni:
 
 def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.01), 
          p2=AgentNN('p2', epsilon=0.05, alfa=0.01), 
-         m=3,
-         n=3,
-         k=3,
-         gravitacija=False,
-         trening=True,
+         m=4,
+         n=5,
+         k=4,
+         gravitacija=True,
+         trening=False,
          epizode=200000,
          nalozi=False,
          nalozi_iz='333', 
          shrani=True, 
-         shrani_v='333nn',
+         shrani_v='454gnn',
          nasprotnik=Clovek('p2'), 
-         strategija='333nn',
+         strategija='454gnn',
          zacne=True):
     """
     p1 = Agent
@@ -109,7 +120,7 @@ def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.01),
 
         # narišemo graf kumulativnih porazov
         plt.plot(porazi)
-        plt.show()
+        #plt.show()
 
         if shrani:
             p1.shrani_strategijo(shrani_v)
@@ -147,6 +158,7 @@ def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.01),
         a = igra.testiraj_nakljucni(st_iger=1000, zacne=zacne)
         return a
 
+
 if __name__ == '__main__':
     main()
 
@@ -155,10 +167,8 @@ if __name__ == '__main__':
 
 
 # TODO: vse dobro dokumentiraj
-# TODO: implementiraj nevronske mreže
-# TODO: refaktorizacija
+# TODO: implementiraj experience replay
 # TODO: treniraj proti drugim vrstam nasprotnika
 # TODO: online trening ne dela!!
 # TODO: branje dimenzije za input v nevronsko mrežo
 # TODO: a gre čas pri učenju v napačno smer?
-# TODO: povprečna napaka model

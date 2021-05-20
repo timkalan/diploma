@@ -1,10 +1,10 @@
 import numpy as np
 
 hiperparametri = {
-                  'VRSTICE': 3,
-                  'STOLPCI': 3,
-                  'V_VRSTO': 3,
-                  'GRAVITACIJA': False,
+                  'VRSTICE': 4,
+                  'STOLPCI': 5,
+                  'V_VRSTO': 4,
+                  'GRAVITACIJA': True,
                   'NAGRADA_ZMAGA': 1,
                   'NAGRADA_REMI': 0.1,
                   'NAGRADA_PORAZ': -1,
@@ -407,6 +407,7 @@ class Okolje:
         zacne = bool; ali začne agent
         naravno = indeksiranje za pozicije človeka
         """
+        print(self)
         while not self.konec:
             # poteza prvega igralca
             if zacne:
