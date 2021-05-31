@@ -6,9 +6,9 @@ hiperparametri = {
                   'V_VRSTO': 4,
                   'GRAVITACIJA': True,
                   'NAGRADA_ZMAGA': 1,
-                  'NAGRADA_REMI': 0.1,
+                  'NAGRADA_REMI': 0.2,
                   'NAGRADA_PORAZ': -1,
-                  'NAGRADA_KORAK': -0.1,
+                  'NAGRADA_KORAK': 0,
                   'KRIZCI': 1,
                   'KROZCI': -1
                   }

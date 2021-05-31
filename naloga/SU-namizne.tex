@@ -1138,24 +1138,22 @@ kjer $m$ označuje število akcij, ki so na voljo v stanju $s$.
 Glavni problem zgornjih algoritmov je shranjevanje v tabele. Vsi delujejo na principu grajenja 
 velihih tabel; en vnos za vsako stanje (oz. en vnos za vsako kombinacijo stanja in akcije). To pri 
 velikih MDP-jih ne pride v poštev, saj učenje postane zelo prostorsko zahtevno in pa tudi 
-dolgotrajno - stanje, ki ni obiskano, nima dodeljene vrednosti, torej o njem ne vemo nič. 
+dolgotrajno - stanje, ki ni obiskano, nima dodeljene vrednosti, torej o njem ne vemo nič. Tabularne 
+rešitve zato potrebujejo veliko kolino podatvko, oz. veliko količino epizod.  
 
-Zato je pomembna nadgradnja algoritmov uporaba funkcijskih aproskimatorjev. Ideja je, da z nekaj 
-utežmi opišemo funkcijo vrednosti, nato pa namesto funkcije neposredno, prilagajamo te uteži. To 
-zmanjša prostorsko zahtevnost algoritmov in pa tudi omogoča, da dodelimo neke (smiselne) vrednosti
-stanjem, ki še niso bila obiskana. Ocene za funkcije vrednsoti stanja in stanja-akcije sedaj 
-zapišemo
+Zato je pomembna nadgradnja algoritmov uporaba funkcijskih aproksimatorjev. Ta koncept je izčrpno 
+preoučevan na področju numerike, statistike in nadzorovanega učenja in načeloma se lahko uporabi 
+katerkoli od znanih aproksimatorjev. Ideja je, da z nekaj utežmi opišemo funkcijo vrednosti, nato 
+pa namesto funkcije neposredno, prilagajamo te uteži. To zmanjša prostorsko zahtevnost algoritmov 
+in pa tudi omogoča, da dodelimo neke (smiselne) vrednosti stanjem, ki še niso bila obiskana. Ocene 
+za funkcije vrednsoti stanja in stanja-akcije sedaj zapišemo
 \begin{align*}
     \hat{v}(s, w) &\approx v_\pi(s), \\
     \hat{q}(s, a, w) &\approx q_\pi(s, a), 
 \end{align*}
 kjer $w$ zdaj predstavlja vektor uteži, ki ga bomo dejansko spreminjali. Videli bomo, da so koristni
-predvsem funkcijski aproksimatorji, ki so odvedljivi po parametru $w$. Najpogosteje sta tako v 
-uporabi linearna aproksimacija in nevronske mreže. 
-
-%\subsubsection{Tipi funkcijskega aproksimiranja}
-%Vsem tipom je skupno, da uporabljajo vektor uteži $w$, do sprememb pride pa pri vhodnih in izhodnih 
-%podatkih. 
+predvsem funkcijski aproksimatorji, ki so \textit{odvedljivi} po parametru $w$. Najpogosteje sta tako v 
+uporabi \textbf{linearna aproksimacija} in \textbf{nevronske mreže}. 
 
 \subsubsection{Gradientni spust}
 Najpogosteje uporabljena metoda ">treniranja"< aproksimatorjev je gradientni spust. Ideja je, da 
@@ -1165,9 +1163,14 @@ v negativni smeri tega gradienta
 $$
 \Delta w = - \alpha \nabla_wJ(w)
 $$
-kjer je $\alpha$ parameter hitrossti učenja (oz. velikost koraka). 
+kjer je $\alpha$ parameter hitrosti učenja (oz. velikost koraka). Ker gradient pove, v katero smer 
+funkcija narašča, bo premik v negativni smeri povročil, da bomo to vrednost zmanjšali. Parameter 
+$\alpha$ je tu pomemben, saj prek njega lahko dosežemo, da se ne premaknemo predaleč in s tem zgrešimo
+naš minimum. Uporaba gradienta pa je tudi kriva za to, da v splošnem tako lahko doežemo le lokalni 
+minimum. 
 
-V našem primeru je smiselno minimizirati srednjo kvadratično napako med pravo vrednostjo stanja in 
+Za uporabo gradientnega spusta seveda potrebujemo neko kriterijsko funkcijo, ki jo želimo minimizirati. 
+V našem primeru je smiselna izbira \textit{srednja kvadratična napaka} med pravo vrednostjo stanja in 
 ocenjeno vrednostjo oz. 
 $$
 J(w) = E_\pi [(v_\pi(s) - \hat{v}(s, w))^2]
@@ -1191,8 +1194,15 @@ možno. To težavo rešimo z dosedaj podano teorijo: $v_pi(s)$ zamenjamo z eno i
 spoznali v poglavju \ref{algoritmi}. Najbolj pogosto je to tarča algoritma TD($\lambda$), ki nam 
 posodablja uteži v skladu z 
 $$
-\Delta w = \alpha (G_t^\lambda - \hat{v}(s, w)) \nabla_w \hat{v}(s, w). 
+\Delta w = \alpha (G_t^\lambda - \hat{v}(s, w)) \nabla_w \hat{v}(s, w), 
 $$
+če uporabljamo algoritem s pogledom naprej oz. 
+\begin{align*}
+    \delta_t &= R_{t+1} + \gamma \hat{v}(S_{t+1}, w) - \hat{v}(S_t, w) \\
+    E_t &= \gamma \lambda E_{t-1} + \nabla_w \hat{v}(S_t, w) \\
+    \Delta w &= \alpha \delta_t E_t
+\end{align*}
+če uporabljamo pogled nazaj.
 
 \subsubsection{Linearna aproksimacija}
 Najbolj enostaven način aproksimacije funkcij je seveda linerana aproksimacija. Ideja je, da stanje 
@@ -1203,12 +1213,16 @@ x(S) = \begin{bmatrix}
     x_{2}(S) \\
     \vdots \\
     x_{n}(S)
-  \end{bmatrix}
+  \end{bmatrix}.
 $$
 
 \begin{zgled}[Vektor $x(S)$ pri križcih in krožcih]
+\label{vektor-ttt}
     Igralno ploščo križcev in krožcev lahko predstavimo kot vektor devetih števil, kjer 
-    $1$ pomeni križec, $0$ pomeni prazno polje in $-1$ pomeni krožec.
+    $1$ pomeni križec, $0$ pomeni prazno polje in $-1$ pomeni krožec. Če želimo pridelati malo daljši 
+    vektor in s tem več uteži, se standardno uporabi binarni vektor stanja, kjer je ideja, da se čez 
+    ploščo sprehodimo trikrat: prvih devet števil ima enice povsod, kjer so na plošči križci in drugod 
+    ničle, drugih devet ima enice na mestih krožcev in zadnjih devet na praznih mestih.
 \end{zgled}
 
 Sedaj lahko predstavimo vrednost stanja kot linearno kombinacijo komponent vektorja stanja
@@ -1216,10 +1230,24 @@ $$
 \hat{v}(s, w) = x(S)^T w = \sum_{i=1}^n x_i(S) w_i.
 $$
 V tej situaciji stohastićni gradientni spust konvergira k globalnemu minimumu (CITIRAJ!!!). Dobimo 
-tudi zelo enostavno pravilo posodabljanja, saj velja $\nabla_w \hat{v}(s, w) = x(S)$.
+tudi zelo enostavno pravilo posodabljanja, saj velja $\nabla_w \hat{v}(s, w) = x(S)$. To zelo 
+poenostavi računanje in razmislek o teoriji v ozadju. Zato je tudi linearna aproksimacija najbolj 
+teoretično obdelana -- konvergenčni dokazi za funkcijske aproksimacije so večinoma narejeni samo 
+za linearni primer.
 
 \subsubsection{Nevronske mreže}
-Pri nevronskih mrežah težave s konvergenco.
+Umetne nevronske mreže so v zadnjem času zelo popularne v nadzorovanem učenju zaradi uspehov pri 
+problemih klasifikacije (MORDA KAK CITAT). Konceptualno so modelirane po možganih: vsebujejo skupke 
+\textit{nevronov}, ki so organizirani v \textit{sloje}. Prvi sloj se imenuje vhodni in ima toliko 
+nevronov, kot je velik naš vhodni podatek. Za problem križcev in krožcev smo v zgledu \ref{vektor-ttt} 
+videli, da je to potem $9$ ali $27$, če uporabljamo binarni vektor. Zadnji sloj je izhodni, vmes pa so 
+\textit{skriti} sloji, ki jih je lahko poljubno mnogo in so lahko poljubne velikosti. Vsi sloji so med 
+sabo povezani, in sicer tako, da so povezani vsi nevroni iz enega sloja z vsemi nevroni iz sosednjega 
+sloja. Izhodni sloj je velik 
+
+mal bolj matematični odstavek
+
+problemi odtavek
 
 \subsubsection{Konvergenca pri funkcijskem aproksimiranju}
 
@@ -1249,7 +1277,8 @@ pridejo prej, torej krajše igre, se zaradi pojavitve neničelnih nagrad samo ob
 uporablja diskontni faktor $\gamma = 1$.
 
 \subsection{Pregled konceptov teorije iger}
-Teortetično imamo pri namiznih igrah opravka z
+Formalno gledano imamo z vidika teorije iger pri namiznih igrah opravka z ekstenzivno (kombinatorno) 
+igro za dva igralca z vsoto 0.
 
 \subsubsection{Nashevo ravnotežje}
 \subsubsection{Igre z vsoto nič}

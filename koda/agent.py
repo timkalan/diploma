@@ -434,10 +434,10 @@ class AgentNN(Agent):
 
         self.mreza = nn.Sequential(nn.Linear(self.input_dim, self.hidden_dim),
                                    nn.ReLU(),
-                                   nn.Linear(self.hidden_dim, self.hidden_dim // 2),
+                                   nn.Linear(self.hidden_dim, self.hidden_dim),
                                    nn.ReLU(),
                                    # zadnji sloj ni relu, saj imamo lahko negativne vrednosti
-                                   nn.Linear(self.hidden_dim // 2, 1))
+                                   nn.Linear(self.hidden_dim, 1))
                                    #nn.Tanh())
 
         # kritejiska funkcija - srednja kvd. napaka
@@ -474,12 +474,6 @@ class AgentNN(Agent):
 
 
     def nagradi(self, nagrada):
-
-        # izrabimo GPU, če je na voljo
-        use_cuda = torch.cuda.is_available()
-        device = torch.device("cuda" if use_cuda else "cpu")
-        #print(device)
-        self.mreza = self.mreza.to(device)
         
         for stanje in reversed(self.stanja):
             

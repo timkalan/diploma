@@ -75,15 +75,15 @@ def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.01),
          m=4,
          n=5,
          k=4,
-         gravitacija=True,
+         gravitacija=False,
          trening=False,
-         epizode=200000,
+         epizode=50000,
          nalozi=False,
-         nalozi_iz='333', 
+         nalozi_iz='454gnn', 
          shrani=True, 
          shrani_v='454gnn',
          nasprotnik=Clovek('p2'), 
-         strategija='454gnn',
+         strategija='test',
          zacne=True):
     """
     p1 = Agent
@@ -126,7 +126,7 @@ def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.01),
             p1.shrani_strategijo(shrani_v)
             p2.shrani_strategijo(shrani_v + '-2')
 
-    #pripravimo p1 na igro
+    # pripravimo p1 na igro
     p1.epsilon = 0
 
     # naložimo ustrezno strategijo
@@ -135,7 +135,7 @@ def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.01),
     else:
         p1.nalozi_strategijo(strategija + '-2')
 
-    ##igranje
+    # igranje
     p2 = nasprotnik
     igra = Okolje(p1, p2)
 
