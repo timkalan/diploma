@@ -188,7 +188,7 @@ To relativno novo raziskovalno področje se deli na tri glavne veje:
 % morda to malo oštevilči
 Naloga je razdeljena na štiri glavne dele. Na začetku so predstavljeni osnovni koncepti 
 spodbujevalnega učenja in nekateri glavni algoritmi s tega področja. Potem se osredotočimo na 
-na namizne igre in ob nekaj malega teorije iger povzamemo osnovne koncepte, na katere naletimo. 
+namizne igre in ob nekaj malega teorije iger povzamemo osnovne koncepte, na katere naletimo. 
 V naslednjem odseku združimo znanje iz prejšnjih dveh in predstavimo, kako nam teorija iger 
 pripomore pri spodbujevalnem učenju v tem konteksu. Na koncu pa so predstavljeni nekateri empirični
 rezultati, ki sledijo iz zgoraj navedene teorije.
@@ -205,8 +205,8 @@ numerično nagrado. Pri tem ne obstaja opazovalec, ki bi agentu povedal ali pa n
 akcije so dobre, to mora ugotoviti sam, s poskušanjem in napakami. V tem dejstvu se skriva 
 bistvena razlika med spodbujevalnim učenjem in ostalimi vejami strojnega učenja. 
 
-Pomembna razlika tiči tudi v pomembnosti časa pri spodbujevalnem učenju. Pri drugih oblikah 
-strojnega učenja se ponavadi ukvarjamo s tabelaričnimi podatki, tu pa ponavadi modeliramo nek 
+Še ena razlika tiči v pomembnosti časa pri spodbujevalnem učenju. Pri drugih oblikah 
+strojnega učenja se ponavadi ukvarjamo s tabelaričnimi podatki, tu pa modeliramo nek 
 dinamičen proces, zato je naravno, da je pomemben čas. Čeprav se ga da v tem kontekstu 
 modelirati zvezno, je za naše namene dovolj, da ga opazujemo kot diskretne točke $t \in 
 \{1, \dots, T\} $, kjer $T$ označuje nek končni čas (v splošnem je lahko seveda $T = \infty$).
@@ -224,12 +224,13 @@ namiznih iger: pri šahu ne razmišljamo samo o neposrednih akcijah, temveč raz
 dolgoročno strategijo, ki nas na koncu nagradi z zmago. 
 
 \begin{zgled}[Križci in krožci]
-    Pri tej znani otroški igri (in pri mnogo drugih namiznih igrah) modeliramo nagrado na 
-    preprost način: če zmagamo, prejmemo nagrado $1$, če izgubimo pa $-1$. V vseh ostalih 
-    situacijah, torej za izenačenje in po vsaki potezi, prejmemo nagrado $0$.
+    Pri tej znani otroški igri (in pri mnogo drugih namiznih igrah) premik v času pomeni 
+    igranje poteze enega od igralcev, zato je diskreten čas popolnoma zadosten. Nagrado 
+    modeliramo na preprost način: če zmagamo, prejmemo nagrado $1$, če izgubimo pa $-1$. 
+    V vseh ostalih situacijah, torej za izenačenje in po vsaki potezi, prejmemo nagrado $0$.
 \end{zgled}
 
-Zavedati se moramo tudi potencialnih omejitev oz. pomanjkljivosti takega modela. 
+Zavedati se moramo tudi potencialnih omejitev oz. pomanjkljivosti takega modela nagrad in ciljev. 
 \begin{hipoteza}[Hipoteza o nagradi]
     Vse cilje je mogoče opisati kot maksimizacijo neke kumulativne numerične 
     nagrade.
@@ -239,7 +240,7 @@ Zavedati se moramo tudi potencialnih omejitev oz. pomanjkljivosti takega modela.
     Problem je, da hipoteza dovoljuje samo enodimezionalnost:
     \begin{itemize}
         \item Ko kupujemo hamburger, nam je pomemben okus in cena; kaj nam več pomeni?
-        \item Država želi med epidemijo ohraniti življenja in gospodarstvo; v kakšni 
+        \item Država želi med epidemijo ohraniti življenja in gospodarstvo; v kolikšni 
                 meri naj prioritizira ti dve katergoriji?
     \end{itemize}
     Na tem mestu poudarimo še, da se da tudi v takih situacijah modelirati nagrado na zgoraj 
@@ -256,7 +257,8 @@ služi tudi kot sodnik akcij oz. stanj. V kontekstu programa za igranje iger tor
 nasprotnikove akcije, odloča katero stanje pomeni zmago in dodeljuje nagrade.
 
 \begin{zgled}[Križci in krožci]
-    Okolje za nas pomeni $3\times3$ igralno polje \textbf{in} našega nasprotnika.
+    Okolje za nas pomeni $3\times3$ igralno polje \textbf{in} našega nasprotnika - to je torej človek 
+    ali nek algoritem.
 \end{zgled}
 
 \subsubsection{Agent}
@@ -267,8 +269,9 @@ funkcijo} (angl. \textit{value function}). Kot ime implicira, je to funkcija, ki
 stanjem (in akcijam). 
 
 Nagrada nam pove takojšnjo vrednost stanja, vrednostna funkcija pa to vrednost gleda na dolgi
-rok. Je izpeljanka nagrade, a veliko bolj primerna za maksimizacijo kot nagrada, saj upošteva,
-da so tudi stanja, ki ne prinesejo takojšnje nagrade, lahko veliko vredna.
+rok. Je izpeljanka nagrade, a veliko bolj primerna za maksimizacijo kot nagrada sama, saj upošteva,
+da so tudi stanja, ki ne prinesejo takojšnje nagrade lahko veliko vredna (na tem mestu se ponovno 
+spomnimo šaha in grajenja strategije, ki nagrado prinese šele ob koncu igre).
 
 Poleg tega je v splošnem lažje učenje prek vrednostnih funkcij kot prek strategij neposredno, 
 saj je ponavadi stanj mnogokrat manj kot možnih strategij agenta.
@@ -280,9 +283,8 @@ Zapišimo zgoraj opisane pojme bolj formalno:
     S_t, A_t$ zaporedoma označujejo nagrado, stanje in akcijo ob času $t$. Definiramo naslednje 
     pojme: 
     \begin{itemize}
-        \item   Agentova \textbf{strategija} (angl. \textit{policy}) je v osnovi preslikava, ki 
-                agentu pove, katero akcijo naj izbere v katerem stanju. Strategije delimo v dve 
-                skupini:
+        \item   Agentova \textbf{strategija} (angl. \textit{policy}) je preslikava, ki agentu pove, 
+                katero akcijo naj izbere v katerem stanju. Strategije delimo v dve skupini:
                 \begin{itemize}
                     \item \textbf{Deterministična strategija} je preslikava $\pi: \mathcal{S} 
                     \rightarrow \mathcal{A}$, ki za vsako stanje pove, katero akcijo agent v njem 
@@ -306,19 +308,20 @@ Zapišimo zgoraj opisane pojme bolj formalno:
                 $$
                 G_t = R_{t+1} + \gamma R_{t+2} + ... = \sum_{k=0}^\infty \gamma^k R_{t + k + 1} ,
                 $$
-                kjer je $\gamma \in [0,1]$ \textit{diskontni faktor}. Predstavlja dejstvo, da 
+                kjer je $\gamma \in [0,1]$ \textbf{diskontni faktor}. Predstavlja dejstvo, da 
                 imamo raje nagrade, ki bodo prišle prej. Formalno gledano, je cilj učenja 
                 maksimizacija pričakovanega povračila.
 
          \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
-                stanja} (angl. \textit{state value function}) glede na strategijo $\pi$ je
+                stanja} (angl. \textit{state value function}) glede na strategijo $\pi$ je 
+                pogojno matematično upanje glede na stanje
                 $$
                 v_\pi(s) = \mathrm{E} [G_t~|~S_t = s].
                 $$
                 Predstavlja torej pričakovani izplen, če se vedemo skladno s strategijo $\pi$.
 
         \item Naj bo $\pi$ še vedno dana strategija agenta. \textbf{Vrednostna funkcija 
-                akcije} (tudi stanja-akcije) (angl. \textit{action value function}) glede na 
+                akcije} (tudi stanja-akcije) (angl. \textit{action-value function}) glede na 
                 strategijo $\pi$ je definirana kot
                 $$
                 q_\pi(s, a) = \mathrm{E} [G_t~|~S_t = s, A_t = a].
@@ -330,7 +333,8 @@ Zapišimo zgoraj opisane pojme bolj formalno:
 
 \begin{zgled}[Križci in krožci]
     Agent je v tem primeru računalniški program, ki prejme igralno ploščo, nasprotnikove 
-    poteze in nagrade, vrne pa optimalno strategijo (to si želimo).
+    poteze in nagrade, nato pa prek poskušanja in učenja vrne optimalno strategijo, t.j. 
+    za vsako stanje najboljšo možno akcijo.
 \end{zgled}
 
 \subsubsection{Model}
@@ -343,20 +347,23 @@ modela lahko agent ">preračuna"< smiselnost svojih akcij, brez da bi dejansko k
 Prisotnost modela je glavna ločnica med dvema velikima, a zelo različnima vejama spodbujevalnega
 učenja. Če modela ni, govorimo o spodbujevalnem učenju brez modela (angl. \textit{model-free 
 reinforcement learning}), v nasprotnem primeru pa govorimo o učenju z modelom (angl. \textit
-{model-based reinfocement learning}).
+{model-based reinfocement learning}). Narava namiznih iger za dva igralca, kakeršne obravnavamo tu
+je, da lahko predvidimo v kakšno stanje nas prinese naša akcija, zato načeloma imamo omejen model 
+okolja.
 
 \subsection{Korak spodbujevalnega učenja}
 Spodbujevalno učenje se pogosto ukvarja s procesi, ki naravno razpadejo v t. i. \textbf{epizode}. 
-Tak proces so recimo namizne igre, kjer so epizode precej naravno posamezne igre. Ni pa nujno, 
-da je delitev tako naravna (ali pa sploh možna oz. smiselna). Za namene te diplomske naloge lahko 
-privzamemo, da taka delitev obstaja.
+Tak proces so recimo namizne igre, kjer so epizode precej naravno posamezne igre. Če bi probavali 
+robota naučiti hoje, bi lahko za epizode vzeli neko časovno okno ali pa morda hojo do prvega padca.
+Ni pa nujno, da je delitev tako naravna (ali pa sploh možna oz. smiselna). Za namene te diplomske 
+naloge lahko privzamemo, da delitev na epizode obstaja.
 
 Ideja učenja je, da agenta spustimo v okolje in mu dovolimo, da doživi (igra) mnogo epizod. Nato 
-na nek način (bo razjasnjeno kasneje) ob nekih določenih časih (npr. po koncu epizode) posodobi 
-svojo strategijo (in/ali vrednostno funkcijo). 
+na nek način (s pomočjo spodbujevalnega učenja) ob nekih določenih časih (npr. po koncu posamezne 
+epizode) posodobi svojo strategijo (in/ali vrednostno funkcijo). 
 
-Dejanski korak (npr. poteza v namizni igri) v epizodi pa formalno gledano opredelimo na naslednji 
-način.
+Dejanski korak (npr. poteza enega od igralcev v namizni igri) v epizodi pa formalno gledano opredelimo
+ na naslednji način.
 \begin{itemize}
     \item Agent naredi akcijo $A_t$ ob prejetem stanju $S_t$ in prejme nagrado $R_t$.
     \item Okolje prejme akcijo $A_t$, posreduje agentu stanje $S_{t+1}$ in nagrado $R_{t+1}$.
@@ -383,7 +390,15 @@ akcije in nikoli ne ugotovi, da neka druga akcija prinese še višjo nagrado; te
 torej se ničesar ne nauči. 
 
 Uravnoteženje raziskovanja in izkoriščanja je pomemben problem, a se izkaže, da ima dokaj enostavno
-rešitev (ki deluje dovolj dobro). Spoznali jo bomo v madaljevanju.
+rešitev (ki deluje dovolj dobro). Spoznali jo bomo v nadaljevanju.
+
+\begin{zgled}[Raziskovanje v namiznih igrah]
+    Pri namiznih igrah agent lahko odkrije strategijo, ki premaga določenega nasprotnika. To strategijo
+    lahko potem izrablja in nasprotnika vedno premaga, ko pa naleti na drugega nasprotnika se lahko izkaže, 
+    da je bila strategija učinkovita samo proti prvemu - naša strategija ni bila optimalna. Zato je 
+    pomembno, da tudi ob odkritju dobre strategije agent še vedno raziskuje prostor strategij, to 
+    najenostavneje dosežemo tako, da agenta prisilimo, da občasno igra naključne poteze.
+\end{zgled}
 
 Morda se nekaterim bralcem zdi, da smo zaenkrat preveč ">mahali z rokami"<. To je zato, ker želimo, 
 da se do te točke razvije intuicija o predstavljenih pojmih. V nadaljevanju bomo do sedaj opisane 
@@ -397,7 +412,7 @@ in okolje. Ob koraku $t$ agent prejme od okolja stanje (oz. reprezentacijo stanj
 \mathcal{S}$, kjer $\mathcal{S}$ označuje množico vseh stanj. Na podlagi stanja in strategije, 
 ki jo ima, izbere akcijo $A_t \in \mathcal{A}(S_t)$, kjer $\mathcal{A}(S_t)$ predstavlja 
 množico akcij, ki jih ima agent na voljo v stanju $S_t$. Rezultat te akcije je nagrada $R_{t+1} 
-\in \mathcal{R}$, kjer $\mathcal{R}$ označuje mnoožico vseh nagrad, in novo stanje $S_{t+1}$.
+\in \mathcal{R}$, kjer $\mathcal{R}$ označuje množico vseh nagrad, in novo stanje $S_{t+1}$.
 
 Čeprav se da vse opisane koncepte posplošiti na števne in celo neštevne množice stanj in akcij, 
 se bomo mi omejili na končne množice. To je pri namiznih igrah dovolj.
@@ -466,7 +481,8 @@ funkcijo $v(s) = \mathrm{E} [G_t~|~S_t = s]$, ki je v tem primeru neodvisna od s
 saj strategija v tem modelu nima pomena. 
 
 Za vrednostno funkcijo lahko izpeljemo rekurzivno enačbo, s pomočjo katere lahko ">rešimo"< Markovski
-proces nagrajevanja. S tem mislimo, da vsakemu stanju dodelimo pravo vrednost:
+proces nagrajevanja. S tem mislimo, da vsakemu stanju dodelimo pravo vrednost. To je vrednost, ki jo 
+stanju določata nagrada in nagradna funkcija.
 
 \begin{align*}
     v(s) &= \mathrm{E} [G_t~|~S_t = s] \\
@@ -485,8 +501,8 @@ oziroma
 \begin{equation}\label{beMRP}
     v(s) = \mathcal{R}_s + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'} v(s'),
 \end{equation} 
-kjer smo v drugi vrstici upoštevali aditivnost in idempotentnost pogojnega matematičnega upanja. 
-Enačba \eqref{beMRP} je \textbf{Bellmanova enačba za Markovkse procese nagrajevanja}.
+kjer smo upoštevali aditivnost in idempotentnost pogojnega matematičnega upanja. Enačba \eqref{beMRP}
+je \textbf{Bellmanova enačba za Markovkse procese nagrajevanja}.
 
 Ker se ukvarjamo s primerom, ko je stanj končno mnogo, recimo $n$, jih lahko brez škode za 
 splošnost označimo kar $1, \dots, n$. Potem lahko Bellmanovo enačbo prepišemo v matrični obliki
@@ -516,7 +532,7 @@ splošnost označimo kar $1, \dots, n$. Potem lahko Bellmanovo enačbo prepišem
     \intertext{ali krajše}
     v &= \mathcal{R} + \gamma \mathcal{P}v.
 \end{align*}
-Opazimo, da je to \textit{linearna} enačba in da v splošnem eksplicitno rešitev: 
+Opazimo, da je to \textit{linearna} enačba, ki jo lahko eksplicitno rešimo: 
 \begin{align*}
     v &= \mathcal{R} + \gamma \mathcal{P}v \\
     (I - \gamma \mathcal{P}) v &= \mathcal{R} \\
@@ -529,17 +545,18 @@ obstajajo iterativni algoritmi in metode, nekatere izmed njih bomo spoznali v na
 TA DEL LAHKO MATEMATIZIRAŠ - ENOLIČNOST REŠITEV
 
 \subsubsection{Markovski proces odločanja}
-Kot ime že nakazuje, \textit{Markovski proces odločanja (MDP)} razširja koncept procesa nagrajevanja 
-z dodatkom odločanja - akcij. S tem dodatkom imamo v popolnosti opisan problem spodbujevalnega 
-učenja: opisujemo torej nek proces, kjer ima agent možnost odločanja, izid pa je vsaj delno slučajen 
-in odvisen od okolja. 
+Kot ime že nakazuje, \textbf{Markovski proces odločanja} (angl. \textit{Markov decision process (MDP)}) 
+razširja koncept procesa nagrajevanja z dodatkom odločanja - akcij. S tem dodatkom imamo v popolnosti 
+opisan problem spodbujevalnega učenja: proučujemo torej nek proces, kjer ima agent možnost odločanja, 
+izid pa je vsaj delno slučajen in odvisen od okolja. 
 
 \begin{opomba}
     Ker v Markovskem procesu odločanja nastopajo (in imajo poglavitno) vlogo akcije, seveda pomembno 
-    vplivajo na nagradno funkcijo, zato moramo ta koncept ustrezno prilagoditi:
-    $$
-    \mathcal{R}_s^a = E[R_{t+1}~|~S_{t} = s, A_t = a].
-    $$
+    vplivajo na nagradno funkcijo in prehodno matriko, zato moramo ta koncepta ustrezno prilagoditi:
+    \begin{align*}
+    \mathcal{R}_s^a &= E[R_{t+1}~|~S_{t} = s, A_t = a], \\
+    \mathcal{P}_{ss'}^a &= P(S_{t+1} = s'~|~S_t = s, A_t = a)
+    \end{align*}
 \end{opomba}
 
 \begin{definicija}[Markovski proces odločanja]
@@ -556,14 +573,13 @@ in odvisen od okolja.
     pravimo \textbf{Markovski proces odločanja} (angl. \textit{Markov decision process}).
 \end{definicija}
 
-Prehodna matrika in nagradna funkcija sta sedaj seveda odvisni tudi od akcije. V kontekstu MDP-jev
-lahko sedaj formalno definiramo strategijo agenta $\pi$, ki je zahvaljujoč Markovski lastnosti 
-odvisna od enega stanja in ne od celotne zgodovine procesa. Definiramo tudi vrednostno funkcijo 
-stanja $v_{\pi}(s)$ in vrednostno funkcijo akcije $q_{\pi}(s, a)$. Njihove definicije se ne 
-spremenijo, so pa sedaj formalno umeščene v model.
+V kontekstu MDP-jev lahko sedaj formalno definiramo strategijo agenta $\pi$, ki je zahvaljujoč 
+Markovski lastnosti odvisna od enega (trenutnega) stanja in ne od celotne zgodovine procesa. 
+Definiramo tudi vrednostno funkcijo stanja $v_{\pi}(s)$ in vrednostno funkcijo akcije $q_{\pi}(s, a)$. 
+Njihove definicije se ne spremenijo, so pa sedaj formalno vmeščene v model.
 
-Opazimo tudi, da je v MDP-ju pri fiksni strategiji $\pi$ zaporedje oz. proces stanj $S_1, S_2, 
-\dots$ Markovska veriga $(\mathcal{S}, \mathcal{P}^\pi)$. Če v zaporedje stanj pomešamo še nagrade, 
+Opazimo, da je v MDP-ju pri fiksni strategiji $\pi$ zaporedje oz. proces stanj $S_1, S_2, \dots$ 
+Markovska veriga $(\mathcal{S}, \mathcal{P}^\pi)$. Če v zaporedje stanj pomešamo še nagrade, 
 torej $S_1, R_2, S_2, R_3, \dots$, dobimo Markovski proces nagrajevanja $(\mathcal{S}, 
 \mathcal{P}^\pi, \mathcal{R}^\pi, \gamma)$, kjer smo označili
 
@@ -574,27 +590,37 @@ torej $S_1, R_2, S_2, R_3, \dots$, dobimo Markovski proces nagrajevanja $(\mathc
 
 \begin{opomba}
     Morda je nekatere bralce zbodlo, da v zaporedju stanj in nagrad $S_1$ ne sledi $R_1$, temveč 
-    $R_2$. Za tako notacijo smo se odločili, da poudarimo, da okolje agentu sočasno poda $S_2$ in 
-    $R_2$, glede na stanje $S_1$ pa se agent odloča o akciji $A_1$.
+    $R_2$. Za tako notacijo smo se odločili, da poudarimo, da okolje agentu sočasno poda stanje $S_2$
+    in nagrado $R_2$, glede na stanje $S_1$ pa se agent odloča o akciji $A_1$.
 \end{opomba}
 
 MDP-ji so splošna orodja za obravnavo stohastičnih procesov, ki vključujejo odločitve v diskretnem 
 času. Njihov utemeljitelj je Richard Bellman, ki je znan predvsem po izumu dinamičnega 
 programiranja, zato morda ni presenetljivo, da nam prav dinamično programiranje poda osnovo za 
 njihovo reševanje.
-Kot pri procesih nagrajevanja, lahko tudi tu izpeljemo Bellmanovo enačbo. Najprej zapišemo 
+Kot pri procesih nagrajevanja, lahko tudi tu izpeljemo Bellmanovo enačbo. Najprej izpeljimo 
 rekurzivni zvezi za vrednostni funkciji stanja in akcije: 
-
 \begin{align*}
     v_\pi(s) &= \mathrm{E} [R_{t+1} + \gamma v_\pi(S_{t+1})~|~S_t = s], \\
     q_\pi(s, a) &= \mathrm{E} [R_{t+1} + \gamma q_\pi(S_{t+1}, A_{t+1})~|~S_t = s, A_t = a].
 \end{align*}
 Opazimo, da $v_\pi$ in $q_\pi$ povezujta zvezi
-
 \begin{align*}
     v_\pi(s) &= \sum_{a \in \mathcal{A}} \pi(a|s)q_\pi(s, a), \\
     q_\pi(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s').
 \end{align*}
+
+Smiselno se zdi, da bi povprečje $q_\pi(s, a)$ po akcijah, uteženo z ustrenimi verjetnostmi
+
+
+
+
+
+
+
+
+
+
 Če zvezi združimo, dobimo
 
 \begin{align}
@@ -1138,7 +1164,7 @@ kjer $m$ označuje število akcij, ki so na voljo v stanju $s$.
 Glavni problem zgornjih algoritmov je shranjevanje v tabele. Vsi delujejo na principu grajenja 
 velihih tabel; en vnos za vsako stanje (oz. en vnos za vsako kombinacijo stanja in akcije). To pri 
 velikih MDP-jih ne pride v poštev, saj učenje postane zelo prostorsko zahtevno in pa tudi 
-dolgotrajno - stanje, ki ni obiskano, nima dodeljene vrednosti, torej o njem ne vemo nič. Tabularne 
+dolgotrajno - stanje, ki ni obiskano, nima dodeljene vrednosti, torej o njem ne vemo nič. Tabelarne 
 rešitve zato potrebujejo veliko kolino podatvko, oz. veliko količino epizod.  
 
 Zato je pomembna nadgradnja algoritmov uporaba funkcijskih aproksimatorjev. Ta koncept je izčrpno 
@@ -1301,7 +1327,7 @@ igro za dva igralca z vsoto 0.
 \subsubsection{Naključni nasprotnik}
 \subsubsection{Fiksiran nasprotnik}
 
-\subsection{Kombinacija z iskanjem - generalised policy eval?}
+\subsection{Kombinacija z iskanjem - možna nadgradnja}
 
 \subsection{Algoritem - zaključena celota}
 \subsubsection{Opomba: deluje, tudi ko ni vsota 0}
@@ -1311,11 +1337,9 @@ igro za dva igralca z vsoto 0.
 
 \subsection{m,n,k-igra}
 \subsubsection{Kompleksnost m,n,k-igre}
-
-\section{Uspehi glede na velikost}
-\subsubsection{Morda tudi kaj z bolj modificranimi mnk igrami}
-
-\section{Primerjava, grafi}
+\subsection{Tablearni agent}
+\subsection{Agent s funkcijsko aproksimacijo}
+\subsubsection{Hiperparametri in arhitektura}
 
 
 
