@@ -67,7 +67,7 @@
 % naslednje ukaze ustrezno popravi
 \newcommand{\program}{Finančna matematika} % ime studijskega programa: Matematika/Finan"cna matematika
 \newcommand{\imeavtorja}{Tim Kalan} % ime avtorja
-\newcommand{\imementorja}{izr.~prof.~dr. Marjetka Knez} % akademski naziv in ime mentorja
+\newcommand{\imementorja}{prof.~dr. Marjetka Knez} % akademski naziv in ime mentorja
 \newcommand{\naslovdela}{Spodbujevalno učenje pri igranju namiznih iger}
 \newcommand{\letnica}{2021} %letnica diplome
 
@@ -130,14 +130,6 @@ Prevod zgornjega povzetka v angle"s"cino.
 
 % tu se zacne tekst seminarja
 \section{Uvod}
-%Na za"cetku prvega poglavja/razdelka (ali v samostojnem razdelku z naslovom Uvod) napi"site 
-%kratek zgodovinski in matemati"cni uvod. Pojasnite motivacijo za problem, kje nastopa, kje 
-%vse je bil obravnavan. Na koncu opi"site tudi organizacijo dela -- kaj je v kak"snem razdelku.
-%
-%"Ce se uvod naravno nadaljuje v besedilo prvega poglavja, lahko nadaljujete z besedilom v istem 
-%razdelku, sicer za"cnete novega. Na za"cetku vsakega razdelka/podraz\-delka povete, "cemu se 
-%bomo posvetili v nadaljevanju. Pri pisanju uporabljajte ukaze za matemati"cna okolja, med 
-%formalnimi enotami dodajte vezni razlagalni tekst.
 Namizne igre ljudje igramo že od prazgodovine. Na Kitajskem je bila igra Go znana kot ena 
 izmed štirih umetnosti Kitajskega učenjaka poleg igranja inštrumenta s strunami, kaligrafije
 in slikanja. Spremljajo nas že zelo dolgo časa, zato je naravno, da jih želimo ljudje čim
@@ -335,6 +327,11 @@ Zapišimo zgoraj opisane pojme bolj formalno:
     Agent je v tem primeru računalniški program, ki prejme igralno ploščo, nasprotnikove 
     poteze in nagrade, nato pa prek poskušanja in učenja vrne optimalno strategijo, t.j. 
     za vsako stanje najboljšo možno akcijo.
+
+    Deterministična strategija bi pomenila preslikavo, ki prejme reprezentacijo igralne plošče
+    in vrne točno določeno potezo glede na to ploščo. Stohastična strategija pa pomeni preslikavo, 
+    ki sprejme isto stvar, a vrne neko verjetnostno porazdelitev med vsemi legalnimi potezami, 
+    ki jih ima agent (legalnost poteze je določena s strani okolja oz. pravil igre).
 \end{zgled}
 
 \subsubsection{Model}
@@ -598,8 +595,8 @@ MDP-ji so splošna orodja za obravnavo stohastičnih procesov, ki vključujejo o
 času. Njihov utemeljitelj je Richard Bellman, ki je znan predvsem po izumu dinamičnega 
 programiranja, zato morda ni presenetljivo, da nam prav dinamično programiranje poda osnovo za 
 njihovo reševanje.
-Kot pri procesih nagrajevanja, lahko tudi tu izpeljemo Bellmanovo enačbo. Najprej izpeljimo 
-rekurzivni zvezi za vrednostni funkciji stanja in akcije: 
+Kot pri procesih nagrajevanja, lahko tudi tu izpeljemo Bellmanovo enačbo. Na popolnoma enak način 
+kot pri procesih nagrajevanja lahko izpeljemo rekurzivni  
 \begin{align*}
     v_\pi(s) &= \mathrm{E} [R_{t+1} + \gamma v_\pi(S_{t+1})~|~S_t = s], \\
     q_\pi(s, a) &= \mathrm{E} [R_{t+1} + \gamma q_\pi(S_{t+1}, A_{t+1})~|~S_t = s, A_t = a].
@@ -610,7 +607,11 @@ Opazimo, da $v_\pi$ in $q_\pi$ povezujta zvezi
     q_\pi(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s').
 \end{align*}
 
-Smiselno se zdi, da bi povprečje $q_\pi(s, a)$ po akcijah, uteženo z ustrenimi verjetnostmi
+Smiselno se zdi, da bi se vsota $q_\pi(s, a)$ po akcijah, uteženo z ustreznimi verjetnostmi izbire 
+posamezne akcije v stanju $s$ $\pi(a|s)$ seštela v $v_\pi(s)$ in tudi res je tako, saj
+\begin{align*}
+    v_\pi(s) &= \mathrm{E} [G_t~|~S_t = s] \\
+\end{align*}
 
 
 
@@ -637,19 +638,20 @@ DODATNA RAZLAGA) rešitev:
     v_\pi &= (I - \gamma \mathcal{P}^\pi)^{-1} \mathcal{R}^\pi
 \end{align*}
 
-Ta enačba je sicer pomembna, a nas najbolj zanima ">rešitev"< MDP-ja. Želimo namreč najti optimalno 
-strategijo. Pri tem nam pomaga naslednje: 
+Ta enačba je sicer pomembna, a določi samo prave vrednosti glede na neko strategijo. Nas pa zanima 
+">rešitev"< MDP-ja. To pomeni, da želimo najti strategijo, ki nam bo prinesla največjo nagrado.
 
+\subsubsection{Optimalne vrednostne funkcije}
 \begin{definicija}
     ~
     \begin{itemize}
         \item \textbf{Optimalna vrednostna funkcija stanja} (angl. \textit{optimal state-value 
-                function}) $v_*(s)$ je največja med vsemi vrednostnimi funkcijami stanj
+                function}) $v_*(s)$ je vrednostna funkcija za strategijo, ki vrne največje vrednosti
                 $$
                 v_*(s) = \max_\pi v_\pi(s).
                 $$
         \item \textbf{Optimalna vrednostna funkcija akcije} (angl. \textit{optimal action-value 
-                function}) $q_*(s, a)$ je največja med vsemi vrednostnimi funkcijami akcij
+                function}) $q_*(s, a)$ je analog optimalni vrednostni funkciji stanja
                 $$
                 q_*(s, a) = \max_\pi q_\pi(s, a).
                 $$
@@ -659,6 +661,8 @@ strategijo. Pri tem nam pomaga naslednje:
                 $$
                 Če za strategiji velja kot zgoraj, pravimo, da je $\pi$ \textit{boljša ali enaka} 
                 kot $\pi'$.
+        \item \textbf{Optimalna strategija} je strategija $\pi_*$, ki je boljša ali enaka od vseh 
+                ostalih strategij $\pi \in \Pi$.
     \end{itemize}
 \end{definicija}
 Sedaj lahko uporabimo naslenji izrek.
@@ -669,10 +673,10 @@ Sedaj lahko uporabimo naslenji izrek.
         \item Obstaja \textit{optimalna} strategija $\pi_*$, ki je boljša ali enaka kot vse ostale 
                 strategije; $\pi_* \geq \pi \text{ } \forall \pi \in \Pi$. 
         
-        \item Vedno obstaja \textit{deterministična} optimalna strategija. PREJ RAZLOŽI NATANČNO 
-                STRATEGIJE
-        \item Vse optimalne strategije določajo optimalno vrednostno funkcijo stanja in optimalno 
-                vrednostno funkcijo akcije; 
+        \item Vedno obstaja \textit{deterministična} optimalna strategija $\pi: \mathcal{S} 
+                \rightarrow \mathcal{A}$. 
+        \item Vse optimalne strategije določajo enako optimalno vrednostno funkcijo stanja in 
+                optimalno vrednostno funkcijo akcije; 
                 \begin{align*}
                     v_{\pi*}(s) &= v_*(s) \\
                     q_{\pi*}(s, a) &= q_*(s, a).
@@ -687,10 +691,8 @@ ki jo dobimo kot $\pi_*(a|s) = \mathbbm{1} (a =\text{arg}\max_{a \in \mathcal{A}
 
 Podobno kot za poljubne vrednostne funkcije, lahko tudi za optimalne vrednostne funkcije 
 izpeljemo Bellmanovo enačbo, ki jo sedaj imenujemo \textbf{Bellmanova enačba optimalnosti} (angl. 
-\textit{Bellman optimality equation}). Sprva opazimo zvezi med $q_*$ in $v_*$:
-
-IZPELJI TI DVE ZVEZI
-
+\textit{Bellman optimality equation}). Sprva opazimo, da $q_*$ in $v_*$ povezujeta enaki zvezi kot 
+$q_\pi$ in $v_\pi$:
 \begin{align*}
     v_*(s) &= \max_a q_*(s, a), \\
     q_*(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_*(s).
@@ -705,6 +707,8 @@ Ti zvezi nato vstavimo eno v drugo, in dobimo enačbi:
 Opazimo, da sta enačbi tokrat nelinearni, kar močno oteži direktno reševanje. Na srečo pa tudi 
 v tem primeru pridejo prav metode iz naslednjega odseka.
 
+MALO BOLJ NATANČNO O TEM KAKO DO OPT STRAT IZ FUNKCIJE, DOKAZI, IZPELJAVE, ...
+
 \section{Algoritmi pri spodbujevalnem učenju}
 \label{algoritmi}
 Algoritmov za reševanje MDP-jev je precej. Mi se bomo omejili predvsem na algoritme, ki se učijo 
@@ -712,10 +716,10 @@ prek vrednostne funkcije in izhajajo iz dinamičnega programiranja, a naj na tem
 da obstajajo tudi algoritmi, ki posodabljajo strategijo neposredno (MOGOČE KAKŠEN REFERENCE ALI 
 PA KEJ).
 
-Izjemnega pomena pri reševanju je tudi dejstvo, ali je znana matrika $\mathcal{P}$ in nagradna 
-funkcija $\mathcal{R}_s^a$. Izkaže se, da je večina problemov takih, da ti dve stvari nista znani. 
-Eden izmed takih problemov je tudi igranje namiznih iger -- ne poznamo strategije našega nasprotnika, 
-zato ne poznamo verjetnosti prehodov med stanji.
+Izjemnega pomena pri reševanju je dejstvo, ali je znana matrika $\mathcal{P}$ in nagradna funkcija 
+$\mathcal{R}_s^a$. Izkaže se, da je večina problemov takih, da ti dve stvari nista znani. Eden izmed 
+takih problemov je tudi igranje namiznih iger -- ne poznamo strategije našega nasprotnika, zato ne 
+poznamo verjetnosti prehodov med stanji.
 
 Poleg tega naj na tem mestu omenimo, da reševanju celotnega problema spodbujevalnega učenja 
 pravimo \textbf{načrtovanje} (angl. \textit{planning}), le-ta pa se deli na dve stopnji: 
@@ -724,7 +728,7 @@ pravimo \textbf{načrtovanje} (angl. \textit{planning}), le-ta pa se deli na dve
     \item \textbf{Napovedovanje} - pri tem podproblemu podamo nek MDP in strategijo, algoritem nam 
             vrne vrednostno funkcijo stanja (glede na strategijo).   
     \item \textbf{Upravljanje} - to je bolj poln problem: podan je MDP, algoritem pa nam vrne 
-            optimalno vrednostno funkcijo in optimalno strategijo.
+            optimalno vrednostno funkcijo in pripadajočo optimalno strategijo.
 \end{itemize}
 
 \subsection{Dinamično programiranje - reševanje poznanih MDP-jev}
@@ -742,8 +746,8 @@ problema. Druga pomembna lastnost pa so \textbf{prekrivajoči podproblemi}, ki i
 
 Opazimo, da obe lastnosti veljata za MDP-je; Bellmanova enačba, nam razdeli problem na 
 podprobleme, vrednostna funkcija pa hrani in ponovno uporablja rešitve. Lastnosti veljata tudi 
-za MRP-je in tudi metode, ki jih bomo spoznali so aplikativne na njih, a mi se bomo posvetili 
-predvsem procesom odločanja.
+za Markovske procese nagrajevanja, zato lahko metode, ki jih bomo spoznali, uporabimo za reševanje
+tovrstnih procesov. Nam je seveda v interesu reševati MDP-je, zato se bomo posvetili temu.
 
 (MORDA BOLJ FORMALNO O BELLMANOVIH ENAČBAH - NI TREBA?)
 
@@ -759,22 +763,30 @@ naslednje stanje od $s$. Enačba iteracije se potem glasi
     v_{k+1} &= \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_k.
 \end{align*}
 
-\begin{izrek}
+\begin{izrek}\label{ios}
     Iterativno ocenjevanje strategije konvergira proti vrednostni funkciji, ki jo določa strategija 
     $\pi$.
 \end{izrek}
 
-\begin{proof}
-    Pokazali bomo, da iz iteracije lahko pridobimo skrčitev, iz izrekov o fiksni točki potem sledi 
-    naš rezultat (MOGOČE DEJMO NAVEST IZREK? - BANACH, CONTRACTION MAPPING) - LAHKO SKLIC NA 
-    LITERATURO.
+Izrek bomo dokazali samo v primeru končnih MDP-jev, to pomeni, da je prostor stanj $\mathcal{S}$ 
+končen, torej $|\mathcal{S}| < \infty$. V tem primeru je prostor vrednostnih funkcij $\mathcal{V}$
+vektorski prostor. Vsaka točka v njem korespondira z eno vrednostno funkcijo $v(s)$.
 
+\begin{definicija}[Neskončna norma za vrednostne funkcije]
+    Je norma, ki meri ">razdaljo"< med vrednostnima funkcijama $v$ in $u$. Izračunamo jo kot 
+    največjo razliko med vrednosti stanj oz. 
+    $$
+    ||v - u||_\infty = \max_{s \in \mathcal{S}} |v(s) - u(s)|.
+    $$
+\end{definicija}
+
+\begin{proof}[Dokaz izreka \ref{ios}]
+    Pokazali bomo, da iz iteracije lahko pridobimo skrčitev, iz Banachovega izreka o fiksni točki 
+    potem sledi naš rezultat.
     Definiramo \textbf{Bellmanov operator pričakovanja} kot 
     $$
     T_\pi(v) = \mathcal{R}_\pi + \gamma \mathcal{P}_\pi v.
     $$
-
-    POVEŠ KAKO JE DEFINIRANA OPERATORSKA NESKONČNA NORMA
     Naj bosta $u$ in $v$ vrednostni funkciji. Potem je zgornji operator skrčitev glede na neskončno 
     normo: 
     \begin{align*}
@@ -785,25 +797,28 @@ naslednje stanje od $s$. Enačba iteracije se potem glasi
         &\leq \gamma ||v - u||_\infty,
     \end{align*}
     kjer smo upoštevali, da velja $||\mathcal{P}_\pi||_\infty \leq 1$, saj so elementi 
-    $\mathcal{P}_\pi$ verjetnosti.
-
+    $\mathcal{P}_\pi$ verjetnosti. Po Bellmanovi enačbi pričakovanja je $v_\pi$ fiksna točka 
+    za $T_\pi$, rezultat nato sledi iz Banachovega izreka.
 \end{proof}
 
 S tem procesom tako res dobimo vrednostno funkcijo, ki jo določa strategija, a strategija je 
 statična; to reši problem napovedovanja. 
 
 Da rešimo problem upravljanja, uporabimo enostavno idejo: strategijo izboljšamo \textbf{požrešno}. 
-To pomeni, da izberemo tako akcijo, ki nas pripelje v stanje, ki je dosegljivo in ima trenutno 
-največjo vrednost $v_\pi$.
+To pomeni, da izberemo tako akcijo, ki nas pripelje v stanje $s$, ki je dosegljivo in ima največjo 
+vrednost $v_\pi(s)$. Na vsakem koraku torej izberemo največjo vrednost ne glede na vse, od tu pride 
+ime \textit{požrešno}.
 
 \subsubsection{Iteracija strategije}
 Algoritem, ki ga dobimo s tem, da združimo iterativno ocenjevanje strategije in požrešno izboljšavo 
 strategije, imenujemo iteracija strategije (angl. \textit{policy iteration}). S tem algoritmom 
-lahko sedaj rešimo problem upravljanja in s tem celoten problem poznanega MDP-ja. 
+lahko sedaj rešimo problem upravljanja in s tem celoten problem poznanega MDP-ja. V praksi to pomeni, 
+da začnemo z naključno strategijo, jo iterativno ocenimo, nato na podlagi rezultata požrešno izboljšamo 
+strategijo in ta dva koraka ponavljamo.
 
-\begin{trditev}
+\begin{izrek}
     Iteracija strategije vedno konvergira k optimalni strategiji $\pi_*$.
-\end{trditev}
+\end{izrek}
 
 \begin{proof}
     Ukvarjali se bomo samo z determinističnimi strategijami, saj so zaradi požrešne izbire 
@@ -853,15 +868,13 @@ Za korak obeh iteracij je potrebnih $O(mn^2)$ operacij, kjer je $m$ število akc
 stanj. Popolnoma enake algoritme lahko uporabimo za iteracijo $q_\pi(s, a)$ oz. $q_*(s, a)$, le 
 da sedaj pridemo do časovne zahtevnosti $O(m^2n^2)$.
 
-\subsubsection{a sm js pozabu na generalised policy evaluation}
-
 \subsection{Monte Carlo}
 Do sedaj smo se ukvarjali s poznanim MDP-jem, kar pa ni naš končen cilj. V nadaljevanju se bomo 
 posvetili nepoznanim. Metode, ki jih bomo spoznali so tako bolj splošno aplikativne, svoje 
 bistvo pa črpajo pri do sedaj poznanem.
 
-Prva taka metoda je Monte Carlo. Spopada se s problemom napovedovanja z dodatno izboljšavo, da 
-ne rabi poznati matrike $\mathcal{P}$. Potrebujemo pa strategijo $\pi$, na podlagi katere opazujemo 
+Prva taka metoda je Monte Carlo. Spopada se s problemom \textit{napovedovanja} z dodatno izboljšavo, 
+da ne rabi poznati matrike $\mathcal{P}$. Potrebujemo pa strategijo $\pi$, na podlagi katere opazujemo
 epizode dogajanja. Ideja delovanja je, da se namesto na direktno računanje pričakovanega povračila
 $G_t = \sum_{k=0}^\infty \gamma^k R_{t + k + 1}$, osredotočimo na računanje \textit{empiričnega} 
 povračila. To storimo tako, da za vsako stanje $s$ definiramo števec $N(s)$, ki beleži, kolikokrat 
@@ -918,14 +931,14 @@ oblike:
     (\textit{tarča} - \textit{stara ocena}).
 \end{equation}
 
-\subsection{Algoritem $TD(0)$}
+\subsection{Algoritem TD($0$)}
 V spodbujevalnem učenju obstaja skupina algoritmov, ki se imenujejo \textbf{algoritmi učenja s 
 časovno razliko} (angl. \textit{temporal-difference learning}). Delujejo v podobnih pogojih kot 
 Monte Carlo in tudi dosegajo enak cilj. Pomembna razlika je, da ne potrebujejo povračila pri 
 posodobitvi. Delujejo lahko tudi v sistemih, ki se ne delijo na epizode oz. ne potrebujejo 
 končanih epizod za svoje delovanje.
 
-Najpreprostejši algoritem učenja s časovno razliko je $TD(0)$. Ideja je, da v stanju ocenimo
+Najpreprostejši algoritem učenja s časovno razliko je TD($0$). Ideja je, da v stanju ocenimo
 povračilo kot $G_t \approx R_{t+1} + \gamma V(S_{t+1}).$ To potem uporabimo za \textit{tarčo}
 v pravilu \eqref{osnova}. To nam da pravilo
 \begin{equation}
@@ -938,13 +951,13 @@ učenje uporablja oceno, torej ocenjuje na podalgi ocene. Temu pravimo \textit{z
 
 \subsubsection{Primerjava z Monte Carlo}
 \begin{itemize}
-    \item Tarča pri MC je nepristranska ocena $v_\pi(S_t)$, medtem ko je pri TD(0) tarča 
-    pristranska ocena. Ta prednost MC je uravnotežena s tem, da ima TD(0) tarča nižjo varianco, 
+    \item Tarča pri MC je nepristranska ocena $v_\pi(S_t)$, medtem ko je pri TD($0$) tarča 
+    pristranska ocena. Ta prednost MC je uravnotežena s tem, da ima TD($0$) tarča nižjo varianco, 
     saj je odvisna od ene same slučajne spremenljivke, medtem ko je pri MC odvisna od mnogih 
     slučajnih dogodkov.
     
     \item Prav tako je pomembna razlika v dejstvu, da MC nujno rabi popolne epizode in se lahko
-    izvede le po končani epizodi, TD(0) pa se lahko uči sproti (angl. \textit{online}) in sploh 
+    izvede le po končani epizodi, TD($0$) pa se lahko uči sproti (angl. \textit{online}) in sploh 
     ne potrebuje končnih epizod.
 
     \item Razlika je tudi v tem, kam konvergirata algoritma, če imamo na voljo samo končno 
@@ -953,7 +966,7 @@ učenje uporablja oceno, torej ocenjuje na podalgi ocene. Temu pravimo \textit{z
     $$
     \sum_{k=1}^K \sum_{t=1}^{T_k} (G_t^k - V(s_t^k))^2,
     $$
-    torej se najbolje prilega opazovanim povračilom. TD(0) pa konvergira k rešitvi modela največjega 
+    torej se najbolje prilega opazovanim povračilom. TD($0$) pa konvergira k rešitvi modela največjega 
     verjetja Markova; to je rešitev MDP-ja, ki se najbolje prilega podatkom. Dobimo torej naslednji 
     cenilki: (TO SI ŠE POGLEJ)
     \begin{align*}
@@ -981,13 +994,13 @@ učenje uporablja oceno, torej ocenjuje na podalgi ocene. Temu pravimo \textit{z
     To pomeni recimo, da smo prvo epizodo začeli v stanju A, nato dobili nagrado $0$ in prešli v 
     stanje B, kjer smo ponovno dobili nagrado $0$, tu pa se je epizoda končala. Če bi se učili 
     samo iz teh osmih epizod, bi se verjetno vsi strinjali, da je $V(B) = 3/4$, saj je v šestih
-    opažanjih B zavzel vrednost $1$, v dveh pa $0$. Z nami se strinjata tudi $TD(0)$ in $MC$. 
+    opažanjih B zavzel vrednost $1$, v dveh pa $0$. Z nami se strinjata tudi TD($0$) in $MC$. 
 
     Razlike se začenjo pri stanju A. $MC$, ki minimizira povprečno kvadratno napako in zato ob 
     enem opažanju A, ki je dal nagrado $0$, enostavno reče $V(A) = 0$ - to ima celo ničelno 
     napako glede na podatke. 
 
-    $TD(0)$ pa pristopi nekoliko drugače. Vedno, ko smo opazili A, smo potem takoj opazili tudi B
+    TD($0$) pa pristopi nekoliko drugače. Vedno, ko smo opazili A, smo potem takoj opazili tudi B
     (vmes smo prejeli nagrado $0$), zato je smiselno, da je vrednost stanja A enaka vrednosti 
     stanja B, tj. $V(A) = 3/4$. V tem pristopu smo si pomagali tako, da smo problem modelirali kot 
     markovski proces.
@@ -1002,7 +1015,7 @@ G_t^{(n)} = R_{t+1} + \dots + \gamma^{n-1} R_{t+n} + \gamma^n V(S_{t+1}).
 $$
 To tarčo lahko uporabimo v pravilu \eqref{osnova}. S tem dobimo algoritem, ki se imenuje \textit{
 učenje s časovno razliko z $n$ koraki}. Opazimo tudi, da z večanjem $n$ proti neskončno pridemo na 
-neki točki do že znanega MC pravila. Hitro tudi vidimo, da to pravilo sicer res poveže $TD(0)$ in 
+neki točki do že znanega MC pravila. Hitro tudi vidimo, da to pravilo sicer res poveže TD($0$) in 
 MC, a ne predstavlja nobene bistvene izboljšave. Pojavi pa se še dodaten problem. Če smo v času, ki
 je manj kot $n$ korakov stran od konca epizode, ne moremo porabiti celotnega $G_t^{(n)}$. V tem 
 primeru enostavno vzamemo toliko korakov naprej, kot nam čas dopušča. To pomeni, da se vedemo enako 
@@ -1062,13 +1075,13 @@ alternativi:
             akumulativno in nadomeščujočo.
 \end{itemize}
 
-V zgornji formulaciji pravila TD($\lambda$) je tudi bolj očitno, zakaj ta algoritem poveže $TD(0)$ 
+V zgornji formulaciji pravila TD($\lambda$) je tudi bolj očitno, zakaj ta algoritem poveže TD($0$) 
 in $MC$:
 
 \begin{itemize}
     \item Če je $\lambda = 0$, potem velja $E_t(s) = \mathbbm{1}(S_t = s)$, torej se posodobi samo
             trenutno stanje: $V(S_t) \leftarrow V(s_t) + \alpha \delta_t$, kar pa je natančno 
-            posodobitev pri $TD(0)$.
+            posodobitev pri TD($0$).
     \item Za $TD(1)$ pa je za nagrado zaslužno vsako stanje, tako kot pri $MC$. Pravo ekvivalenco 
             nam pomaga videti naslednji izrek.
 \end{itemize}
@@ -1302,13 +1315,34 @@ Posebnost pri namiznih igrah je tudi v diskontnem faktorju. Čeprav so vseeno za
 pridejo prej, torej krajše igre, se zaradi pojavitve neničelnih nagrad samo ob koncu igre pogosto 
 uporablja diskontni faktor $\gamma = 1$.
 
-\subsection{Pregled konceptov teorije iger}
-Formalno gledano imamo z vidika teorije iger pri namiznih igrah opravka z ekstenzivno (kombinatorno) 
-igro za dva igralca z vsoto 0.
+\subsection{Formalna definicija namizne igre} Namizne igre , s katerimi se ukvarjamo tukaj, sodijo 
+v skupino \textit{kombinatornih iger}. To so igre za dva igralca s popolno informacijo (noben aspekt 
+igre igralcem ni skrit), kjer igralca izmenično igrata poteze. Tovrstnim igram se odlično poda 
+reprezentacija z drevesom, kjer je vsako vozlišče možno stanje (možna stanja določajo pravila igre), 
+povezave pa predstavljajo poteze igralcev.
 
-\subsubsection{Nashevo ravnotežje}
-\subsubsection{Igre z vsoto nič}
-\subsubsection{Ekstenzivne igre}
+Namizne igre v kontekstu te diplomske naloge so igre z vsoto nič. To pomeni, da se nagrade igralcev 
+seštejejo v $0$. Za namene spodbujevalnega učenja lahko agentove nagrade odstopijo od te konvencije
+(npr. z že omenjeno malo negativno nagrado ob vsakem koraku), a v osnovi imamo opravka s tovrstnimi 
+igrami.
+
+\subsection{Optimalna strategija}
+Če imamo opravka z okoljem za enega agenta, je definicija optimalne strategije dokaj enostavna - to
+je strategija, ki agentu dolgoročno prinese najvišjo nagrado. Namizne igre pa imajo drugačno zasnovo; 
+so igre za dva igralca oz. agenta. Sedaj je optimalna strategija enega odvisna od optimalne strategije 
+drugega. Tu nam na vprašanje optimalne strategije ponovno pomaga odgovoriti teorija iger. 
+
+Vrednostna funkcija v modelu z dvema agentoma ocenjuje njuno skupno strategijo, označeno $\pi = (\pi_1, 
+\pi_2)$. Še vedno je definirana na enak način kot v osnovnem modelu. Razlika je samo v optimalni 
+vrednostni funkciji, ki ji tu pravimo \textbf{minimax vrednsotna funkcija}. Ta funkcija maksimizira 
+nagrado za prvega igralca in minimizira nagrado za drugega, in je definirana kot
+$$
+v_*(s) = \max_{\pi_1} \min_{\pi_2} v_\pi(s).
+$$
+\textbf{Minimax strategija} je potem skupna strategija, ki doseže vrednosti minimax vrednostne funkcije. 
+Ta strategija sovpada z Nashevim ravnotežjem igre in je ena sama.
+
+CITIRAJ CITIRAJ
 
 \subsection{Kompleksnost iger}
 \subsubsection{Game tree ...}
@@ -1330,8 +1364,6 @@ igro za dva igralca z vsoto 0.
 \subsection{Kombinacija z iskanjem - možna nadgradnja}
 
 \subsection{Algoritem - zaključena celota}
-\subsubsection{Opomba: deluje, tudi ko ni vsota 0}
-
 
 \section{Empirični rezultati}
 
@@ -1341,7 +1373,20 @@ igro za dva igralca z vsoto 0.
 \subsection{Agent s funkcijsko aproksimacijo}
 \subsubsection{Hiperparametri in arhitektura}
 
+% slovar
+\section*{Slovar strokovnih izrazov}
 
+\geslo{reinforcement learning}{spodbujevalno učenje}
+
+\geslo{Markov decision process (MDP)}{Markovski proces odločanja}
+
+\geslo{temporal-difference learning}{učenje s časovno razliko}
+
+\geslo{(artificial) neural network}{(umetna) nevronska mreža}
+
+%\geslo{glide reflection}{zrcalni zdrs ali zrcalni pomik -- tip ravninske evklidske izometrije, ki je kompozitum zrcaljenja in translacije vzdol"z iste premice}
+%
+%\geslo{partition}{\textbf{$\sim$ of a set} razdelitev mno"zice; \textbf{$\sim$ of a number} raz"clenitev "stevila}
 
 
 
@@ -1384,18 +1429,6 @@ igro za dva igralca z vsoto 0.
 %Na konec dela sodita angle"sko-slovenski slovar"cek strokovnih izrazov in seznam uporabljene literature. Slovar naj vsebuje vse pojme, ki ste jih spoznali ob pripravi dela, pa tudi "ze znane pojme, ki ste jih spoznali pri izbirnih predmetih. Najprej navedite angle"ski pojem (ti naj bodo urejeni po abecedi) in potem ustrezni slovenski prevod; za"zeleno je, da temu sledi tudi opis pojma, lahko komentar ali pojasnilo. Slovarska gesla navajajte z ukazom \verb|\geslo{}{}|. Med zaporednima geselskima ukazoma v \LaTeX\ datoteki mora biti prazna vrstica, da so gesla izpisana vsako v svoji vrstici.
 %
 %Pri navajanju literature si pomagajte s spodnjimi primeri; najprej je opisano pravilo za vsak tip vira, nato so podani primeri. Posebej opozarjam, da spletni viri uporabljajo paket url, ki je vklju"cen v preambuli. Polje ``ogled'' pri spletnih virih je obvezno; "ce je kak podatek neznan, ustrezno ``polje'' seveda izpustimo. Literaturo je potrebno urediti po abecednem vrstnem redu; najprej navedemo vse vire z znanimi avtorji po abecednem redu avtorjev (po priimkih, nato imenih), nato pa spletne vire, urejene po naslovih strani. "Ce isti vir citiramo v dveh oblikah, kot tiskani in spletni vir, najprej navedemo tiskani vir, nato pa "se podatek o tem, kje je dostopen v elektronski obliki.
-%
-%% slovar
-%\section*{Slovar strokovnih izrazov}
-%
-%\geslo{glide reflection}{zrcalni zdrs ali zrcalni pomik -- tip ravninske evklidske izometrije, ki je kompozitum zrcaljenja in translacije vzdol"z iste premice}
-%
-%\geslo{lattice}{mre"za}
-%
-%\geslo{link}{splet}
-%
-%\geslo{partition}{\textbf{$\sim$ of a set} razdelitev mno"zice; \textbf{$\sim$ of a number} raz"clenitev "stevila}
-%
 %
 %% seznam uporabljene literature
 %%\begin{thebibliography}{99}
