@@ -13,6 +13,17 @@
 \usepackage{graphicx}
 \usepackage{bbm}
 \usepackage{hyperref}
+\usepackage{forest,calc}
+\forestset{
+  make tab/.style args={#1:#2:#3/#4:#5:#6/#7:#8:#9}{%
+    content={%
+      \tabcolsep=.6\tabcolsep
+      \begin{tabular}{p{\widthof{x}}|p{\widthof{x}}|p{\widthof{x}}}
+        #1 & #2 & #3\\\hline#4&#5&#6\\\hline#7&#8&#9
+      \end{tabular}}},
+  label position r/.initial=right,
+  label position b/.initial=below
+}
 \hypersetup{
     colorlinks=true, %set true if you want colored links
     linktoc=all,     %set to all if you want both sections and subsections linked
@@ -365,18 +376,19 @@ Dejanski korak (npr. poteza enega od igralcev v namizni igri) v epizodi pa forma
     \item Agent naredi akcijo $A_t$ ob prejetem stanju $S_t$ in prejme nagrado $R_t$.
     \item Okolje prejme akcijo $A_t$, posreduje agentu stanje $S_{t+1}$ in nagrado $R_{t+1}$.
 \end{itemize}
-
-\medspace
-
-\begin{tikzpicture}[node distance = 6em, auto, thick]
-    \node [block] (Agent) {Agent};
-    \node [block, below of=Agent] (Okolje) {Okolje};
-
-    \path [line] (Agent.0) --++ (4em,0em) |- node [near start]{Akcija $A_t$} (Okolje.0);
-    \path [line] (Okolje.190) --++ (-6em,0em) |- node [near start] {Novo stanje  $S_{t+1}$} (Agent.170);
-    \path [line] (Okolje.170) --++ (-4.25em,0em) |- node [near start, right] {Nagrada $R_{t+1}$} (Agent.190);
-\end{tikzpicture}
-
+\begin{center}
+    \begin{figure}[h]
+        \begin{tikzpicture}[node distance = 6em, auto, thick]
+            \node [block] (Agent) {Agent};
+            \node [block, below of=Agent] (Okolje) {Okolje};
+        
+            \path [line] (Agent.0) --++ (4em,0em) |- node [near start]{Akcija $A_t$} (Okolje.0);
+            \path [line] (Okolje.190) --++ (-6em,0em) |- node [near start] {Novo stanje  $S_{t+1}$} (Agent.170);
+            \path [line] (Okolje.170) --++ (-4.25em,0em) |- node [near start, right] {Nagrada $R_{t+1}$} (Agent.190);
+        \end{tikzpicture}
+    \caption{Zanka spodbujevalnega učenja}
+    \end{figure}
+\end{center}
 \subsubsection{Raziskovanje in izkoriščanje}
 Eden izmed glavnih problemov, s katerim se srečamo pri spodbujevalnem učenju, je problem 
 raziskovanja in izkoriščanja. Ko se agent uči, začne dojemati, katere akcije ali pa kombinacije 
@@ -1320,7 +1332,82 @@ v skupino \textit{kombinatornih iger}. To so igre za dva igralca s popolno infor
 igre igralcem ni skrit), kjer igralca izmenično igrata poteze. Tovrstnim igram se odlično poda 
 reprezentacija z drevesom, kjer je vsako vozlišče možno stanje (možna stanja določajo pravila igre), 
 povezave pa predstavljajo poteze igralcev.
-
+%\begin{center}
+%    \begin{figure}[h]
+%        \begin{forest}
+%            TTT/.style args={#1:#2}{
+%              make tab/.expanded=\forestove{content},
+%              label={\pgfkeysvalueof{/forest/label position #1}:$#2$}
+%            },
+%            TTT*/.style={
+%              make tab=::/::/::,
+%              content/.expand once=%
+%              \expandafter\vphantom\expandafter{\romannumeral-`0\forestov{content}},
+%              draw=none,
+%              append after command={(\tikzlastnode.north) edge (\tikzlastnode.south)},
+%              for descendants={before computing xy={l*=1.2}},
+%            },
+%            th/.style=thick,
+%            for tree={node options=draw, inner sep=+0pt, parent anchor=south, child anchor=north}
+%            [o:x:o/x:x:/x:o:, TTT=r:
+%                [o:x:o/x:x:o/x:o:, TTT=b:
+%                    [o:x:o/x:x:o/x:o:x, TTT=b: 0]
+%                ]
+%                [o:x:o/x:x:/x:o:o, TTT=b:
+%                    [o:x:o/x:x:x/x:o:o, TTT=b: 1]
+%                ]
+%            ]
+%        \end{forest}
+%    \caption{Del drevesa igre križci in krožci}
+%    \end{figure}
+%\end{center}
+\begin{center}
+    \begin{figure}[h]
+        \begin{forest}
+            TTT/.style args={#1:#2}{
+              make tab/.expanded=\forestove{content},
+              label={\pgfkeysvalueof{/forest/label position #1}:$#2$}
+            },
+            TTT*/.style={
+              make tab=::/::/::,
+              content/.expand once=%
+              \expandafter\vphantom\expandafter{\romannumeral-`0\forestov{content}},
+              draw=none,
+              append after command={(\tikzlastnode.north) edge (\tikzlastnode.south)},
+              for descendants={before computing xy={l*=1.2}},
+            },
+            th/.style=thick,
+            for tree={node options=draw, inner sep=+0pt, parent anchor=south, child anchor=north}
+            [o:x:o/:x:/x:o:, TTT=r:
+                [o:x:o/x:x:/x:o:, TTT=b:
+                    [o:x:o/x:x:o/x:o:, TTT=b: 
+                        [o:x:o/x:x:o/x:o:x, TTT=b: 0]
+                    ]
+                    [o:x:o/x:x:/x:o:o, TTT=b: 
+                        [o:x:o/x:x:x/x:o:o, TTT=b: 1]
+                    ]
+                ]
+                [o:x:o/:x:x/x:o:, TTT=b:
+                    [o:x:o/o:x:x/x:o:, TTT=b: 
+                        [o:x:o/o:x:x/x:o:x, TTT=b: 0]
+                    ]
+                    [o:x:o/:x:x/x:o:o, TTT=b: 
+                        [o:x:o/x:x:x/x:o:o, TTT=b: 1]
+                    ]
+                ]
+                [o:x:o/:x:/x:o:x, TTT=b:
+                    [o:x:o/:x:o/x:o:x, TTT=b: 
+                        [o:x:o/x:x:o/x:o:x, TTT=b: 0]
+                    ]
+                    [o:x:o/o:x:/x:o:x, TTT=b: 
+                        [o:x:o/o:x:x/x:o:x, TTT=b: 0]
+                    ]
+                ]
+            ]
+        \end{forest}
+    \caption{Del drevesa igre križci in krožci}
+    \end{figure}
+\end{center}
 Namizne igre v kontekstu te diplomske naloge so igre z vsoto nič. To pomeni, da se nagrade igralcev 
 seštejejo v $0$. Za namene spodbujevalnega učenja lahko agentove nagrade odstopijo od te konvencije
 (npr. z že omenjeno malo negativno nagrado ob vsakem koraku), a v osnovi imamo opravka s tovrstnimi 
@@ -1344,32 +1431,99 @@ Ta strategija sovpada z Nashevim ravnotežjem igre in je ena sama.
 
 CITIRAJ CITIRAJ
 
+\subsection{Parcialni model - ">po-stanja"<}
+V veliki večini primerov je pri spodbujevalnem učenju uporabna vrednostna funkcija akcij $q(s, a)$. 
+je zaradi neznane dinamike okolja in nepredvidljivosti njegovih odgovorov smiselno. Vrednostna 
+funkcija stanj $v(s)$ nam ne pomaga pri izboljšavi strategije, saj nam ena vrednost stanja ne pove 
+nič o tem katera akcija je dobra, govori samo o tem, kakšno je trenutno stanje. Za namene uečenja 
+pa je pomembno vedeti, kako dobre so posamezne akcije v stanju, ali pa še boljše, kako dobro je 
+najboljše dosegljivo stanje. 
+
+Izkaže se, da so kombinatorne igre primer okolje, kjer točno vemo, v katero stanje nas bo pripeljala 
+katera akcija - imamo nek parcialni model. Zato se tu ocenjevanja vrednosti lotimo drugače. Ocenjujemo 
+namreč vrednosti ">po-stanj"< (angl. \textit{afterstates}), to so stanja, v katera nas pripelje 
+določena akcija. S pomočjo tega dejstva zelo zmanjšamo velikost vrednostne funkcije in pospešimo učenje.
+
+\begin{zgled}
+    Na začetku igre križcev in krožcev je plošča popolnoma prazna. Ko se prvi igralec odloča, kam bo 
+    postavil svoj križec, nam vrednost prazne plošče ne pomaga nič, vrednosti vseh dosegljivih stanj 
+    (po-stanj) in vrednosti vseh akcij, ki jih ima na voljo, pa nosijo enako inforamcijo.
+\end{zgled}
+
+\subsection{Pridobivanje iger}
+Še ena posebnost pri spodbujevalnem učenju je generiranje iger oz. epizod. Imamo namreč dve zelo 
+različni možnosti. 
+
+\subsubsection{Samoigra}
+Če se vedemo, da je namizna igra okolje za dva agenta, je najbolj naraven in enostaven način za 
+pridobivanje epizod samoigra. To pomeni, da dva identična agenta igrata drug proti drugemu in se 
+soprilagajata. Tak način generiranja iger se tudi najlepše prilega teoriji iger, ki tiči v ozadju. 
+Slabost pa je, da agenta začneta brez znanja in potrebujeta veliko količino iger, da prenehata z 
+igro, ki je skoraj naključna.
+
+\subsubsection{Okolje z enim agentom}
+Alternativa je, da simuliramo okolje s samo enim agentom. To ponavadi naredimo na enega od treh 
+načinov, ki jih opisuje Ghory \cite{RLboard}:
+\begin{itemize}
+    \item \textbf{Igre iz podatkovnih baz.} Za nekatere popularne igre obstajajo podatkovne baze, 
+            kjer so shranjene stare igre. Te so lahko profesionalne (npr. iz kakšnih svetovnih
+            prvenstev) ali pa samo naključne igre med navadnimi ljudmi. Vsekakor je to odlična 
+            alternativa samoigri, saj je polovica igre samo branje iz baz, torej potrebujemo storiti 
+            samo polovico računskih operacij.
+    \item \textbf{Naključen nasprotnik.} Če podatkovno bazo zamenjamo z generatorjem naključnih potez, 
+            dosežemo podobno zmanjšanje računske zahtevnosti, a povzročimo nekaj novih težav. Izkaže 
+            se, da v mnogo igrah obstajajo strategije, ki zelo enostavno premagajo naključnega igralca 
+            a izgubijo proti praktično kateremukoli človeku. Prav tako je naključna igra ponavadi zelo 
+            različna od stila igranja človeka. Naključni igralec ima lahko težave tudi pri uporabi 
+            nekaterih pravil igre in posledično privede do nepotrebnega podaljšanja igre.
+    \item \textbf{Fiksen nasprotnik.} Najenostavnejša alternativa samoigri je uporaba fiksnega 
+            nasprotnika. Ta je ponavadi računalnik, v redkih primerih pa tudi človek. Tu se pojavi 
+            problem prevelikega prilagajanja strategije temu nasprotniku. Pogosto se zgodi, da se 
+            agent nauči strategije, ki premaga fiksnega nasprotnika, a izgubi proti drugim 
+            nasprotnikom.
+\end{itemize}
+
 \subsection{Kompleksnost iger}
 \subsubsection{Game tree ...}
 
 \subsection{Morda kaj o optimal board representationu?}
 \subsection{Pride še kaj v poštev tu?}
 
-
-\section{Spodbujevalno učenje pri namiznih igrah}
-
-\subsection{Parcialni model - ">po-stanja"<}
-
-\subsection{Učenje}
-\subsubsection{Samoigra}
-\subsubsection{Igre iz podatkovnih baz}
-\subsubsection{Naključni nasprotnik}
-\subsubsection{Fiksiran nasprotnik}
-
 \subsection{Kombinacija z iskanjem - možna nadgradnja}
 
 \subsection{Algoritem - zaključena celota}
 
-\section{Empirični rezultati}
+\section{Primer}
+Spoznano teorijo smo aplicirali na praktičen primer namizne igre. V tem odseku bomo predstavili 
+nekaj rezultatov, do katerih smo prišli. Program je napisan v programskem jeziku \textit{Python}. 
+Vsa koda je prosto dostopna na \href{https://github.com/timkalan/diploma}{Githubu}.
 
-\subsection{m,n,k-igra}
+\subsection{$m$,$n$,$k$,-igra}
+$m$,$n$,$k$,-igra je abstraktna namizna igra, kjer dva igralca drug za drugim na ploščo z $m$ 
+vrsticami in $n$ stolpci polagata kamenček svoje barve (oz. ">križce"< in ">krožce"<). Njun cilj 
+je, da v vrsto postavita $k$ kamenčkov svoje barve. Vrsta je lahko v vrstici, stolpcu ali diagonali.
+Kdor prvi uspe, zmaga.
+
+Možna in enostavna prilagoditev igre je dodatek \textit{gravitacije}. To pomeni, da se v vsakem
+stolpcu kamenček lahko postavi le v najnižjo vrstico.
+
+\begin{zgled}
+    Igra Križci in krožci bi tako bila $3$,$3$,$3$-igra. Popularna japonska igra Gomoku je 
+    $15$,$15$,$5$-igra. Ob dodatku gravitacije je igra Štiri v vrsto (angl. \textit{Connect four}) 
+    $6$,$7$,$4$-igra.
+\end{zgled}
+
 \subsubsection{Kompleksnost m,n,k-igre}
-\subsection{Tablearni agent}
+
+\subsection{Kaj smo raziskovali?}
+Ogledali smo si tabelarnega agenta in agenta, ki je vrednsotno funkcijo aproksimiral z nevronsko mrežo. 
+Za samo učenje smo uporabili algoritma TD($0$) in TD($\lambda$). Pod drobnogled smo vzeli $3$,$3$,$3$-igro,
+$5$,$5$,$4$-igro in $6$,$7$,$4$-igro z dodatkom gravitacije.
+
+\subsection{Tabelarni agent}
+Najprej smo se problema lotili na bolj osnoven način - s pomočjo vrednostnih funkcij v obliki tabel. 
+Uporabili smo prej omenjeno vrednostno funkcijo po-stanj in jo predstavili kot slovar v Pythonu. 
+
 \subsection{Agent s funkcijsko aproksimacijo}
 \subsubsection{Hiperparametri in arhitektura}
 
@@ -1394,11 +1548,7 @@ CITIRAJ CITIRAJ
 
 
 
-%\begin{izrek}\label{izr:enakomerno}
-%Zvezna funkcija na zaprtem intervalu je enakomerno zvezna.
-%\end{izrek}
-%
-%\proof
+
 %Na za"cetku dokaza, "ce je to le mogo"ce in smiselno, razlo"zite idejo dokaza. 
 %
 %Dokazovali bomo s protislovjem. Pomagali si bomo z definicijo zveznosti in s kompaktnostjo intervala.
@@ -1415,19 +1565,7 @@ CITIRAJ CITIRAJ
 %\proof[Dokaz izreka \ref{izr:enakomerno}]
 %Dokazovanja te trditve se lahko lotimo tudi takole...
 %\endproof
-%
-%\subsection{Naslov morebitnega podrazdelka} Besedilo naj se nadaljuje v vrstici naslova, torej za ukazom \verb|\subsection{}| ne smete izpustiti prazne vrstice.
-%
-%V tem podrazdelku si bomo ogledali "se nekatere posledice zveznosti. 
-%
-%\begin{lema}
-%Naj bo $f$ zvezna in ...
-%\end{lema}
-%
-%$$\vdots$$
-%
-%Na konec dela sodita angle"sko-slovenski slovar"cek strokovnih izrazov in seznam uporabljene literature. Slovar naj vsebuje vse pojme, ki ste jih spoznali ob pripravi dela, pa tudi "ze znane pojme, ki ste jih spoznali pri izbirnih predmetih. Najprej navedite angle"ski pojem (ti naj bodo urejeni po abecedi) in potem ustrezni slovenski prevod; za"zeleno je, da temu sledi tudi opis pojma, lahko komentar ali pojasnilo. Slovarska gesla navajajte z ukazom \verb|\geslo{}{}|. Med zaporednima geselskima ukazoma v \LaTeX\ datoteki mora biti prazna vrstica, da so gesla izpisana vsako v svoji vrstici.
-%
+
 %Pri navajanju literature si pomagajte s spodnjimi primeri; najprej je opisano pravilo za vsak tip vira, nato so podani primeri. Posebej opozarjam, da spletni viri uporabljajo paket url, ki je vklju"cen v preambuli. Polje ``ogled'' pri spletnih virih je obvezno; "ce je kak podatek neznan, ustrezno ``polje'' seveda izpustimo. Literaturo je potrebno urediti po abecednem vrstnem redu; najprej navedemo vse vire z znanimi avtorji po abecednem redu avtorjev (po priimkih, nato imenih), nato pa spletne vire, urejene po naslovih strani. "Ce isti vir citiramo v dveh oblikah, kot tiskani in spletni vir, najprej navedemo tiskani vir, nato pa "se podatek o tem, kje je dostopen v elektronski obliki.
 %
 %% seznam uporabljene literature
