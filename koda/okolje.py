@@ -1,10 +1,10 @@
 import numpy as np
 
 hiperparametri = {
-                  'VRSTICE': 4,
-                  'STOLPCI': 5,
-                  'V_VRSTO': 4,
-                  'GRAVITACIJA': True,
+                  'VRSTICE': 3,
+                  'STOLPCI': 3,
+                  'V_VRSTO': 3,
+                  'GRAVITACIJA': False,
                   'NAGRADA_ZMAGA': 1,
                   'NAGRADA_REMI': 0.2,
                   'NAGRADA_PORAZ': -1,
@@ -118,7 +118,6 @@ class Okolje:
                         pozicije.append((i, j))
 
         return pozicije
-
 
 
     def igraj(self, pozicija):
@@ -487,6 +486,11 @@ class Okolje:
 
                         self.ponastavi()
                         break
+
+        # poskrbimo, da so rezultati predstavljeni z vidika agenta
+        if not zacne:
+            rezultati['porazi'], rezultati['zmage'] = rezultati['zmage'], rezultati['porazi']
+
         print(rezultati)
         return rezultati
 

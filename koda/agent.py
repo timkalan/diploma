@@ -32,7 +32,7 @@ class Agent:
     shraniti strategijo.
     """
 
-    def __init__(self, ime, epsilon=0.3, alfa=0.2):
+    def __init__(self, ime, epsilon=0.05, alfa=0.2):
         """
         Agent mora beležiti vsa raziskana stanja v epizodi in 
         posodabljati vrednosti teh stanj. 
@@ -113,6 +113,8 @@ class Agent:
                 nagrada - self.vrednosti_stanj[stanje])
 
             nagrada = self.vrednosti_stanj[stanje]
+
+        return nagrada
 
 
     def nagradi_online(self):
@@ -285,6 +287,9 @@ class TD(Agent):
                 nagrada - self.vrednosti_stanj[stanje]) * sledi[stanje]
 
             nagrada = self.gama * self.vrednosti_stanj[stanje]
+        
+        # začasni placeholder loss
+        return 0
 
 
 
@@ -481,7 +486,7 @@ class AgentNN(Agent):
             num_stanje = [float(s) for s in stanje[1:-1].split(' ') if s != '']
             tenzor = FloatTensor(num_stanje)
             
-            # pripravimo za backward pass
+            # pripravimo za backward pass (nastavimo gradient na 0)
             self.optimizer.zero_grad()
 
             output = self.mreza(tenzor)

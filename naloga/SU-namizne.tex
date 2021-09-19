@@ -891,11 +891,10 @@ epizode dogajanja. Ideja delovanja je, da se namesto na direktno računanje pri�
 $G_t = \sum_{k=0}^\infty \gamma^k R_{t + k + 1}$, osredotočimo na računanje \textit{empiričnega} 
 povračila. To storimo tako, da za vsako stanje $s$ definiramo števec $N(s)$, ki beleži, kolikokrat 
 je bilo stanje obiskano. Ta števec ne beleži zgolj obiskov znotraj epizode, temveč skozi celoten 
-proces učenja. Za vsako stanje hranimo še $S(s)$, ki mu ob vsakem obisku prištejemo pričakovano 
-povračilo. To seveda pomeni, da se vrednost stanja ne more posodobiti takoj po obisku, ampak šele 
-ob koncu epizode, ko je $G_t$ znan. Po koncu učenja enostavno za vsako stanje delimo $S(s)$ z $N(s)$
-in tako dobimo vzorčno povprečje za dejanski $v(s)$.
-
+proces učenja. Za vsako stanje hranimo še $S(s)$, ki ga posodobimo za vsa stanja na koncu epizode
+tako, da prištejemo dejansko opaženo empirično povračilo $G_t$, ki pripada posameznemu stanju.
+Po koncu učenja enostavno za vsako stanje delimo $S(s)$ z $N(s)$ in tako dobimo vzorčno povprečje za 
+dejanski $v(s)$.
 \begin{itemize}
     \item Ob vsakem (ali samo prvem) obisku stanja $s$: 
         \begin{align*}
@@ -907,7 +906,10 @@ in tako dobimo vzorčno povprečje za dejanski $v(s)$.
         V(s) \leftarrow S(s) / N(s)
         $$
 \end{itemize}
-TOLE MALO BOLJ RAZDELAJ - MONTE CARLO IMA KVADRATIČNO KONVERGENCO, SUTTON BARTO
+
+TOLE MALO BOLJ RAZDELAJ - MONTE CARLO IMA KVADRATIČNO KONVERGENCO, SUTTON BARTO, RAZLOŽI KAJ JE 
+PUŠČICA
+
 Opazimo, da vrednost $V(s)$ konvergira proti $v_\pi(s)$, ko gre $N(s) \rightarrow \infty$ po 
 krepkem zakonu velikih števil. Opazimo tudi, da metoda deluje samo za probleme, ki imajo končne 
 epizode, saj šele takrat lahko poznamo $G_t$. Če za vsako stanje $s$ hranimo $N(s)$ in $S(s)$, 
@@ -921,7 +923,6 @@ spremenljivk $X_1, X_2, \dots$ izračunamo inkrementalno:
         &= \frac{1}{k} \left[X_k + (k-1) \mu_{k-1} \right] \\
         &= \mu_{k-1} + \frac{1}{k} \left(X_k - \mu_{k-1} \right).
 \end{align*}
-
 Na podlagi te zveze lahko implementiramo inkrementalni Monte Carlo, tako da po končani epizodi 
 za vsako stanje $S_t$ s povračilom $G_t$ posodobimo (ODLOČI SE ZA $S_t$ ALI s): 
 
@@ -929,8 +930,8 @@ za vsako stanje $S_t$ s povračilom $G_t$ posodobimo (ODLOČI SE ZA $S_t$ ALI s)
     N(S_t) &\leftarrow N(S_t) + 1, \\
     V(S_t) &\leftarrow V(S_t) + \frac{1}{N(S_t)} (G_t - V(S_t)).
 \end{align*}
-Izkaže se, da lahko zgornje še malo posplošimo in uporabimo
-
+Izkaže se, da lahko zgornje še malo posplošimo in namesto faktorja $1/N(S_t)$ uporabimo splošni 
+faktor $\alpha$
 \begin{equation}\label{mc}
     V(S_t) \leftarrow V(S_t) + \alpha (G_t - V(S_t)),
 \end{equation}
@@ -946,9 +947,9 @@ oblike:
 \subsection{Algoritem TD($0$)}
 V spodbujevalnem učenju obstaja skupina algoritmov, ki se imenujejo \textbf{algoritmi učenja s 
 časovno razliko} (angl. \textit{temporal-difference learning}). Delujejo v podobnih pogojih kot 
-Monte Carlo in tudi dosegajo enak cilj. Pomembna razlika je, da ne potrebujejo povračila pri 
-posodobitvi. Delujejo lahko tudi v sistemih, ki se ne delijo na epizode oz. ne potrebujejo 
-končanih epizod za svoje delovanje.
+Monte Carlo in tudi dosegajo enak cilj. Pomembna razlika je, da ne potrebujejo empiričnega povračila 
+pri posodobitvi. Zaradi tega lahko delujejo tudi v sistemih, ki se ne delijo na epizode oz. ne 
+potrebujejo končanih epizod za svoje delovanje.
 
 Najpreprostejši algoritem učenja s časovno razliko je TD($0$). Ideja je, da v stanju ocenimo
 povračilo kot $G_t \approx R_{t+1} + \gamma V(S_{t+1}).$ To potem uporabimo za \textit{tarčo}
@@ -957,20 +958,21 @@ v pravilu \eqref{osnova}. To nam da pravilo
     V(S_t) \leftarrow V(S_t) + \alpha (R_{t+1} + \gamma V(S_{t+1}) - V(S_t)).
 \end{equation}
 Iz tega zelo hitro ugotovimo, od kod pride poimenovanje. Algoritem za svoje posodabljanje uporablja 
-podatek iz naslednjega trenutka - torej se uči s časovno razliko. Pomembno je omeniti tudi, da  za 
-učenje uporablja oceno, torej ocenjuje na podalgi ocene. Temu pravimo \textit{zankanje} (angl. 
-\textit{bootstrapping}).
+podatek iz naslednjega trenutka -- torej se uči s časovno razliko. Pomembno je omeniti tudi, da za 
+učenje uporablja oceno vrednosti naslednjega stanja, torej ocenjuje na podalgi ocene. Temu pravimo 
+\textit{zankanje} (angl. \textit{bootstrapping}).
 
 \subsubsection{Primerjava z Monte Carlo}
 \begin{itemize}
     \item Tarča pri MC je nepristranska ocena $v_\pi(S_t)$, medtem ko je pri TD($0$) tarča 
-    pristranska ocena. Ta prednost MC je uravnotežena s tem, da ima TD($0$) tarča nižjo varianco, 
+    pristranska ocena. Ta prednost MC je uravnotežena s tem, da ima tarča pri TD($0$) nižjo varianco, 
     saj je odvisna od ene same slučajne spremenljivke, medtem ko je pri MC odvisna od mnogih 
     slučajnih dogodkov.
     
     \item Prav tako je pomembna razlika v dejstvu, da MC nujno rabi popolne epizode in se lahko
     izvede le po končani epizodi, TD($0$) pa se lahko uči sproti (angl. \textit{online}) in sploh 
-    ne potrebuje končnih epizod.
+    ne potrebuje končnih epizod. Seveda pa lahko TD($0$) uporabimo tudi za učenje samo ob koncu 
+    posameznih epizod (angl. \textit{offline}).
 
     \item Razlika je tudi v tem, kam konvergirata algoritma, če imamo na voljo samo končno 
     količino epizod. Naj $K$ označuje število epizod in $k$ nakazuje, v kateri epizodi smo. Potem 
@@ -1143,7 +1145,7 @@ in $MC$:
     se napaka akumulira v več takih napak pogleda naprej.
 \end{proof}
 
-\subsection{Posplošena iteracija strategije}
+\subsection{Problem upravljanja}
 Do sedaj smo se osredotočali samo na problem napovedovanja - o strategiji nismo veliko govorili, 
 smo pa ugotovili, kako ob dani strategiji dobimo pravo funkcijo vrednosti. Pri dinamičnem 
 programiranju smo to reševali s pomočjo požrešne izboljšave strategije, ki bi tu imela enačbo
@@ -1151,7 +1153,7 @@ $$
 \pi'(s) = \text{arg}\max_{a \in \mathcal{A}} \mathcal{R}_s^a + \mathcal{P}_{ss'}^a V(s'),
 $$
 a to sedaj ne pride v poštev, saj želimo problem rešiti, brez da poznamo MDP (torej brez da 
-poznamo $\mathcal{P}_{ss'}^a$ in $\mathcal{R}_s^a$). Opaizmo, da lahko prek zamenjave vrednostne 
+poznamo $\mathcal{P}_{ss'}^a$ in $\mathcal{R}_s^a$). Opazimo, da lahko prek zamenjave vrednostne 
 funkcije stanj v funkcijo akcij $Q(s, a)$ odpravimo potrebo po poznavanju in dobimo enačbo požrešne
 izboljšave strategije kot 
 \begin{equation}\label{PIS}
@@ -1160,7 +1162,7 @@ izboljšave strategije kot
 Tako res lahko uporabimo enega od zgoraj opisanih algoritmov v kombinaciji s tem in rešimo problem 
 upravljanja, torej celoten problem spodbujevalnega učenja. Naletimo pa na novo težavo. Če se vedemo
 požrešno ni nujno, da raziščemo celoten prostor stanj $\mathcal{S}$. Prišli smo do problema 
-\textit{rasikovanja in izkoriščanja}. Na srečo pa ima problem enostavno rešitev. 
+\textit{rasikovanja in izkoriščanja}. Na srečo pa ima problem enostavno rešitev.
 
 Če se agent ne vede popolnoma požrešno, pač pa z verjetnostjo $\epsilon$ izbere naključno akcijo, 
 je zagotovljeno, da bo z neničelno verjetnostjo obiskal vsa stanja, hkrati pa se bo strategija 
@@ -1190,11 +1192,22 @@ Glavni problem zgornjih algoritmov je shranjevanje v tabele. Vsi delujejo na pri
 velihih tabel; en vnos za vsako stanje (oz. en vnos za vsako kombinacijo stanja in akcije). To pri 
 velikih MDP-jih ne pride v poštev, saj učenje postane zelo prostorsko zahtevno in pa tudi 
 dolgotrajno - stanje, ki ni obiskano, nima dodeljene vrednosti, torej o njem ne vemo nič. Tabelarne 
-rešitve zato potrebujejo veliko kolino podatvko, oz. veliko količino epizod.  
+rešitve zato potrebujejo veliko kolino podatkov, oz. veliko količino epizod.  
+
+\begin{zgled}[Število stanj pri nekaterih namiznih igrah]
+    Igra Križci in krožci je zelo enostavna igra in to je odraženo tudi v številu stanj v igri. 
+    Grobo oceno lahko dobimo, če upoštevamo da lahko vsako od devetih polj vsebuje enega od znakov 
+    ali pa je prazno. To nam da oceno $3^9 = 19683$. To številko hitro zmanjšamo, če ne upoštevamo 
+    ilegalnih stanj. Tako dobimo $5478$ legalnih stanj. Ob upoštevanju rotacij in zrcaljenj pa 
+    prispemo do $765$ dejansko razliučnih stanj. To lahko enostavno shranimo v tabelo. 
+
+    Popolnoma druga zgodba pa nastopi pri igrah kot sta Šah in Go. Za Šah je ocenjeno, da ima 
+    $10^{46}$ stanj, Go pa ima okoli $10^{170}$ stanj.
+\end{zgled}
 
 Zato je pomembna nadgradnja algoritmov uporaba funkcijskih aproksimatorjev. Ta koncept je izčrpno 
-preoučevan na področju numerike, statistike in nadzorovanega učenja in načeloma se lahko uporabi 
-katerkoli od znanih aproksimatorjev. Ideja je, da z nekaj utežmi opišemo funkcijo vrednosti, nato 
+preučevan na področju numerike, statistike in nadzorovanega učenja in načeloma se lahko uporabi 
+katerkoli od znanih aproksimatorjev. Ideja je, da z nekaj utežmi $w$ opišemo funkcijo vrednosti, nato
 pa namesto funkcije neposredno, prilagajamo te uteži. To zmanjša prostorsko zahtevnost algoritmov 
 in pa tudi omogoča, da dodelimo neke (smiselne) vrednosti stanjem, ki še niso bila obiskana. Ocene 
 za funkcije vrednsoti stanja in stanja-akcije sedaj zapišemo
@@ -1230,7 +1243,7 @@ in tako premikati uteži v skladu z
 $$
 \Delta w = \alpha E_\pi [(v_\pi(s) - \hat{v}(s, w)) \nabla_w \hat{v}(s, w)], 
 $$
-kjer smo pri odvajanju pridobljeno $1/2$ skrili v parameter $\alpha$.
+kjer smo pri odvajanju pridobljen faktor $2$ skrili v parameter $\alpha$.
 
 Seveda pa tu pridemo do dveh težav. Prva je uporaba pričakovane vrednosti, ki bi spet pomenila polno 
 znanje o sistemu. To odpravimo z uporabo \textbf{stohastičnega gradientnega spusta} tako, da 
@@ -1241,7 +1254,7 @@ $$
 V povprečju vseeno dobimo enako posodobitev uteži. 
 
 Druga težava je zahteva po poznavanju $v_\pi(s)$, kar seveda pri problemu spodbujevalnega učenja ni 
-možno. To težavo rešimo z dosedaj podano teorijo: $v_pi(s)$ zamenjamo z eno izmed tarč, ki smo jih 
+možno. To težavo rešimo z dosedaj podano teorijo: $v_\pi(s)$ zamenjamo z eno izmed tarč, ki smo jih 
 spoznali v poglavju \ref{algoritmi}. Najbolj pogosto je to tarča algoritma TD($\lambda$), ki nam 
 posodablja uteži v skladu z 
 $$
@@ -1257,17 +1270,17 @@ $$
 
 \subsubsection{Linearna aproksimacija}
 Najbolj enostaven način aproksimacije funkcij je seveda linerana aproksimacija. Ideja je, da stanje 
-predstavimo z vektorjem 
+$s$ predstavimo z vektorjem 
 $$
-x(S) = \begin{bmatrix}
-    x_{1}(S) \\
-    x_{2}(S) \\
+x(s) = \begin{bmatrix}
+    x_{1}(s) \\
+    x_{2}(s) \\
     \vdots \\
-    x_{n}(S)
+    x_{n}(s)
   \end{bmatrix}.
 $$
 
-\begin{zgled}[Vektor $x(S)$ pri križcih in krožcih]
+\begin{zgled}[Vektor $x(s)$ pri križcih in krožcih]
 \label{vektor-ttt}
     Igralno ploščo križcev in krožcev lahko predstavimo kot vektor devetih števil, kjer 
     $1$ pomeni križec, $0$ pomeni prazno polje in $-1$ pomeni krožec. Če želimo pridelati malo daljši 
@@ -1278,10 +1291,10 @@ $$
 
 Sedaj lahko predstavimo vrednost stanja kot linearno kombinacijo komponent vektorja stanja
 $$
-\hat{v}(s, w) = x(S)^T w = \sum_{i=1}^n x_i(S) w_i.
+\hat{v}(s, w) = x(s)^T w = \sum_{i=1}^n x_i(s) w_i.
 $$
-V tej situaciji stohastićni gradientni spust konvergira k globalnemu minimumu (CITIRAJ!!!). Dobimo 
-tudi zelo enostavno pravilo posodabljanja, saj velja $\nabla_w \hat{v}(s, w) = x(S)$. To zelo 
+V tej situaciji stohastični gradientni spust konvergira k globalnemu minimumu (CITIRAJ!!!). Dobimo 
+tudi zelo enostavno pravilo posodabljanja, saj velja $\nabla_w \hat{v}(s, w) = x(s)$. To zelo 
 poenostavi računanje in razmislek o teoriji v ozadju. Zato je tudi linearna aproksimacija najbolj 
 teoretično obdelana -- konvergenčni dokazi za funkcijske aproksimacije so večinoma narejeni samo 
 za linearni primer.
@@ -1493,10 +1506,10 @@ načinov, ki jih opisuje Ghory \cite{RLboard}:
 
 \subsection{Algoritem - zaključena celota}
 
-\section{Primer}
+\section{Aplikacija v praksi}
 Spoznano teorijo smo aplicirali na praktičen primer namizne igre. V tem odseku bomo predstavili 
-nekaj rezultatov, do katerih smo prišli. Program je napisan v programskem jeziku \textit{Python}. 
-Vsa koda je prosto dostopna na \href{https://github.com/timkalan/diploma}{Githubu}.
+nekaj rezultatov, do katerih smo prišli. Vsa koda je prosto dostopna na 
+\href{https://github.com/timkalan/diploma}{Githubu}.
 
 \subsection{$m$,$n$,$k$,-igra}
 $m$,$n$,$k$,-igra je abstraktna namizna igra, kjer dva igralca drug za drugim na ploščo z $m$ 
@@ -1515,17 +1528,44 @@ stolpcu kamenček lahko postavi le v najnižjo vrstico.
 
 \subsubsection{Kompleksnost m,n,k-igre}
 
-\subsection{Kaj smo raziskovali?}
+\subsection{Metoda}
+
+\subsubsection{Algoritmi}
 Ogledali smo si tabelarnega agenta in agenta, ki je vrednsotno funkcijo aproksimiral z nevronsko mrežo. 
 Za samo učenje smo uporabili algoritma TD($0$) in TD($\lambda$). Pod drobnogled smo vzeli $3$,$3$,$3$-igro,
 $5$,$5$,$4$-igro in $6$,$7$,$4$-igro z dodatkom gravitacije.
 
+\subsubsection{Pripomočki}
+Uporabili smo programski jezik \textit{Python}. Nekatere numerične operacije so pospešene s pomočjo 
+knjižnice za numerično računanje \textit{NumPy}. Nevronskih mrež nismo implementirali sami, pač pa 
+smo uporabili knjižnico \textit{PyTorch}.
+
+\subsubsection{Postopek}
+Za vse kombinacije iger in algoritmov smo izvedli enakovreden poskus. Uporabili smo metodo samoigre, 
+s pomočjo katere so agenti igrali vnaprej določeno količino iger. Na vsake $500$ iger smo učenje 
+ustavili, pridobljeno strategijo za prvega igralca pa uporabili za $1000$ iger proti naključnemu 
+igralcu. Zmage, izenačenja in poraze smo potem narisali na graf. 
+
+Za nekatere igre oz. algoritme smo izvedli eksperiment tudi na način, da je igro začel naključni igralec
+in je agent igral vlogo drugega igralca. Oznake so vseeno vedno pripravljene tako, da npr. ">zmage"< 
+govorijo o zmagah agenta (ne glede na to, ali je agent prvi ali drugi igralec). 
+
 \subsection{Tabelarni agent}
 Najprej smo se problema lotili na bolj osnoven način - s pomočjo vrednostnih funkcij v obliki tabel. 
-Uporabili smo prej omenjeno vrednostno funkcijo po-stanj in jo predstavili kot slovar v Pythonu. 
+Uporabili smo prej omenjeno vrednostno funkcijo po-stanj in jo predstavili kot slovar v Pythonu, ki 
+se je polnil z vsakim novim odkritim stanjem. Parameter hitrosti učenja $\alpha$ in parameter 
+raziskovanja $\epsilon$ sta bila prek poskušanja nastavljena na učinkoviti vrednosti -- to sta 
+$\alpha = 0.2$ in $\epsilon = 0.3$.
+
+\subsubsection{$3$,$3$,$3$-igra}
 
 \subsection{Agent s funkcijsko aproksimacijo}
-\subsubsection{Hiperparametri in arhitektura}
+Pri agentu z nevrosnkimi mrežami se pojavijo dodatni parametri. Izbira velikosti in globine nevronske 
+mreže je pogosto arbitrarna izbira, mi smo izbrali mrežo z dvema skritima slojema. Velikost vhodnega 
+sloja je določena z velikostjo igre. Ploščo smo predstavili z binarnim vektorjem stanja in na koncu 
+dodali še nevron pristranskosti (angl. \textit{bias neuron}). Tako je formula za velikost $ m \times 
+n \times 3 + 1$. Velikost obeh skritih slojev je dvakratnik velikosti vhodnega sloja. Izhodni sloj pa 
+ima enostavno velikost $1$, saj nas zanima samo ocena stanja, ki ga podamo mreži. 
 
 % slovar
 \section*{Slovar strokovnih izrazov}

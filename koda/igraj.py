@@ -69,22 +69,23 @@ class Nakljucni:
 #    pass
 
 
-
-def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.01), 
-         p2=AgentNN('p2', epsilon=0.05, alfa=0.01), 
-         m=4,
-         n=5,
-         k=4,
+# za NN agenta je alfa = 0.01, epsilon = 0.05
+# za tab agenta je alfa = 0.2, epsilon = 0.01
+def main(p1=Agent('p1', alfa = 0.2, epsilon = 0.5), 
+         p2=Agent('p2', alfa = 0.2, epsilon = 0.5), 
+         m=3,
+         n=3,
+         k=3,
          gravitacija=False,
-         trening=False,
-         epizode=50000,
+         trening=True,
+         epizode=10000,
          nalozi=False,
-         nalozi_iz='454gnn', 
+         nalozi_iz='test', 
          shrani=True, 
-         shrani_v='454gnn',
-         nasprotnik=Clovek('p2'), 
+         shrani_v='test',
+         nasprotnik=Nakljucni('p2'), 
          strategija='test',
-         zacne=True):
+         zacne=False):
     """
     p1 = Agent
     p2 = nasprotnik za namene treninga
@@ -104,6 +105,11 @@ def main(p1=AgentNN('p1', epsilon=0.05, alfa=0.01),
     hiperparametri['STOLPCI'] = n
     hiperparametri['V_VRSTO'] = k
     hiperparametri['GRAVITACIJA'] = gravitacija
+
+    # posodobimo velikosti nevronskih mrež
+    if isinstance(p1, AgentNN):
+        p1 = AgentNN('p1', epsilon=0.05, alfa=0.01)
+        p2 = AgentNN('p2', epsilon=0.05, alfa=0.01)
 
     if trening:
         if nalozi:
