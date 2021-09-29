@@ -4,18 +4,32 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 igre = []
-igralec1 = agent.Agent
-igralec2 = agent.Agent
+igralec1 = agent.AgentNN
+igralec2 = agent.AgentNN
 # format: algo-igralec-igra-stevilo
 
 m = 3
 n = 3
 k = 3
 grav = False
-epsilon = 0.3
-alfa = 0.2
-zacne = True
-igra = 'td0-333-10000'
+
+# epsilon za navadnega
+#epsilon = 0.3
+# epsilon za nn
+epsilon = 0.05
+
+# alfa za navadnega
+#alfa = 0.2
+# alfa za nn
+alfa = 0.01
+
+zacne = False
+algo = 'tdnn'
+# 'λ'
+kdo_igra = 'TD(0)-NM'
+igra = algo + '-333-40000'
+g = 'g' if grav else ''
+turn = '1' if zacne else '2'
 
 a = igraj.main(p1=igralec1('p1', epsilon=epsilon, alfa=alfa), 
                p2=igralec2('p2', epsilon=epsilon, alfa=alfa), 
@@ -34,7 +48,7 @@ a = igraj.main(p1=igralec1('p1', epsilon=epsilon, alfa=alfa),
                zacne=zacne)
 igre.append(a)
 
-for i in range(20):
+for i in range(80):
     #epsilon = 1 / (2 * i + 1)
     #alfa = 1 / (i + 1)
 
@@ -64,13 +78,12 @@ df = pd.DataFrame(igre)
 print(df)
 df.plot.line()
 
-g = 'g' if grav else ''
-turn = '-1' if zacne else '-2'
-df.to_csv(f'rezultati/{str(m) + str(n) + str(k)}{g}{turn}.csv')
-plt.xlabel('Število iger x 1000')
+
+df.to_csv(f'rezultati/{algo}-{str(m) + str(n) + str(k)}{g}-{(i + 1) * 500}-{turn}.csv')
+plt.xlabel('Število iger x 500')
 plt.ylabel('Število')
 if zacne:
-    plt.title(f'{m}' + ',' + f'{n}' + ',' + f'{k}' + '-igra: agent proti naključnemu igralcu')
+    plt.title(f'{m}' + ',' + f'{n}' + ',' + f'{k}' + f'-igra: {kdo_igra} proti naključnemu igralcu')
 else: 
-    plt.title(f'{m}' + ',' + f'{n}' + ',' + f'{k}' + '-igra: naključni igralec proti agentu')
+    plt.title(f'{m}' + ',' + f'{n}' + ',' + f'{k}' + f'-igra: naključni igralec proti {kdo_igra}')
 plt.show()

@@ -62,11 +62,7 @@ class Nakljucni:
         indeks =  np.random.choice(len(pozicije))
         akcija = pozicije[indeks]
         return akcija
-
-
-
-#class Minimax():
-#    pass
+        
 
 
 # za NN agenta je alfa = 0.01, epsilon = 0.05
