@@ -8,10 +8,10 @@ igralec1 = agent.AgentNN
 igralec2 = agent.AgentNN
 # format: algo-igralec-igra-stevilo
 
-m = 3
-n = 3
-k = 3
-grav = False
+m = 6
+n = 7
+k = 4
+grav = True
 
 # epsilon za navadnega
 #epsilon = 0.3
@@ -23,11 +23,11 @@ epsilon = 0.05
 # alfa za nn
 alfa = 0.01
 
-zacne = False
+zacne = True
 algo = 'tdnn'
 # 'λ'
 kdo_igra = 'TD(0)-NM'
-igra = algo + '-333-40000'
+igra = algo + '-674g-100000'
 g = 'g' if grav else ''
 turn = '1' if zacne else '2'
 
@@ -48,7 +48,7 @@ a = igraj.main(p1=igralec1('p1', epsilon=epsilon, alfa=alfa),
                zacne=zacne)
 igre.append(a)
 
-for i in range(80):
+for i in range(200):
     #epsilon = 1 / (2 * i + 1)
     #alfa = 1 / (i + 1)
 

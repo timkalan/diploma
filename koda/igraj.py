@@ -62,24 +62,24 @@ class Nakljucni:
         indeks =  np.random.choice(len(pozicije))
         akcija = pozicije[indeks]
         return akcija
-        
+
 
 
 # za NN agenta je alfa = 0.01, epsilon = 0.05
 # za tab agenta je alfa = 0.2, epsilon = 0.01
 def main(p1=Agent('p1', alfa = 0.2, epsilon = 0.5), 
          p2=Agent('p2', alfa = 0.2, epsilon = 0.5), 
-         m=3,
-         n=3,
-         k=3,
+         m=6,
+         n=7,
+         k=4,
          gravitacija=False,
          trening=True,
-         epizode=10000,
+         epizode=10,
          nalozi=False,
          nalozi_iz='test', 
          shrani=True, 
          shrani_v='test',
-         nasprotnik=Nakljucni('p2'), 
+         nasprotnik=Clovek('p2'), 
          strategija='test',
          zacne=False):
     """
