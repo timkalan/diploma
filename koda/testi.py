@@ -20,14 +20,14 @@ epsilon = 0.05
 
 # alfa za navadnega
 #alfa = 0.2
-# alfa za nn
-alfa = 0.01
+# alfa za nn (0.01)
+alfa = 1
 
 zacne = True
 algo = 'tdnn'
 # 'λ'
 kdo_igra = 'TD(0)-NM'
-igra = algo + '-674g-100000'
+igra = algo + '-674g-150000'
 g = 'g' if grav else ''
 turn = '1' if zacne else '2'
 
@@ -48,7 +48,7 @@ a = igraj.main(p1=igralec1('p1', epsilon=epsilon, alfa=alfa),
                zacne=zacne)
 igre.append(a)
 
-for i in range(200):
+for i in range(300):
     #epsilon = 1 / (2 * i + 1)
     #alfa = 1 / (i + 1)
 
