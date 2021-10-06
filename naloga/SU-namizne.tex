@@ -10,6 +10,8 @@
 \usepackage[dvipsnames,usenames]{color}
 \usepackage{pgf}
 \usepackage{tikz}
+\usepackage{algorithm}
+\usepackage{algorithmic}
 \usepackage{graphicx}
 \usepackage{bbm}
 \usepackage{hyperref}
@@ -61,6 +63,7 @@
 \newtheorem{posledica}[definicija]{Posledica}
 \newtheorem{zgled}[definicija]{Zgled}
 \newtheorem{hipoteza}[definicija]{Hipoteza}
+\newtheorem{algoritem}[algorithm]{Algoritem}
 
 
 % za stevilske mnozice uporabi naslednje simbole
@@ -141,7 +144,7 @@ Prevod zgornjega povzetka v angle"s"cino.
 
 % tu se zacne tekst seminarja
 \section{Uvod}
-Namizne igre ljudje igramo že od prazgodovine. Na Kitajskem je bila igra Go znana kot ena 
+Namizne igre ljudje igramo že od prazgodovine. Na Kitajskem je bila igra go znana kot ena 
 izmed štirih umetnosti Kitajskega učenjaka poleg igranja inštrumenta s strunami, kaligrafije
 in slikanja. Spremljajo nas že zelo dolgo časa, zato je naravno, da jih želimo ljudje čim
 bolje igrati.
@@ -960,7 +963,36 @@ v pravilu \eqref{osnova}. To nam da pravilo
 Iz tega zelo hitro ugotovimo, od kod pride poimenovanje. Algoritem za svoje posodabljanje uporablja 
 podatek iz naslednjega trenutka -- torej se uči s časovno razliko. Pomembno je omeniti tudi, da za 
 učenje uporablja oceno vrednosti naslednjega stanja, torej ocenjuje na podalgi ocene. Temu pravimo 
-\textit{zankanje} (angl. \textit{bootstrapping}).
+\textit{zankanje} (angl. \textit{bootstrapping}). 
+
+Seveda za delovanje ni nujno, da se agent uči med samo epizodo, ampak se lahko samo po koncu -- tako 
+kot pri Monte Carlu. Mi se bomo zaradi enostavnosti implementacije omejili na ta primer. Ker so si 
+algoritmi med sabo podobni, zadošča navesti zgled algoritma za TD($0$).
+
+\begin{algorithm}[H]
+    \caption{TD($0$) - ocenjevnaje  $V \approx v_\pi$}
+\begin{algorithmic}
+    
+    \STATE \textbf{Podatki}: strategija $\pi$, parameter hitrosti učenja $\alpha$, število epizod $epizode$, 
+            diskontni faktor $\gamma$
+    \STATE 
+    \STATE Arbitrarno nastavimo vrednosti $V(s)$ za vsak $s \in \mathcal{S}$ (npr. $V(s) = 0~\forall s$)
+    \STATE
+    \FOR{$epizoda$ in $epizode$}
+        \STATE Generiraj epizodo prek strategije $\pi$
+        \STATE $stanja \leftarrow$ seznam vseh opaženih stanj
+        \STATE $nagrade \leftarrow$ seznam vseh opaženih nagrad
+        \STATE
+        \FOR{$korak$ in $epizoda$}
+        \STATE $trenutno = stanja[korak]$
+        \STATE $naslednje = stanja[korak + 1]$
+        \STATE $V(trenutno) \leftarrow V(trenutno) + \alpha (nagrade[naslednje] + \gamma V(naslednje) - 
+        V(trenutno))$ 
+        \ENDFOR
+    \ENDFOR
+
+\end{algorithmic}
+\end{algorithm}
 
 \subsubsection{Primerjava z Monte Carlo}
 \begin{itemize}
@@ -1187,6 +1219,37 @@ kjer $m$ označuje število akcij, ki so na voljo v stanju $s$.
     
 \end{proof}
 
+Z upoštevanjem vsega zgornjega lahko sedaj zapišemo, kako bi s pomočjo algoritma TD($0$) rešili 
+celoten problem spodbujevalnega učenja.
+
+\begin{algorithm}[H]
+    \caption{TD($0$) - ocenjevnaje  $Q \approx q_*$ (t. i. $SARSA$ algoritem)}
+\begin{algorithmic}\label{SARSA}
+    
+    \STATE \textbf{Podatki}: parameter hitrosti učenja $\alpha$, število epizod $epizode$, diskontni 
+            faktor $\gamma$, parameter požrešnosti $\epsilon$
+    \STATE 
+    \STATE Arbitrarno nastavimo vrednosti $Q(s, a)$ za vsak $s \in \mathcal{S}$ in $a \in \mathcal{A}(s)$ 
+            (npr. $Q(s, a) = 0~\forall s, a$)
+    \STATE
+    \FOR{$epizoda$ in $epizode$}
+        \STATE Generiraj epizodo prek funkcije $Q$ $\epsilon$-požrešno
+        \STATE $stanja \leftarrow$ seznam vseh opaženih stanj
+        \STATE $nagrade \leftarrow$ seznam vseh opaženih nagrad
+        \STATE $akcije \leftarrow$ seznam vseh opaženih akcij
+        \STATE
+        \FOR{$korak$ in $epizoda$}
+        \STATE $s = stanja[korak]$
+        \STATE $s' = stanja[korak + 1]$
+        \STATE $a = akcije[korak]$
+        \STATE $a' = akcije[korak + 1]$
+        \STATE $Q(s, a) \leftarrow Q(s, a) + \alpha (nagrade[s'] + \gamma Q(s', a') - Q(s, a))$ 
+        \ENDFOR
+    \ENDFOR
+
+\end{algorithmic}
+\end{algorithm}
+
 \subsection{Funkcijska aproksimacija}
 Glavni problem zgornjih algoritmov je shranjevanje v tabele. Vsi delujejo na principu grajenja 
 velihih tabel; en vnos za vsako stanje (oz. en vnos za vsako kombinacijo stanja in akcije). To pri 
@@ -1201,8 +1264,8 @@ rešitve zato potrebujejo veliko kolino podatkov, oz. veliko količino epizod.
     ilegalnih stanj. Tako dobimo $5478$ legalnih stanj. Ob upoštevanju rotacij in zrcaljenj pa 
     prispemo do $765$ dejansko razliučnih stanj. To lahko enostavno shranimo v tabelo. 
 
-    Popolnoma druga zgodba pa nastopi pri igrah kot sta Šah in Go. Za Šah je ocenjeno, da ima 
-    $10^{46}$ stanj, Go pa ima okoli $10^{170}$ stanj.
+    Popolnoma druga zgodba pa nastopi pri igrah kot sta šah in Go. Za šah je ocenjeno, da ima 
+    $10^{46}$ stanj, go pa ima okoli $10^{170}$ stanj.
 \end{zgled}
 
 Zato je pomembna nadgradnja algoritmov uporaba funkcijskih aproksimatorjev. Ta koncept je izčrpno 
@@ -1319,7 +1382,7 @@ problemi odtavek
 
 
 \section{Namizne igre}
-Namizne igre (npr. šah, Go, križci in krožci, \dots) so proces, ki se zelo lepo poda modeliranju z 
+Namizne igre (npr. šah, go, križci in krožci, \dots) so proces, ki se zelo lepo poda modeliranju z 
 Markovskim procesom odločanja. Množico stanj $\mathcal{S}$ enostavno zapolnimo z vsemi možnimi 
 konfiguracijami igralne plošče. Množico akcij $\mathcal{A}$ sestavljajo vse legalne poteze, ki jih 
 definirajo pravila igre in trenutno stanje. Prehodno matriko definirajo akcije našega nasprotnika oz. 
@@ -1499,12 +1562,46 @@ načinov, ki jih opisuje Ghory \cite{RLboard}:
 \subsection{Kompleksnost iger}
 \subsubsection{Game tree ...}
 
-\subsection{Morda kaj o optimal board representationu?}
-\subsection{Pride še kaj v poštev tu?}
+\subsection{Nekatere nadgradnje}
 
-\subsection{Kombinacija z iskanjem - možna nadgradnja}
+\subsection{Primer algoritma}
+Če nasprotnik ni kopija agenta, je algoritem zelo podoben algoritmu \ref{SARSA}. Do razlik pride, če uporabimo 
+samoigro. V spodnjem primeru bomo pokazali, kako izgleda algoritem TD($0$) z učenjem ob koncu posamezne 
+epizode/igre.
 
-\subsection{Algoritem - zaključena celota}
+\begin{algorithm}[H]
+    \caption{TD($0$) s samoigro - uporba po-stanj}
+\begin{algorithmic}
+    \STATE \textbf{Podatki}: parameter hitrosti učenja $\alpha$, število epizod $epizode$, diskontni 
+            faktor $\gamma$, parameter požrešnosti $\epsilon$
+    \STATE 
+    \STATE Arbitrarno nastavimo vrednosti $V(s)$ za vsak $s \in \mathcal{S}$ (npr. $V(s) = 0~\forall s$)
+    \STATE
+    \FOR{$epizoda$ in $epizode$}
+        \STATE Generiraj epizodo prek funkcije po-stanj $V$ $\epsilon$-požrešno
+        \STATE $stanja1 \leftarrow$ seznam vseh opaženih stanj po potezi prvega igrlaca
+        \STATE $stanja2 \leftarrow$ seznam vseh opaženih stanj po potezi drugega igralca
+        \STATE $nagrade1 \leftarrow$ seznam vseh opaženih nagrad po potezi prvega igralca
+        \STATE $nagrade2 \leftarrow$ seznam vseh opaženih nagrad po potezi drugega igralca
+        \STATE
+        \FOR{$korak$ in $epizoda$}
+            \IF{jeLih(korak)}
+                \STATE $s1 = stanja1[korak]$
+                \STATE $s1' = stanja1[korak + 1]$
+                \STATE $V(s1) \leftarrow V(s1) + \alpha (nagrade1[s1'] + \gamma V(s1') - V(s1))$ 
+            \ELSE
+                \STATE $s2 = stanja2[korak]$
+                \STATE $s2' = stanja2[korak + 1]$
+                \STATE $V(s2) \leftarrow V(s2) + \alpha (nagrade2[s2'] + \gamma V(s2') - V(s2))$ 
+            \ENDIF
+        \ENDFOR
+    \ENDFOR
+\end{algorithmic}
+\end{algorithm}
+
+Po-stanja spremenijo algoritem tako, da na prvi pogled izgleda, da se agent uči za stanja, v katerih 
+akcijo izbira nasprotnik namesto on sam. Ta sprememba nam dovoli, da se izognemo vrednostni funkciji 
+akcij.
 
 \section{Aplikacija v praksi}
 Spoznano teorijo smo aplicirali na praktičen primer namizne igre. V tem odseku bomo predstavili 
