@@ -831,7 +831,7 @@ lahko sedaj rešimo problem upravljanja in s tem celoten problem poznanega MDP-j
 da začnemo z naključno strategijo, jo iterativno ocenimo, nato na podlagi rezultata požrešno izboljšamo 
 strategijo in ta dva koraka ponavljamo.
 
-\begin{izrek}
+\begin{izrek}\label{iterKonv}
     Iteracija strategije vedno konvergira k optimalni strategiji $\pi_*$.
 \end{izrek}
 
@@ -909,6 +909,11 @@ dejanski $v(s)$.
         V(s) \leftarrow S(s) / N(s)
         $$
 \end{itemize}
+
+\begin{opomba}
+    V izrazu $N(s) \leftarrow N(s) + 1$ (in v podobnih izrazih v nadaljevanju) operator ">$\leftarrow$"<
+    pomeni prirejanje vrednosti na desni spremenljivki na levi, torej $spremenljivka \leftarrow vrednost$.
+\end{opomba}
 
 TOLE MALO BOLJ RAZDELAJ - MONTE CARLO IMA KVADRATIČNO KONVERGENCO, SUTTON BARTO, RAZLOŽI KAJ JE 
 PUŠČICA
@@ -1203,8 +1208,8 @@ $\epsilon$-požrešnega raziskovanja}, ki deterministično strategijo spremeni v
 sledi:
 \begin{equation}
     \pi(a|s) = \begin{cases}
-                \epsilon / m + 1 - \epsilon & \text{če } a^* = \text{arg}\max_{a \in 
-                    \mathcal{A}} Q(s, a) \\
+                \epsilon / m + 1 - \epsilon & \text{če } a = \text{arg}\max_{a \in 
+                    \mathcal{A}} q(s, a) \\
                     \epsilon / m & \text{sicer},
                \end{cases}
 \end{equation}
@@ -1216,7 +1221,16 @@ kjer $m$ označuje število akcij, ki so na voljo v stanju $s$.
 \end{izrek}
 
 \begin{proof}
-    
+    Če nam uspe pokazati, da $q_\pi(s, \pi'(s)) \geq v_\pi(s)$, potem lahko analogno kot v dokazu izreka 
+    \ref{iterKonv} pokažemo, da velja $v_{\pi'}(s) \geq v_\pi(s)$.
+    \begin{align*}
+        q_\pi(s, \pi'(s)) &= \sum_{a \in \mathcal{A}} \pi'(a|s) q_\pi(s, a) \\
+        &= \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} q_\pi(s, a) + (1 - \epsilon) \max_{a \in 
+            \mathcal{A}} q_\pi(s, a) \\
+        &\geq \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} q_\pi(s, a) + (1 - \epsilon) \sum_{a \in \mathcal{A}} 
+            \frac{\pi(a|s) - \epsilon / m}{1 - \epsilon} q_\pi(s, a) \\
+        &= \sum_{a \in \mathcal{A}} \pi(a|s) q_\pi(s, a) = v_\pi(s)
+    \end{align*}
 \end{proof}
 
 Z upoštevanjem vsega zgornjega lahko sedaj zapišemo, kako bi s pomočjo algoritma TD($0$) rešili 
@@ -1250,6 +1264,46 @@ celoten problem spodbujevalnega učenja.
 \end{algorithmic}
 \end{algorithm}
 
+\subsubsection{Konvergenca}
+Algoritem SARSA in podobni algoritmi, ki jih pridobimo z zamenjavo pravila TD($0$) z drugimi, ki smo 
+jih spoznali, je seveda uporaben samo, če konvergira. K sreči so konvergenco dokazali Singh idr. 
+\cite{dokaz}. Mi bomo tu samo navedli potrebne definicije in izrek.
+
+\begin{definicija}[PLNR]
+    Zaporedje strategij $(\pi_k)_{k=1}^\infty$ je \textbf{Požrešno v limiti z neskončnim raziskovanjem 
+    (PLNR)} (angl. \textit{Greedy in the limit with infinite exploration}), če velja:
+    \begin{itemize}
+        \item Vsi pari stanj in akcij so obiskani oz. uporbljeni neskončnokrat.
+        \item Zaporedje konvergira proti požrešni strategiji, torej 
+            $$
+            \lim_{k \rightarrow \infty} \pi_k(a|s) = \mathbbm{1} (\text{arg}\max_{a \in \mathcal{A}} 
+                q(s, a)).
+            $$
+    \end{itemize}
+\end{definicija}
+
+\begin{zgled}
+    Če imamo zaporedje $\epsilon$-požrešnih strategij, je to zaporedje PLNR, če $\epsilon$ manjšamo 
+    proti $0$ na vsakem koraku, recimo $\epsilon_k = 1 / k$.
+\end{zgled}
+
+\begin{izrek}
+    Algoritem SARSA konvergira proti optimalni vrednostni funkciji akcij $q_*$, če veljata naslednja 
+    pogoja:
+    \begin{itemize}
+        \item Zaporedje strategij je PLNE (npr. $\epsilon$-požrešno z $\epsilon_k = 1 / k$).
+        \item Zaporedje parametrov hitrosti učenja $\alpha_k$ zadošča \textit{Robbins-Monro} pogojema:
+            \begin{itemize}
+                \item $\sum_{k=1}^\infty \alpha_k = \infty$,
+                \item $\sum_{k=1}^\infty \alpha_k^2 < \infty$.
+            \end{itemize}
+    \end{itemize}
+\end{izrek}
+
+Čeprav so za dokaz konvergence zgornji pogoji nujni, se je v praksi velikokrat izkazalo, da je možno 
+doseči konvergenco tudi s fiksnima $\epsilon$ in $\alpha$. Za tovrsten pristop smo se odločili tudi 
+mi v praktičnem delu.
+
 \subsection{Funkcijska aproksimacija}
 Glavni problem zgornjih algoritmov je shranjevanje v tabele. Vsi delujejo na principu grajenja 
 velihih tabel; en vnos za vsako stanje (oz. en vnos za vsako kombinacijo stanja in akcije). To pri 
@@ -1272,8 +1326,8 @@ Zato je pomembna nadgradnja algoritmov uporaba funkcijskih aproksimatorjev. Ta k
 preučevan na področju numerike, statistike in nadzorovanega učenja in načeloma se lahko uporabi 
 katerkoli od znanih aproksimatorjev. Ideja je, da z nekaj utežmi $w$ opišemo funkcijo vrednosti, nato
 pa namesto funkcije neposredno, prilagajamo te uteži. To zmanjša prostorsko zahtevnost algoritmov 
-in pa tudi omogoča, da dodelimo neke (smiselne) vrednosti stanjem, ki še niso bila obiskana. Ocene 
-za funkcije vrednsoti stanja in stanja-akcije sedaj zapišemo
+in pa tudi omogoča, da dodelimo neke (bolj ali manj smiselne) vrednosti stanjem, ki še niso bila 
+obiskana. Ocene za funkcije vrednsoti stanja in stanja-akcije sedaj zapišemo
 \begin{align*}
     \hat{v}(s, w) &\approx v_\pi(s), \\
     \hat{q}(s, a, w) &\approx q_\pi(s, a), 
@@ -1331,6 +1385,11 @@ $$
 \end{align*}
 če uporabljamo pogled nazaj.
 
+Z drugačnimi tarčami dobimo analogne rezultate. Problem upravljanja v primeru funkcijske aproksimacije 
+rešujemo analogno osnovnemu primeru, kjer seveda uporabimo $\hat{q}(s, a, w)$ in ne $\hat{v}(s, w)$. 
+Naletimo pa na nov problem; konvergenca namreč ni več nujno zadovoljena, vendar je vseeno lahko dosežena 
+v posebnih primerih.
+
 \subsubsection{Linearna aproksimacija}
 Najbolj enostaven način aproksimacije funkcij je seveda linerana aproksimacija. Ideja je, da stanje 
 $s$ predstavimo z vektorjem 
@@ -1340,8 +1399,9 @@ x(s) = \begin{bmatrix}
     x_{2}(s) \\
     \vdots \\
     x_{n}(s)
-  \end{bmatrix}.
+  \end{bmatrix},
 $$
+kjer je vsaka komponenta funkcija $x_i(s): \mathcal{S} \rightarrow \R$.
 
 \begin{zgled}[Vektor $x(s)$ pri križcih in krožcih]
 \label{vektor-ttt}
@@ -1356,11 +1416,11 @@ Sedaj lahko predstavimo vrednost stanja kot linearno kombinacijo komponent vekto
 $$
 \hat{v}(s, w) = x(s)^T w = \sum_{i=1}^n x_i(s) w_i.
 $$
-V tej situaciji stohastični gradientni spust konvergira k globalnemu minimumu (CITIRAJ!!!). Dobimo 
+V tej situaciji stohastični gradientni spust konvergira k globalnemu minimumu \cite{RLintro}. Dobimo 
 tudi zelo enostavno pravilo posodabljanja, saj velja $\nabla_w \hat{v}(s, w) = x(s)$. To zelo 
 poenostavi računanje in razmislek o teoriji v ozadju. Zato je tudi linearna aproksimacija najbolj 
 teoretično obdelana -- konvergenčni dokazi za funkcijske aproksimacije so večinoma narejeni samo 
-za linearni primer.
+za linearni primer \cite{RLalgo}.
 
 \subsubsection{Nevronske mreže}
 Umetne nevronske mreže so v zadnjem času zelo popularne v nadzorovanem učenju zaradi uspehov pri 
@@ -1370,16 +1430,46 @@ nevronov, kot je velik naš vhodni podatek. Za problem križcev in krožcev smo 
 videli, da je to potem $9$ ali $27$, če uporabljamo binarni vektor. Zadnji sloj je izhodni, vmes pa so 
 \textit{skriti} sloji, ki jih je lahko poljubno mnogo in so lahko poljubne velikosti. Vsi sloji so med 
 sabo povezani, in sicer tako, da so povezani vsi nevroni iz enega sloja z vsemi nevroni iz sosednjega 
-sloja. Izhodni sloj je velik 
+sloja. 
 
-mal bolj matematični odstavek
+Za velikost izhodnega sloja imamo v našem primeru dve možnosti. Lahko ima velikost $1$, če želimo, 
+da mreža vrača oceno stanja oz. para stanja in akcije, ki sta ji podana. Po drugi strani, pa jo lahko 
+naredimo tako veliko, kot imamo na voljo akcij in za vsako stanje ocenimo vse akcije hkrati. 
 
-problemi odtavek
+Prehod med posameznimi sloji lahko seveda zapišemo malo bolj matematično. Naj $a_n$ označuje 
+\textit{aktivacijo} $n$-tega sloja. To je torej vektor, ki predstavlja kakšne vrednosti je dosegel
+vhodni podatek, ko je prišel do $n$-tega sloja. Vsak nevron ima svoj vektor uteži $w$, tako lahko 
+uteži sloja zložimo v matriko velikosti $W$ velikosti $velikost~sloja~n~\times~velikost~sloja~n + 1$.
+Vsak nevron ima načeloma tudi svojo pristranskost (angl. \textit{bias}), ki jo za posamezen sloj 
+označimo z vektorjem $b$. Sedaj lahko končno napišemo, kako se spremeni vrednost pri prehodu med 
+slojema:
+$$
+a_{n+1} = f(W a_n + b)
+$$
+$f$ je tu \textit{nelinearna monotona} funkcija, ki ji pravimo \textbf{aktivacijska funkcija}. Zaradi 
+nje so nevronske mreže tako uporabne in univerzalne. 
 
-\subsubsection{Konvergenca pri funkcijskem aproksimiranju}
+\begin{zgled}[Zgledi aktivacijskih funkcij]
+    Najpogosteje uporabljene funkcije so:
+    \begin{itemize}
+        \item Sigmoidna funkcija: $f(x) = \frac{1}{1 + e^{-x}}$, 
+        \item Hiperbolični tangens: $f(x) = \frac{1 - e^{-2x}}{1 + e^{-2x}}$,
+        \item ReLU: $f(x) = \max(0, x)$.
+    \end{itemize}
+\end{zgled}
 
-\subsubsection{Serijsko učenje}
+Kljub velikim uspehom v zadnjem času, imajo nevronske mreže vseeno veliko težav. Veliko parametrov je 
+potrebno nastaviti ročno, še več pa jih je potrebno prilagoditi prek učenja, lahko naletimo na 
+prekomerno prilagajanje podatkom ali pa dobimo konvergenco k lokalnemu minimumu.
+Poseben problem spodbujevalnega učenja pa je dokaz, da z uporabo nevronskih mrež kot aproksimatorja 
+v primeru algoritmov TD($0$) in TD($\lambda$) dobimo divergenco \cite{RLintro}.
 
+\subsubsection{Serijsko učenje (angl. \textit{Batch reinforcement learning})}
+Ena izmed nadgradenj, ki v praksi izboljša konvergenco algoritmov, je serijsko učenje. Veliko uspeha 
+je dosegla predvsem metoda ponovitve izkušenj (angl. \textit{experience replay}), kar v osnovi pomeni, 
+da v tabelo hranimo zadnjih nekaj opažanj kombinacij stanj, akcij in nagrad in se učimo s pomočjo 
+naključne izbire iz te tabele namesto iz iger direktno. S tem se znebimo korelacije med podatki 
+\cite{LecNotesSilver}. Tovrstne nadgradnje presegajo obseg tega dela.
 
 \section{Namizne igre}
 Namizne igre (npr. šah, go, križci in krožci, \dots) so proces, ki se zelo lepo poda modeliranju z 
@@ -1606,7 +1696,7 @@ akcij.
 \section{Aplikacija v praksi}
 Spoznano teorijo smo aplicirali na praktičen primer namizne igre. V tem odseku bomo predstavili 
 nekaj rezultatov, do katerih smo prišli. Vsa koda je prosto dostopna na 
-\href{https://github.com/timkalan/diploma}{Githubu}.
+\href{https://github.com/timkalan/diploma}{https://github.com/timkalan/diploma}.
 
 \subsection{$m$,$n$,$k$,-igra}
 $m$,$n$,$k$,-igra je abstraktna namizna igra, kjer dva igralca drug za drugim na ploščo z $m$ 
@@ -1616,6 +1706,11 @@ Kdor prvi uspe, zmaga.
 
 Možna in enostavna prilagoditev igre je dodatek \textit{gravitacije}. To pomeni, da se v vsakem
 stolpcu kamenček lahko postavi le v najnižjo vrstico.
+
+Zaradi naravne simetrije igre ima praviloma prvi igralec prednost, saj naredi prvo potezo. Ker nobena 
+poteza igralca ne škoduje sama sebi, po argumentu kraje strategije ne obstaja strategija, ki bi 
+zagotovila zmago drugemu igralcu \cite{SSA}. To pomeni, da se $m$,$n$,$k$,-igre ob predpostavki 
+popolne igre končajo bodisi z zmago prvega igralca, bodisi z izenačenjem (odvisno od $m$, $n$ in $k$).
 
 \begin{zgled}
     Igra Križci in krožci bi tako bila $3$,$3$,$3$-igra. Popularna japonska igra Gomoku je 
@@ -1655,6 +1750,30 @@ raziskovanja $\epsilon$ sta bila prek poskušanja nastavljena na učinkoviti vre
 $\alpha = 0.2$ in $\epsilon = 0.3$.
 
 \subsubsection{$3$,$3$,$3$-igra}
+Igra križci in krožci je znana otroška igra in prav tako je splošno znano, da se ob predpostavki 
+popolne igre s strani obeh igralcev, konča z izenačenjem. Ker so v našem primeru testi izvedeni proti 
+naključnemu igralcu, bo ob predpostavki uspešnega učenja, večino iger zmagal agent. 
+
+\begin{center}
+    \begin{table}[H]
+        \begin{tabular}{| c | c | c | c |}
+            \hline
+            IGRALEC & ZMAGE & IZENAČENJA & PORAZI \\
+            \hline
+            TD($0$) 1.&$78,1$&$4,22$&$17,7$\\
+            TD($\lambda$) 1.&$78,1$&$4,16$&$17,7$\\
+            MC 1.&$78,0$&$4,17$&$17,9$\\
+            TD($0$)-NM 1.&$43,4$&$20,9$&$35,7$\\
+            \hline
+            TD($0$) 2.&$43,9$&$3,79$&$52,3$\\
+            TD($\lambda$) 2.&$44,2$&$3,84$&$52,0$\\
+            MC 2.&$44,3$&$3,82$&$51,9$\\
+            TD($0$)-NM 2.&$16,3$&$25,5$&$58,2$\\
+            \hline
+    \end{tabular}
+    \caption{Rezultati igranja proti naključnemu igralcu pred učenjem agenta}
+    \end{table}
+    \end{center}
 
 \subsection{Agent s funkcijsko aproksimacijo}
 Pri agentu z nevrosnkimi mrežami se pojavijo dodatni parametri. Izbira velikosti in globine nevronske 
@@ -1770,4 +1889,3 @@ ima enostavno velikost $1$, saj nas zanima samo ocena stanja, ki ga podamo mrež
 
 
 \end{document}
-
