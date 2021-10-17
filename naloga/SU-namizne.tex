@@ -319,7 +319,7 @@ Zapišimo zgoraj opisane pojme bolj formalno:
                 maksimizacija pričakovanega povračila.
 
          \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
-                stanja} (angl. \textit{state value function}) glede na strategijo $\pi$ je 
+                stanja} (angl. \textit{state-value function}) glede na strategijo $\pi$ je 
                 pogojno matematično upanje glede na stanje
                 $$
                 v_\pi(s) = \mathrm{E} [G_t~|~S_t = s].
@@ -1031,23 +1031,24 @@ algoritmi med sabo podobni, zadošča navesti zgled algoritma za TD($0$).
     vsaj v teoriji TD veliko bolj učinkovit v MDP-jih.
 \end{itemize}
 
-\begin{zgled}[Ti si sodnik - IZ SUTTON BARTO UČBENIKA]
-    Recimo, da imamo na voljo za učenje naslednjih 8 epizod: 
-    A $0$, B, $0$;
-    B $1$;
-    B $1$;
-    B $1$;
-    B $1$;
-    B $1$;
-    B $1$;
-    B $0$
+\begin{zgled}[Ti si sodnik \cite{RLintro}]
+    Recimo, da imamo na voljo za učenje naslednjih 8 epizod (vejice ločijo stanja v epizodi, podpičja 
+    pa dejanske epizode): 
+    A, $0$, B, $0$;
+    B, $1$;
+    B, $1$;
+    B, $1$;
+    B, $1$;
+    B, $1$;
+    B, $1$;
+    B, $0$.
 
     To pomeni recimo, da smo prvo epizodo začeli v stanju A, nato dobili nagrado $0$ in prešli v 
     stanje B, kjer smo ponovno dobili nagrado $0$, tu pa se je epizoda končala. Če bi se učili 
     samo iz teh osmih epizod, bi se verjetno vsi strinjali, da je $V(B) = 3/4$, saj je v šestih
-    opažanjih B zavzel vrednost $1$, v dveh pa $0$. Z nami se strinjata tudi TD($0$) in $MC$. 
+    opažanjih B zavzel vrednost $1$, v dveh pa $0$. Z nami se strinjata tudi TD($0$) in MC. 
 
-    Razlike se začenjo pri stanju A. $MC$, ki minimizira povprečno kvadratno napako in zato ob 
+    Razlike se začenjo pri stanju A. MC, ki minimizira povprečno kvadratno napako in zato ob 
     enem opažanju A, ki je dal nagrado $0$, enostavno reče $V(A) = 0$ - to ima celo ničelno 
     napako glede na podatke. 
 
@@ -1127,13 +1128,13 @@ alternativi:
 \end{itemize}
 
 V zgornji formulaciji pravila TD($\lambda$) je tudi bolj očitno, zakaj ta algoritem poveže TD($0$) 
-in $MC$:
+in MC:
 
 \begin{itemize}
     \item Če je $\lambda = 0$, potem velja $E_t(s) = \mathbbm{1}(S_t = s)$, torej se posodobi samo
             trenutno stanje: $V(S_t) \leftarrow V(s_t) + \alpha \delta_t$, kar pa je natančno 
             posodobitev pri TD($0$).
-    \item Za $TD(1)$ pa je za nagrado zaslužno vsako stanje, tako kot pri $MC$. Pravo ekvivalenco 
+    \item Za $TD(1)$ pa je za nagrado zaslužno vsako stanje, tako kot pri MC. Pravo ekvivalenco 
             nam pomaga videti naslednji izrek.
 \end{itemize}
 
@@ -1654,7 +1655,7 @@ načinov, ki jih opisuje Ghory \cite{RLboard}:
 
 \subsection{Nekatere nadgradnje}
 
-\subsection{Primer algoritma}
+\subsection{Primer algoritma za namizne igre}
 Če nasprotnik ni kopija agenta, je algoritem zelo podoben algoritmu \ref{SARSA}. Do razlik pride, če uporabimo 
 samoigro. V spodnjem primeru bomo pokazali, kako izgleda algoritem TD($0$) z učenjem ob koncu posamezne 
 epizode/igre.
@@ -1758,7 +1759,7 @@ naključnemu igralcu, bo ob predpostavki uspešnega učenja, večino iger zmagal
     \begin{table}[H]
         \begin{tabular}{| c | c | c | c |}
             \hline
-            IGRALEC & ZMAGE & IZENAČENJA & PORAZI \\
+            IGRALEC & ZMAGE [$\%$]& IZENAČENJA [$\%$]& PORAZI [$\%$]\\
             \hline
             TD($0$) 1.&$78,1$&$4,22$&$17,7$\\
             TD($\lambda$) 1.&$78,1$&$4,16$&$17,7$\\
@@ -1775,18 +1776,48 @@ naključnemu igralcu, bo ob predpostavki uspešnega učenja, večino iger zmagal
     \end{table}
     \end{center}
 
-\subsection{Agent s funkcijsko aproksimacijo}
-Pri agentu z nevrosnkimi mrežami se pojavijo dodatni parametri. Izbira velikosti in globine nevronske 
+V zgornji tabeli vidimo stanje agentov pred učenjem. Služi nam za primerjavo. Spodaj pa vidimo primer 
+agentovega učenja -- algoritem TD($\lambda$) v vlogi drugega igralca:
+
+\begin{figure}[h]
+    \includegraphics[scale=0.8]{../rezultati/tdl-333-40000-2.png}
+    \caption{Proces učenja TD($\lambda$) v vlogi drugega igralca tekom 40000 iger}
+\end{figure}
+
+Ključen element grafa je število porazov. Želimo, da pada proti $0$ in to tukaj tudi dosežemo. Ker pa 
+smo se odločili za uporabo konstantnega $\epsilon$ in $\alpha$, pa tudi ob veliki količini iger, 
+občasno dobimo neoptimalno igro -- pri posodabljanju vrednosti naredi prevelik korak in zgreši optimalno.
+
+\subsection{Agent s funkcijsko aproksimacijo - nevronske mreže}
+Pri agentu z nevronsko mrežo se pojavijo dodatni parametri. Izbira velikosti in globine nevronske 
 mreže je pogosto arbitrarna izbira, mi smo izbrali mrežo z dvema skritima slojema. Velikost vhodnega 
 sloja je določena z velikostjo igre. Ploščo smo predstavili z binarnim vektorjem stanja in na koncu 
 dodali še nevron pristranskosti (angl. \textit{bias neuron}). Tako je formula za velikost $ m \times 
 n \times 3 + 1$. Velikost obeh skritih slojev je dvakratnik velikosti vhodnega sloja. Izhodni sloj pa 
 ima enostavno velikost $1$, saj nas zanima samo ocena stanja, ki ga podamo mreži. 
 
+Pomembna izbira je tudi aktivacijska funkcija. S pomočjo eksperimentiranja smo ugotovili, da nam 
+najbolje služi funkcija ReLU oz. $f(x) = \max(0, x)$.
+
+\subsubsection{$3$,$3$,$3$-igra}
+Zaradi relativno majhnega števila stanj v tej igri je tabelarni agent tu hitreje uspešen, saj hitro 
+odkrije dovolj stanj. Agent z nevronsko mrežo pa ne more beležiti vrednosti dejanskih stanj, zato 
+se moran zanesti na svoje sposobnosti posploševanja, ki so, kot bomo videli, manj uspešne kot beleženje 
+stanj.
+
+\begin{figure}[h]
+    \includegraphics[scale=0.8]{../rezultati/tdnn-333-40000-2.png}
+    \caption{Proces učenja TD($0$) z nevronsko mrežo v vlogi drugega igralca tekom 40000 iger}
+\end{figure}
+
 % slovar
 \section*{Slovar strokovnih izrazov}
 
 \geslo{reinforcement learning}{spodbujevalno učenje}
+
+\geslo{state-value function}{vrednostna funkcija stanja}
+
+\geslo{action-value function}{vrednostna funkcija akcije}
 
 \geslo{Markov decision process (MDP)}{Markovski proces odločanja}
 
