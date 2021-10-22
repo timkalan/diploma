@@ -1650,11 +1650,6 @@ načinov, ki jih opisuje Ghory \cite{RLboard}:
             nasprotnikom.
 \end{itemize}
 
-\subsection{Kompleksnost iger}
-\subsubsection{Game tree ...}
-
-\subsection{Nekatere nadgradnje}
-
 \subsection{Primer algoritma za namizne igre}
 Če nasprotnik ni kopija agenta, je algoritem zelo podoben algoritmu \ref{SARSA}. Do razlik pride, če uporabimo 
 samoigro. V spodnjem primeru bomo pokazali, kako izgleda algoritem TD($0$) z učenjem ob koncu posamezne 
@@ -1694,6 +1689,9 @@ Po-stanja spremenijo algoritem tako, da na prvi pogled izgleda, da se agent uči
 akcijo izbira nasprotnik namesto on sam. Ta sprememba nam dovoli, da se izognemo vrednostni funkciji 
 akcij.
 
+
+\subsection{Nekatere nadgradnje za namizne igre}
+
 \section{Aplikacija v praksi}
 Spoznano teorijo smo aplicirali na praktičen primer namizne igre. V tem odseku bomo predstavili 
 nekaj rezultatov, do katerih smo prišli. Vsa koda je prosto dostopna na 
@@ -1719,7 +1717,12 @@ popolne igre končajo bodisi z zmago prvega igralca, bodisi z izenačenjem (odvi
     $6$,$7$,$4$-igra.
 \end{zgled}
 
-\subsubsection{Kompleksnost m,n,k-igre}
+\subsubsection{Kompleksnost $m$,$n$,$k$,-igre}
+Merjenje kompleksnosti iger je kompleksen problem, mi se ga bomo samo dotaknili, saj nam lahko da idejo 
+o velikostnih razredih problemov, ki jih rešujemo. Kompleksnost bomo merili izključno v smislu števila 
+stanj, to pa seveda ni edini način. Točno število stanj za $m$,$n$,$k$,-igro je težko izračunljivo, lahko 
+ga pa enostavno ocenimo kot $zgornja~meja = 3 ^ {(m \times n)}$. Logika v ozadju je, da ima vsako polje 
+lahko eno izmed treh vrednosti: križec, krožec ali pa je prazno.
 
 \subsection{Metoda}
 
@@ -1743,17 +1746,11 @@ Za nekatere igre oz. algoritme smo izvedli eksperiment tudi na način, da je igr
 in je agent igral vlogo drugega igralca. Oznake so vseeno vedno pripravljene tako, da npr. ">zmage"< 
 govorijo o zmagah agenta (ne glede na to, ali je agent prvi ali drugi igralec). 
 
-\subsection{Tabelarni agent}
-Najprej smo se problema lotili na bolj osnoven način - s pomočjo vrednostnih funkcij v obliki tabel. 
-Uporabili smo prej omenjeno vrednostno funkcijo po-stanj in jo predstavili kot slovar v Pythonu, ki 
-se je polnil z vsakim novim odkritim stanjem. Parameter hitrosti učenja $\alpha$ in parameter 
-raziskovanja $\epsilon$ sta bila prek poskušanja nastavljena na učinkoviti vrednosti -- to sta 
-$\alpha = 0.2$ in $\epsilon = 0.3$.
-
-\subsubsection{$3$,$3$,$3$-igra}
+\subsection{$3$,$3$,$3$-igra}
 Igra križci in krožci je znana otroška igra in prav tako je splošno znano, da se ob predpostavki 
 popolne igre s strani obeh igralcev, konča z izenačenjem. Ker so v našem primeru testi izvedeni proti 
-naključnemu igralcu, bo ob predpostavki uspešnega učenja, večino iger zmagal agent. 
+naključnemu igralcu, bo ob predpostavki uspešnega učenja večino iger zmagal agent. Stanje pred učenjem
+naših agentov si lahko ogledamo v spodnji tabeli.
 
 \begin{center}
     \begin{table}[H]
@@ -1776,10 +1773,53 @@ naključnemu igralcu, bo ob predpostavki uspešnega učenja, večino iger zmagal
     \end{table}
     \end{center}
 
-V zgornji tabeli vidimo stanje agentov pred učenjem. Služi nam za primerjavo. Spodaj pa vidimo primer 
-agentovega učenja -- algoritem TD($\lambda$) v vlogi drugega igralca:
+Za večjo nazornost grafov smo se odločili, da bomo agenta pri tej igri vedno postavili v vlogo 
+drugega igralca, to pa pomeni, da tudi dobi težjo nalogo -- v naših eksperimentih se je izkazalo, 
+da za učenje dobre strategije v tej vlogi agent potrebuje občutno več iger, kot če je v vlogi 
+prvega igralca.
 
-\begin{figure}[h]
+Spodaj lahko vidimo še tabelo količine potrebnih iger, da algoritem v testu proti naključnemu igralcu 
+prvič nikoli ni izgubil. To seveda ni idealen pokazatelj, saj je lahko to samo naključna sreča, a vseeno
+nam da idejo o kvaliteti posameznih algoritmov. 
+
+\begin{center}
+    \begin{table}[H]
+        \begin{tabular}{| c | c |}
+            \hline
+            IGRALEC & KOLIČINA IGER\\
+            \hline
+            TD($0$) 1. & $1500$\\
+            TD($\lambda$) 1. & $2000$\\
+            MC 1. & $3000$\\
+            TD($0$)-NM 1. & $8500$\\
+            \hline
+    \end{tabular}
+    \quad
+    \begin{tabular}{| c | c |}
+        \hline
+        IGRALEC & KOLIČINA IGER\\
+        \hline
+        TD($0$) 2. & $17500$\\
+        TD($\lambda$) 2. & $26500$\\
+        MC 2. & $23000$\\
+        TD($0$)-NM 2. & $133500$\\
+        \hline
+\end{tabular}
+    \caption{Količina potrebnih iger, da algoritem prvič doseže $0$ porazov}
+    \end{table}
+    \end{center}
+
+\subsubsection{Tabelarni agent}
+Najprej smo se problema lotili na bolj osnoven način - s pomočjo vrednostnih funkcij v obliki tabel. 
+Uporabili smo prej omenjeno vrednostno funkcijo po-stanj in jo predstavili kot slovar v Pythonu, ki 
+se je polnil z vsakim novim odkritim stanjem. Parameter hitrosti učenja $\alpha$ in parameter 
+raziskovanja $\epsilon$ sta bila prek poskušanja nastavljena na učinkoviti vrednosti -- to sta 
+$\alpha = 0.2$ in $\epsilon = 0.3$.
+
+Na spodnjem grafu lahko vidimo primer procesa učenja enega izmed naših agentov, to je algoritem 
+TD($\lambda$) v vlogi drugega igralca:
+
+\begin{figure}[H]
     \includegraphics[scale=0.8]{../rezultati/tdl-333-40000-2.png}
     \caption{Proces učenja TD($\lambda$) v vlogi drugega igralca tekom 40000 iger}
 \end{figure}
@@ -1788,7 +1828,7 @@ Ključen element grafa je število porazov. Želimo, da pada proti $0$ in to tuk
 smo se odločili za uporabo konstantnega $\epsilon$ in $\alpha$, pa tudi ob veliki količini iger, 
 občasno dobimo neoptimalno igro -- pri posodabljanju vrednosti naredi prevelik korak in zgreši optimalno.
 
-\subsection{Agent s funkcijsko aproksimacijo - nevronske mreže}
+\subsubsection{Agent s funkcijsko aproksimacijo - nevronske mreže}
 Pri agentu z nevronsko mrežo se pojavijo dodatni parametri. Izbira velikosti in globine nevronske 
 mreže je pogosto arbitrarna izbira, mi smo izbrali mrežo z dvema skritima slojema. Velikost vhodnega 
 sloja je določena z velikostjo igre. Ploščo smo predstavili z binarnim vektorjem stanja in na koncu 
@@ -1805,10 +1845,23 @@ odkrije dovolj stanj. Agent z nevronsko mrežo pa ne more beležiti vrednosti de
 se moran zanesti na svoje sposobnosti posploševanja, ki so, kot bomo videli, manj uspešne kot beleženje 
 stanj.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \includegraphics[scale=0.8]{../rezultati/tdnn-333-40000-2.png}
     \caption{Proces učenja TD($0$) z nevronsko mrežo v vlogi drugega igralca tekom 40000 iger}
 \end{figure}
+
+\subsection{$5$,$5$,$4$-igra}
+Če povečamo velikost igre, tabelarne metode hitro odpovedo (kot bomo videli v nadaljevanju). V tem 
+primeru lahko grobo ocenimo zgornjo mejo za količino stanj kot $3 ^ {(5 \times 5)}$, kar je $43$ 
+milijonkrat več, kot zgornja meja za križce in krožce. 
+
+\subsubsection{Tabelarni agent}
+
+\begin{figure}[H]
+    \includegraphics[scale=0.8]{../rezultati/tdl-554-40000-2.png}
+    \caption{Neuspeh učenja tabelarnega TD($\lambda$) agenta}
+\end{figure}
+
 
 % slovar
 \section*{Slovar strokovnih izrazov}
