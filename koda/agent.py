@@ -203,6 +203,8 @@ class MonteCarlo(Agent):
                 self.gama * nagrada - self.vrednosti_stanj[stanje])
 
             nagrada *= self.gama
+        
+        return nagrada
 
 
 

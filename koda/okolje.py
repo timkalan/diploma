@@ -17,7 +17,7 @@ hiperparametri = {
 def ponovitve(seznam, simbol):
     """
     Funkcija v seznamu poišče, če se simbol kje ponovi st_ponovitev-krat.
-    Uporabljeno pri metodi zmagovalec, da je bila posplošena na nxn plošče.
+    Uporabljeno pri metodi zmagovalec, da je bila posplošena na mxn plošče.
     """
     st_ponovitev=hiperparametri['V_VRSTO']
     i = 0
@@ -25,7 +25,6 @@ def ponovitve(seznam, simbol):
         if seznam[i] == simbol:
             if [seznam[i]] * st_ponovitev == seznam[i:i+st_ponovitev]:
                 return simbol
-                break
         i += 1
 
 
