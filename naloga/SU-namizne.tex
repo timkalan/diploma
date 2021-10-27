@@ -122,9 +122,20 @@ Ljubljana, \letnica}
 {\bf \naslovdela}\\[3mm]
 {\sc Povzetek}
 \end{center}
-% tekst povzetka v slovenscini
-V povzetku na kratko opišite vsebinske rezultate dela. Sem ne sodi razlaga organizacije
-dela -- v katerem poglavju/razdelku je kaj, pa"c pa le opis vsebine.
+
+Motivacija za nalogo je bila razumeti algoritme, ki se učijo prek poskušanja in napak. Na začetku 
+postavimo teoretični okvir v obliki Markovskih procesov odločanja. V nadaljevanju se posvetimo izpeljavi 
+in opisu metod za njihovo reševanje, ki temeljijo na konceptu dinamičnega programiranja. Te metode potem 
+posplošimo in predstavimo tri glavne iterativne algoritme: Monte Carlo, TD($0$) in TD($\lambda$). 
+Ker pa smo želeli ustvariti kompetentnega igralca namiznih iger, ki imajo pogosto veliko količino stanj, 
+se nato posvetimo funkcijski aproksimaciji in kombinaciji nevronskih mrež s spoznanimi algoritmi.
+
+V drugem delu naloge si bolj natančno ogledamo kombinatorne igre; to je teoretični model za namizne igre.
+Nato opišemo nekaj pomembnih razlik, do katerih pride pri spodbujevalnem učenju v tem konteksu.
+
+V zadnjem delu si ogledamo teorijo še na praktičnem primeru. Na $m$,$n$,$k$-igrah uporabimo opisane 
+algoritme in komentiramo njihovo učinkovitost.
+
 \vfill
 \begin{center}
 {\bf Reinforcement learning in board games}\\[3mm] % prevod slovenskega naslova dela 
@@ -134,10 +145,11 @@ dela -- v katerem poglavju/razdelku je kaj, pa"c pa le opis vsebine.
 Prevod zgornjega povzetka v angle"s"cino.
 
 \vfill\noindent
-{\bf Math. Subj. Class. (2010):} navedite vsaj eno klasifikacijsko oznako -- 
-        dostopne so na \url{www.ams.org/mathscinet/msc/msc2010.html}  \\[1mm]  
-{\bf Ključne besede:} Spodbujevalno učenje, Markovski proces odločanja  \\[1mm]  
-{\bf Keywords:} Reinforcement learning, Markov decision process
+{\bf Math. Subj. Class. (2010):} 62L20, 68T05, 90C40 \url{www.ams.org/mathscinet/msc/msc2010.html}  \\[1mm]  
+{\bf Ključne besede:} spodbujevalno učenje, Markovski proces odločanja, učenje s časovno razliko, 
+                      po-stanja, samoigra \\[1mm]  
+{\bf Keywords:} reinforcement learning, Markov decision process, temporal-difference learning,  
+                afterstates, self-play
 \pagebreak
 
 
@@ -191,7 +203,6 @@ To relativno novo raziskovalno področje se deli na tri glavne veje:
 \end{itemize}
 
 \subsection{Struktura naloge}
-% morda to malo oštevilči
 Naloga je razdeljena na štiri glavne dele. Na začetku so predstavljeni osnovni koncepti 
 spodbujevalnega učenja in nekateri glavni algoritmi s tega področja. Potem se osredotočimo na 
 namizne igre in ob nekaj malega teorije iger povzamemo osnovne koncepte, na katere naletimo. 
@@ -350,7 +361,7 @@ Zapišimo zgoraj opisane pojme bolj formalno:
 
 \subsubsection{Model}
 Model je nenujen del našega sistema. Predstavlja znanje, ki ga ima agent o svojem okolju. 
-Če imamo model, da lahko uporabimo, ga napovemo, kako se bo vedlo okolje in s tem premaknemo
+Če imamo model, ga lahko uporabimo, da napovemo, kako se bo vedlo okolje in s tem premaknemo
 agentovo učenje iz čistih poskusov in napak na \textit{načrtovanje} (angl. \textit{planning}).
 Model je torej poleg strategije in vrednostne funkcije še tretja komponenta agenta. Na podlagi 
 modela lahko agent ">preračuna"< smiselnost svojih akcij, brez da bi dejansko karkoli storil. 
@@ -395,11 +406,11 @@ Dejanski korak (npr. poteza enega od igralcev v namizni igri) v epizodi pa forma
 \subsubsection{Raziskovanje in izkoriščanje}
 Eden izmed glavnih problemov, s katerim se srečamo pri spodbujevalnem učenju, je problem 
 raziskovanja in izkoriščanja. Ko se agent uči, začne dojemati, katere akcije ali pa kombinacije 
-akcij mu pripeljejo nagrado. Ko to ugotovi, seveda lahko začne te akcije \textit{izkoriščati} 
-in prejemati vso nagrado, ki akcijam pripada. Pri tem pa naletimo na problem. Agent lahko izkorišča te 
-akcije in nikoli ne ugotovi, da neka druga akcija prinese še višjo nagrado; tega ne izve, ker ne
-\textit{raziskuje}. Če pa samo raziskuje, pa nikoli ne izkoristi potencialnih nagrad, ki jih sreča, 
-torej se ničesar ne nauči. 
+akcij mu pripeljejo nagrado. Ko to ugotovi, seveda lahko začne te akcije \textit{izkoriščati} in 
+prejemati vso nagrado, ki akcijam pripada. Pri tem pa naletimo na problem. Če bi agent le izkoriščal 
+te akcije, ne bi nikoli ugotovil, da katera druga akcija lahko prinese še višjo nagrado. Tega ne bi 
+izvedel, ker ne bi \textit{raziskoval}. Če bi pa samo raziskoval. pa nikoli ne bi izkoristil potencialnih
+ nagrad, ki jih sreča, torej se ne bi ničesar naučil.
 
 Uravnoteženje raziskovanja in izkoriščanja je pomemben problem, a se izkaže, da ima dokaj enostavno
 rešitev (ki deluje dovolj dobro). Spoznali jo bomo v nadaljevanju.
@@ -434,16 +445,21 @@ Dogajanje pri spodbujevalnem učenju lahko v grobem opišemo z zaporedjem sluča
 S_1, \dots$ v diskretnem času, to je, s slučajnim procesom stanj $(S_t)_{t=0}^T$. Zato je pomembno, 
 da si natančno pogledamo nekaj lastnosti, ki jih lahko pričakujemo. 
 
-\begin{definicija}[Markovska veriga]
-    Slučajni proces $(S_t)_{t=0}^T$ na končnem verjetnostnem prostoru 
-    $(\Omega, \mathcal{F}, P)$ je \textbf{Markovska veriga} oz. \textbf{Markovski proces} (angl. 
-    \textit{Markov chain}), če zanj velja Markovska lastnost
+\begin{definicija}[Markovska veriga]\label{MarkovChain}
+    Slučajni proces $(S_t)_{t=0}^T$ na končnem verjetnostnem prostoru (opremljenim z neko $\sigma$-algebro
+    $\mathcal{F}$) $(\Omega, \mathcal{F}, P)$ je \textbf{Markovska veriga} oz. \textbf{Markovski proces} 
+    (angl. \textit{Markov chain}), če zanj velja Markovska lastnost. To je lastnost, ki govori o 
+    pogojnih verjetnostih doseganja nekega stanja $s_{t+1}$ ob času $t + 1$ glede na celotno zgodovino
+    procesa $S_{t} = s_{t}, \dots, S_0 = s_0$. Natančneje, Markovska lastnost zahteva, da je ta 
+    pogojna verjetnost enaka pogojni verjetnosti glede samo na trenutno stanje $S_{t} = s_{t}$ oz.
     $$
     P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}, \dots, S_0 = s_0) = P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}).
     $$
-    Na kratko to \textit{prehodno verjetnost} označimo $p_{ss'} := P(S_{t+1} = s'~|~S_{t} = s)$.
-    Opazimo, da lahko te verjetnsoti zložimo v matriko $\mathcal{P} := 
-    [p_{ss'}]_{s,s'\in \mathcal{S} }$, ki ji pravimo \textit{prehodna matrika}.
+    To verjetnost imenujemo \textit{prehodno verjetnost} in jo označimo $p_{ss'} := P(S_{t+1} = 
+    s'~|~S_{t} = s)$. Če se ukvarjamo s končnim procesom, torej procesom, ki ima končno mnogo 
+    različnih stanj, lahko število stanj označimo z $n$. Potem lahko brez škode za splošnost 
+    vsa stanja označimo kar $1 \dots n$. To nam potem dovoljuje, da prehodne verjetnosti zložimo v 
+    matriko $\mathcal{P} := [p_{ss'}]_{s,s'\in \mathcal{S} }$, ki ji pravimo \textit{prehodna matrika}.
 
     Zdaj Markovsko verigo predstavimo še na alternativni način: kot dvojico $(\mathcal{S}, 
     \mathcal{P})$, kjer je $\mathcal{P}$ zgoraj definirana prehodna matrika, $\mathcal{S}$ pa 
@@ -494,7 +510,7 @@ saj strategija v tem modelu nima pomena.
 
 Za vrednostno funkcijo lahko izpeljemo rekurzivno enačbo, s pomočjo katere lahko ">rešimo"< Markovski
 proces nagrajevanja. S tem mislimo, da vsakemu stanju dodelimo pravo vrednost. To je vrednost, ki jo 
-stanju določata nagrada in nagradna funkcija.
+stanju določata nagrada in nagradna funkcija:
 
 \begin{align*}
     v(s) &= \mathrm{E} [G_t~|~S_t = s] \\
@@ -516,8 +532,8 @@ oziroma
 kjer smo upoštevali aditivnost in idempotentnost pogojnega matematičnega upanja. Enačba \eqref{beMRP}
 je \textbf{Bellmanova enačba za Markovkse procese nagrajevanja}.
 
-Ker se ukvarjamo s primerom, ko je stanj končno mnogo, recimo $n$, jih lahko brez škode za 
-splošnost označimo kar $1, \dots, n$. Potem lahko Bellmanovo enačbo prepišemo v matrični obliki
+Ker so namizne igre primer, ko je stanj končno mnogo, torej $n$, stanja kot v definiciji \ref{MarkovChain}
+označimo $1, \dots, n$. Bellmanovo enačbo nato lahko prepišemo v matrični obliki
 \begin{align*}
     \begin{bmatrix}
         v(1) \\ 
@@ -551,10 +567,9 @@ Opazimo, da je to \textit{linearna} enačba, ki jo lahko eksplicitno rešimo:
     v &= (I - \gamma \mathcal{P})^{-1} \mathcal{R}.
 \end{align*}
 Ta rešitev predpostavlja obrnljivost matrike $(I - \gamma \mathcal{P})$ in računanje njenega 
-inverza, kar zahteva $O(n^3)$ operacij, zato je smiselna samo za majhne procese. Za večje 
+inverza, kar zahteva $O(n^3)$ operacij, zato je smiselna samo za majhne procese. Dobra stran pa je, 
+da nam enoličnost inverza primeru njegovega obstoja zagotavlja enolično rešitev enačbe. Za večje 
 obstajajo iterativni algoritmi in metode, nekatere izmed njih bomo spoznali v naslednjem odseku.
-
-TA DEL LAHKO MATEMATIZIRAŠ - ENOLIČNOST REŠITEV
 
 \subsubsection{Markovski proces odločanja}
 Kot ime že nakazuje, \textbf{Markovski proces odločanja} (angl. \textit{Markov decision process (MDP)}) 
@@ -596,8 +611,8 @@ torej $S_1, R_2, S_2, R_3, \dots$, dobimo Markovski proces nagrajevanja $(\mathc
 \mathcal{P}^\pi, \mathcal{R}^\pi, \gamma)$, kjer smo označili
 
 \begin{align*}
-    \mathcal{P}^\pi &= \sum_{a \in \mathcal{A}} \pi(a|s) \mathcal{P}_{ss'}^a \\
-    \mathcal{R}^\pi &= \sum_{a \in \mathcal{A}} \pi(a|s) \mathcal{R}_{s}^a. 
+    \mathcal{P}_\pi &= \sum_{a \in \mathcal{A}} \pi(a|s) \mathcal{P}_{ss'}^a \\
+    \mathcal{R}_\pi &= \sum_{a \in \mathcal{A}} \pi(a|s) \mathcal{R}_{s}^a. 
     \end{align*}
 
 \begin{opomba}
@@ -611,34 +626,28 @@ MDP-ji so splošna orodja za obravnavo stohastičnih procesov, ki vključujejo o
 programiranja, zato morda ni presenetljivo, da nam prav dinamično programiranje poda osnovo za 
 njihovo reševanje.
 Kot pri procesih nagrajevanja, lahko tudi tu izpeljemo Bellmanovo enačbo. Na popolnoma enak način 
-kot pri procesih nagrajevanja lahko izpeljemo rekurzivni  
+kot pri procesih nagrajevanja lahko izpeljemo rekurzivni zvezi
 \begin{align*}
     v_\pi(s) &= \mathrm{E} [R_{t+1} + \gamma v_\pi(S_{t+1})~|~S_t = s], \\
     q_\pi(s, a) &= \mathrm{E} [R_{t+1} + \gamma q_\pi(S_{t+1}, A_{t+1})~|~S_t = s, A_t = a].
 \end{align*}
-Opazimo, da $v_\pi$ in $q_\pi$ povezujta zvezi
-\begin{align*}
-    v_\pi(s) &= \sum_{a \in \mathcal{A}} \pi(a|s)q_\pi(s, a), \\
-    q_\pi(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s').
-\end{align*}
 
-Smiselno se zdi, da bi se vsota $q_\pi(s, a)$ po akcijah, uteženo z ustreznimi verjetnostmi izbire 
-posamezne akcije v stanju $s$ $\pi(a|s)$ seštela v $v_\pi(s)$ in tudi res je tako, saj
-\begin{align*}
-    v_\pi(s) &= \mathrm{E} [G_t~|~S_t = s] \\
-\end{align*}
+Iz definicij $v_\pi(s)$ in $q_\pi(s, a)$ sledi, da če za določeno stanje $s$ pri strategiji $\pi$ 
+seštejemo vse vrednosti $q_\pi(s, a)$ in to vsoto utežimo, dobimo ravno $v_\pi(s)$ oz. 
+\begin{equation}\label{zveza1}
+    v_\pi(s) = \sum_{a \in \mathcal{A}} \pi(a|s)q_\pi(s, a).
+\end{equation}
+S podobnim razmislekom lahko dobimo še eno zvezo med tema dvema funkcijama. Če začnemo s parom stanja 
+in akcije $(s, a)$, nas potem od naslednjega stanja $s'$ loči le še nagrada. Vrednost para je potem 
+odvisna od te nagrade oz. $\mathcal{R}_s^a$ in pa vrednosti stanja $s'$. Ta vrednost je odvisna od tega, 
+v katero stanje nas okolje pahne oz. od matrike $\mathcal{P}$ -- gledati moramo pričakovano vrednost. 
+Prav tako pa je stanje $s'$ v časovnem smislu en korak kasneje, dato mora biti vrednost diskontirana z 
+$\gamma$. Ta razmislek zapišemo kot
+\begin{equation}\label{zveza2}
+    q_\pi(s, a) = \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s').
+\end{equation}
 
-
-
-
-
-
-
-
-
-
-Če zvezi združimo, dobimo
-
+Če enačbi \eqref{zveza1} in \eqref{zveza2} vstavimo prvo v drugo in nato drugo v prvo, dobim0
 \begin{align}
     v_\pi(s) &= \sum_{a \in \mathcal{A}} \pi(a|s) \left[\mathcal{R}_s^a + 
     \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s') \right], \label{bepMDP} \\
@@ -646,8 +655,8 @@ posamezne akcije v stanju $s$ $\pi(a|s)$ seštela v $v_\pi(s)$ in tudi res je ta
     \mathcal{P}_{ss'}^a \left[\sum_{a' \in \mathcal{A}} \pi(a'|s')q_\pi(s', a') \right].
 \end{align}
 Enačbo \eqref{bepMDP} imenujemo \textbf{Bellmanova enačba pričakovanja} (angl. \textit{Bellman 
-expectation equation}), ki ima ponovno matrično obliko in eksplicitno (ENOLIČNO - ZAKAJ, TU 
-DODATNA RAZLAGA) rešitev: 
+expectation equation}), ki ima ponovno matrično obliko in v primeru obstoja spodnjega inverza
+eksplicitno ter enolično rešitev: 
 \begin{align*}
     v_\pi &= \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_\pi \\
     v_\pi &= (I - \gamma \mathcal{P}^\pi)^{-1} \mathcal{R}^\pi
@@ -683,58 +692,85 @@ Ta enačba je sicer pomembna, a določi samo prave vrednosti glede na neko strat
 Sedaj lahko uporabimo naslenji izrek.
 
 \begin{izrek}\label{optim}
-    Za vsak Markovski proces odločanja velja: 
-    \begin{itemize}
-        \item Obstaja \textit{optimalna} strategija $\pi_*$, ki je boljša ali enaka kot vse ostale 
-                strategije; $\pi_* \geq \pi \text{ } \forall \pi \in \Pi$. 
+    Za vsak končni Markovski proces odločanja s končnimi nagradami velja: 
+    \begin{enumerate}
+        \item Vedno obstaja \textit{optimalna} strategija $\pi_*$ (ne nujno enolična), ki je boljša 
+                ali enaka kot vse ostale strategije; $\pi_* \geq \pi \text{ za vsak }  \pi \in \Pi$. 
         
-        \item Vedno obstaja \textit{deterministična} optimalna strategija $\pi: \mathcal{S} 
-                \rightarrow \mathcal{A}$. 
+        \item Vedno obstaja optimalna strategija, ki je \textit{deterministična}, torej funkcija  
+                $\pi: \mathcal{S} \rightarrow \mathcal{A}$, $s \mapsto \pi(s) = a$.
+
         \item Vse optimalne strategije določajo enako optimalno vrednostno funkcijo stanja in 
                 optimalno vrednostno funkcijo akcije; 
                 \begin{align*}
                     v_{\pi*}(s) &= v_*(s) \\
                     q_{\pi*}(s, a) &= q_*(s, a).
                 \end{align*}
-    \end{itemize} 
+    \end{enumerate} 
 \end{izrek}
 
-OPOMBA: SKLIC NA DOKAZ
+%\begin{proof}
+%    Ker funkcija $q_\pi(s, a)$ govori o pričakovanem povračilu, če sprejmemo akcijo $a$ in nato sledimo 
+%    strategiji $\pi$, je optimalna funkcija definirana na enak način, in sicer kot $q_*(s, a) = E[R_{t+1} 
+%    + \gamma v_*(S_{t+1})~|~S_t=s, A_t = a]$. Zaradi končnosti procesa, je to ekvivalentno
+%    $$
+%    q_*(s, a) = \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_*(s).
+%    $$  
+%    če začnemo z drugega zornega kota, 
+%    \begin{enumerate}
+%        \item Ker govorimo o končnih procesih s končnimi nagradami in ker velja da je $v_\pi(s) = \mathrm{E} 
+%                [G_t~|~S_t = s]$ ter je $v_*$ maksimalna vrednostna funkcija, so vrednosti $v_*(s)$ navzgor 
+%                omejene. Od tu takoj sledi obstoj vsaj ene strategije $\pi_*$.
+%
+%        \item Ker vrednostni funkciji govorita o pričakovanih povračilih, 
+%                $\pi_*(a|s) = 
+%                \begin{cases}
+%                    1 & \text{če } a = \text{arg}\max_{a \in \mathcal{A}} q_*(s, a) \\
+%                    0 & \text{sicer},
+%                \end{cases}$
+%
+%        \item Ker velja, da $q_*(s, a)$ pove vrednost pričakovanega povračila, če izberemo akcijo $a$ in nato 
+%                sledimo optimalni strategiji, potem velja enakost $q_*(s, a) = E[R_{t+1} + \gamma v_*(S_{t+1})~
+%                |~S_t=s, A_t = a]$. Od tu sledi, da optimalna strategija določa enako $v_*$ in $q_*$.
+%    \end{enumerate}
+%    Ker velja $v_*(s) = \max_a q_*(s, a)$
+%    DOKAZ SE KONČA TAKO DA SE IZPELJE BELLMANOVE ENAČBE, TO DA ENOLIČNOSTI IN DETERMINISTIČNOST
+%\end{proof}
 
-Izrek nam pove, da če poznamo $q_*(s, a)$, poznamo tudi optimalno deterministično strategijo, 
-ki jo dobimo kot $\pi_*(a|s) = \mathbbm{1} (a =\text{arg}\max_{a \in \mathcal{A}} q_*(s, a))$.
+Izrek je dokazan v \cite{RLalgo}, za namene naloge pa je najbolj pomemben rezultat to, da ob poznani 
+$q_*(s, a)$, poznamo tudi optimalno deterministično strategijo, ki jo dobimo kot $\pi_*(a|s) = 
+\mathbbm{1} (a =\text{arg}\max_{a \in \mathcal{A}} q_*(s, a))$.
 
 Podobno kot za poljubne vrednostne funkcije, lahko tudi za optimalne vrednostne funkcije 
 izpeljemo Bellmanovo enačbo, ki jo sedaj imenujemo \textbf{Bellmanova enačba optimalnosti} (angl. 
-\textit{Bellman optimality equation}). Sprva opazimo, da $q_*$ in $v_*$ povezujeta enaki zvezi kot 
-$q_\pi$ in $v_\pi$:
+\textit{Bellman optimality equation}). Natančna izpeljava je stvar zgornjega dokaza, a bistvo je, 
+da dobimo spodnji zvezi:
 \begin{align*}
     v_*(s) &= \max_a q_*(s, a), \\
     q_*(s, a) &= \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_*(s).
 \end{align*}
-Ti zvezi nato vstavimo eno v drugo, in dobimo enačbi: 
+Ti zvezi nato vstavimo eno v drugo, in dobimo Bellamanovi enačbi: 
 
-\begin{align}\label{beo}
+\begin{align*}
     v_*(s) &= \max_a \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_*(s), \\
     q_*(s, a) &= \mathcal{R}_s^a + 
                 \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a \max_{a'} q_*(s', a').
-\end{align}
-Opazimo, da sta enačbi tokrat nelinearni, kar močno oteži direktno reševanje. Na srečo pa tudi 
-v tem primeru pridejo prav metode iz naslednjega odseka.
-
-MALO BOLJ NATANČNO O TEM KAKO DO OPT STRAT IZ FUNKCIJE, DOKAZI, IZPELJAVE, ...
+\end{align*}
+Opazimo, da sta enačbi tokrat nelinearni, kar močno oteži direktno reševanje. Zaradi tega se v praksi 
+pri iskanju optimalnih strategij poslužujemo drugačnih metod.
 
 \section{Algoritmi pri spodbujevalnem učenju}
 \label{algoritmi}
 Algoritmov za reševanje MDP-jev je precej. Mi se bomo omejili predvsem na algoritme, ki se učijo 
 prek vrednostne funkcije in izhajajo iz dinamičnega programiranja, a naj na tem mestu omenimo, 
-da obstajajo tudi algoritmi, ki posodabljajo strategijo neposredno (MOGOČE KAKŠEN REFERENCE ALI 
-PA KEJ).
+da obstajajo tudi algoritmi, ki posodabljajo strategijo neposredno. Opisujeta jih Sutton in Barto 
+\cite{RLintro}.
 
-Izjemnega pomena pri reševanju je dejstvo, ali je znana matrika $\mathcal{P}$ in nagradna funkcija 
+Izjemnega pomena pri reševanju je vprašanje, ali sta znani matrika $\mathcal{P}$ in nagradna funkcija 
 $\mathcal{R}_s^a$. Izkaže se, da je večina problemov takih, da ti dve stvari nista znani. Eden izmed 
 takih problemov je tudi igranje namiznih iger -- ne poznamo strategije našega nasprotnika, zato ne 
-poznamo verjetnosti prehodov med stanji.
+poznamo verjetnosti prehodov med stanji, poleg tega pa ima lahko tudi igra sama element stohastičnosti 
+(npr. met kocke).
 
 Poleg tega naj na tem mestu omenimo, da reševanju celotnega problema spodbujevalnega učenja 
 pravimo \textbf{načrtovanje} (angl. \textit{planning}), le-ta pa se deli na dve stopnji: 
@@ -759,12 +795,10 @@ razstavimo na podprobleme in rešitve podproblemov lahko potem sestavimo nazaj v
 problema. Druga pomembna lastnost pa so \textbf{prekrivajoči podproblemi}, ki implicira, da lahko 
 že poznane rešitve podproblemov večkrat uporabimo.
 
-Opazimo, da obe lastnosti veljata za MDP-je; Bellmanova enačba, nam razdeli problem na 
+Opazimo, da obe lastnosti veljata za MDP-je; Bellmanova enačba nam razdeli problem na 
 podprobleme, vrednostna funkcija pa hrani in ponovno uporablja rešitve. Lastnosti veljata tudi 
 za Markovske procese nagrajevanja, zato lahko metode, ki jih bomo spoznali, uporabimo za reševanje
 tovrstnih procesov. Nam je seveda v interesu reševati MDP-je, zato se bomo posvetili temu.
-
-(MORDA BOLJ FORMALNO O BELLMANOVIH ENAČBAH - NI TREBA?)
 
 \subsubsection{Iterativno ocenjevanje strategije}
 Algoritem deluje na MDP-ju, katerega prehodna matrika je znan podatek. Poleg tega potrebuje tudi 
@@ -775,7 +809,7 @@ naslednje stanje od $s$. Enačba iteracije se potem glasi
 \begin{align*}
     v_{k+1}(s) &= \sum_{a \in \mathcal{A}} \pi(a|s) \left[ \mathcal{R}_s^a + 
         \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] \text{ ali na kratko}\\
-    v_{k+1} &= \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_k.
+    v_{k+1} &= \mathcal{R}_\pi + \gamma \mathcal{P}_\pi v_k.
 \end{align*}
 
 \begin{izrek}\label{ios}
@@ -899,7 +933,7 @@ tako, da prištejemo dejansko opaženo empirično povračilo $G_t$, ki pripada p
 Po koncu učenja enostavno za vsako stanje delimo $S(s)$ z $N(s)$ in tako dobimo vzorčno povprečje za 
 dejanski $v(s)$.
 \begin{itemize}
-    \item Ob vsakem (ali samo prvem) obisku stanja $s$: 
+    \item Ob vsakem obisku stanja $s$: 
         \begin{align*}
             N(s) &\leftarrow N(s) + 1 \\
             S(s) &\leftarrow S(s) + G_t.
@@ -915,16 +949,20 @@ dejanski $v(s)$.
     pomeni prirejanje vrednosti na desni spremenljivki na levi, torej $spremenljivka \leftarrow vrednost$.
 \end{opomba}
 
-TOLE MALO BOLJ RAZDELAJ - MONTE CARLO IMA KVADRATIČNO KONVERGENCO, SUTTON BARTO, RAZLOŽI KAJ JE 
-PUŠČICA
+Opazimo, da metoda deluje samo za probleme, ki imajo končne epizode, saj šele takrat lahko poznamo $G_t$. 
+Če za vsako stanje $s$ hranimo $N(s)$ in $S(s)$, tako dobimo oceno za $v_\pi(s)$ za vsak $s \in 
+\mathcal{S}$.
 
-Opazimo, da vrednost $V(s)$ konvergira proti $v_\pi(s)$, ko gre $N(s) \rightarrow \infty$ po 
-krepkem zakonu velikih števil. Opazimo tudi, da metoda deluje samo za probleme, ki imajo končne 
-epizode, saj šele takrat lahko poznamo $G_t$. Če za vsako stanje $s$ hranimo $N(s)$ in $S(s)$, 
-tako dobimo oceno za $v_\pi(s)$ za vsak $s \in \mathcal{S}$.
+Ker je v ozadju našega problema računanje približka pričakovane vrednosti s pomočjo povprečja nekega 
+vzorca, nam skoraj gotovo konvergenco $V(s)$ proti $v_\pi(s)$, ko gre $N(s) \rightarrow \infty$ 
+zagotavlja krepki zakon velikih števil. To je res, ker je vsako opaženo povračilo dobljeno na podlagi 
+enakih pogojev (strategije in okolja), torej je vzorec enako porazdeljen. Prav tako so vzorčna povračila 
+med seboj neodvisna (ena epizoda ne vpliva na drugo) in imajo končno varianco (zaradi končnih nagrad). 
+Na osnovi krepkega zakona velikih števil lahko ugotovimo, da je konvergenca algoritma \textit{kvadratična}. 
+To sta pokazala Sutton in Singh \cite{MCdokaz}.
 
-Prostorsko zahtevnost lahko izboljšamo, če upoštevamo, da povprečje $\mu$ nekega zaporedja slučajnih 
-spremenljivk $X_1, X_2, \dots$ izračunamo inkrementalno:
+Prostorsko zahtevnost algoritma lahko izboljšamo, če upoštevamo, da povprečje $\mu$ nekega zaporedja 
+slučajnih spremenljivk $X_1, X_2, \dots$ izračunamo inkrementalno:
 \begin{align*}
     \mu_k &= \frac{1}{k} \sum_{i = 1}^k X_i \\
         &= \frac{1}{k} \left[X_k + \sum_{i = 1}^{k-1} X_i \right] \\
@@ -1058,7 +1096,7 @@ algoritmi med sabo podobni, zadošča navesti zgled algoritma za TD($0$).
     markovski proces.
 \end{zgled}
 
-\subsection{TD($\lambda$)}
+\subsection{Algoritem TD($\lambda$)}
 Algoritma, ki smo ju spoznali do sedaj mogoče na prvi pogled nista najbolj podobna, a bomo kmalu 
 videli, da pripadata isti družini algoritmov. V ta namen si poglejmo povračila, ki gledajo $n$-
 korakov v prihodnost. Tarča se primerno prilagodi v: 
@@ -1731,6 +1769,18 @@ Ogledali smo si tabelarnega agenta in agenta, ki je vrednsotno funkcijo aproksim
 Za samo učenje smo uporabili algoritma TD($0$) in TD($\lambda$). Pod drobnogled smo vzeli $3$,$3$,$3$-igro,
 $5$,$5$,$4$-igro in $6$,$7$,$4$-igro z dodatkom gravitacije.
 
+Tabelarni agent vrednostno funkcijo hrani v obliki slovarja, kjer so ključi vsa obiskana stanja. 
+Pri agentu s funkcijsko aproksimacijo pa moramo določiti nekaj stvari, ki niso direktno povezane z 
+uporabljenimi algoritmi. Izbira velikosti in globine nevronske mreže je pogosto arbitrarna izbira, 
+mi smo izbrali mrežo z dvema skritima slojema. Velikost vhodnega sloja je določena z velikostjo igre. 
+Ploščo smo predstavili z binarnim vektorjem stanja in na koncu dodali še nevron pristranskosti (angl. 
+\textit{bias neuron}). Tako je formula za velikost $ m \times n \times 3 + 1$. Velikost obeh skritih 
+slojev je dvakratnik velikosti vhodnega sloja. Izhodni sloj pa ima enostavno velikost $1$, saj nas 
+zanima samo ocena stanja, ki ga podamo mreži. 
+
+Pomembna izbira je tudi aktivacijska funkcija. S pomočjo eksperimentiranja smo ugotovili, da nam 
+najbolje služi funkcija ReLU oz. $f(x) = \max(0, x)$.
+
 \subsubsection{Pripomočki}
 Uporabili smo programski jezik \textit{Python}. Nekatere numerične operacije so pospešene s pomočjo 
 knjižnice za numerično računanje \textit{NumPy}. Nevronskih mrež nismo implementirali sami, pač pa 
@@ -1829,17 +1879,6 @@ smo se odločili za uporabo konstantnega $\epsilon$ in $\alpha$, pa tudi ob veli
 občasno dobimo neoptimalno igro -- pri posodabljanju vrednosti naredi prevelik korak in zgreši optimalno.
 
 \subsubsection{Agent s funkcijsko aproksimacijo - nevronske mreže}
-Pri agentu z nevronsko mrežo se pojavijo dodatni parametri. Izbira velikosti in globine nevronske 
-mreže je pogosto arbitrarna izbira, mi smo izbrali mrežo z dvema skritima slojema. Velikost vhodnega 
-sloja je določena z velikostjo igre. Ploščo smo predstavili z binarnim vektorjem stanja in na koncu 
-dodali še nevron pristranskosti (angl. \textit{bias neuron}). Tako je formula za velikost $ m \times 
-n \times 3 + 1$. Velikost obeh skritih slojev je dvakratnik velikosti vhodnega sloja. Izhodni sloj pa 
-ima enostavno velikost $1$, saj nas zanima samo ocena stanja, ki ga podamo mreži. 
-
-Pomembna izbira je tudi aktivacijska funkcija. S pomočjo eksperimentiranja smo ugotovili, da nam 
-najbolje služi funkcija ReLU oz. $f(x) = \max(0, x)$.
-
-\subsubsection{$3$,$3$,$3$-igra}
 Zaradi relativno majhnega števila stanj v tej igri je tabelarni agent tu hitreje uspešen, saj hitro 
 odkrije dovolj stanj. Agent z nevronsko mrežo pa ne more beležiti vrednosti dejanskih stanj, zato 
 se moran zanesti na svoje sposobnosti posploševanja, ki so, kot bomo videli, manj uspešne kot beleženje 
@@ -1856,12 +1895,24 @@ primeru lahko grobo ocenimo zgornjo mejo za količino stanj kot $3 ^ {(5 \times 
 milijonkrat več, kot zgornja meja za križce in krožce. 
 
 \subsubsection{Tabelarni agent}
+Pri tako velikem prostoru stanj tabelarni agent popolnoma odpove. To je razvidno tudi v spodnjem grafu, 
+kjer vidimo, da se tudi po $40000$ igrah agentova strategija ne izboljša.
 
 \begin{figure}[H]
     \includegraphics[scale=0.8]{../rezultati/tdl-554-40000-2.png}
     \caption{Neuspeh učenja tabelarnega TD($\lambda$) agenta}
 \end{figure}
 
+\subsubsection{Agent s funkcijsko aproksimacijo - nevronske mreže}
+Funkcijska aproksimacija se v tem primeru izkaže za bolj uspešno. Rezultat je zelo podoben 
+$3$,$3$,$3$-igri. To morda nakazuje na dobro sposobnost generalizacije nevronske mreže. 
+
+\begin{figure}[H]
+    \includegraphics[scale=0.8]{../rezultati/tdnn-554-150000-2.png}
+    \caption{Proces učenja TD($0$) z nevronsko mrežo v vlogi drugega igralca tekom 150000 iger}
+\end{figure}
+
+Proti človeku??
 
 % slovar
 \section*{Slovar strokovnih izrazov}
