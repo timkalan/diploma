@@ -67,20 +67,20 @@ class Nakljucni:
 
 # za NN agenta je alfa = 0.01, epsilon = 0.05
 # za tab agenta je alfa = 0.2, epsilon = 0.01
-def main(p1=AgentNN('p1', alfa = 0.2, epsilon = 0.3), 
-         p2=AgentNN('p2', alfa = 0.2, epsilon = 0.3), 
-         m=5,
-         n=5,
-         k=4,
+def main(p1=TD('p1', alfa = 0.2, epsilon = 0.01), 
+         p2=TD('p2', alfa = 0.2, epsilon = 0.01), 
+         m=3,
+         n=3,
+         k=3,
          gravitacija=False,
-         trening=False,
-         epizode=0,
+         trening=True,
+         epizode=1,
          nalozi=False,
          nalozi_iz='test', 
          shrani=True, 
          shrani_v='test',
          nasprotnik=Clovek('p2'), 
-         strategija='tdnn-554-150000',
+         strategija='test',
          zacne=False):
     """
     p1 = Agent

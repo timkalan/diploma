@@ -759,7 +759,7 @@ Ti zvezi nato vstavimo eno v drugo, in dobimo Bellamanovi enačbi:
 Opazimo, da sta enačbi tokrat nelinearni, kar močno oteži direktno reševanje. Zaradi tega se v praksi 
 pri iskanju optimalnih strategij poslužujemo drugačnih metod.
 
-\section{Algoritmi pri spodbujevalnem učenju}
+\section{Algoritmi pri spodbujevalnem učenju}\label{algo}
 \label{algoritmi}
 Algoritmov za reševanje MDP-jev je precej. Mi se bomo omejili predvsem na algoritme, ki se učijo 
 prek vrednostne funkcije in izhajajo iz dinamičnega programiranja, a naj na tem mestu omenimo, 
@@ -1511,7 +1511,7 @@ da v tabelo hranimo zadnjih nekaj opažanj kombinacij stanj, akcij in nagrad in 
 naključne izbire iz te tabele namesto iz iger direktno. S tem se znebimo korelacije med podatki 
 \cite{LecNotesSilver}. Tovrstne nadgradnje presegajo obseg tega dela.
 
-\section{Namizne igre}
+\section{Namizne igre}\label{nm}
 Namizne igre (npr. šah, go, križci in krožci, \dots) so proces, ki se zelo lepo poda modeliranju z 
 Markovskim procesom odločanja. Množico stanj $\mathcal{S}$ enostavno zapolnimo z vsemi možnimi 
 konfiguracijami igralne plošče. Množico akcij $\mathcal{A}$ sestavljajo vse legalne poteze, ki jih 
@@ -1738,54 +1738,64 @@ Ghory \cite{RLboard}.
 
 \section{Aplikacija v praksi}
 Spoznano teorijo smo aplicirali na praktičen primer namizne igre. V tem odseku bomo predstavili 
-nekaj rezultatov, do katerih smo prišli. Vsa koda je prosto dostopna na 
+nekaj rezultatov, do katerih smo prišli. Vsa koda in dodatni rezultati so prosto dostopni na 
 \href{https://github.com/timkalan/diploma}{https://github.com/timkalan/diploma}.
 
 \subsection{$m$,$n$,$k$,-igra}
 $m$,$n$,$k$,-igra je abstraktna namizna igra, kjer dva igralca drug za drugim na ploščo z $m$ 
 vrsticami in $n$ stolpci polagata kamenček svoje barve (oz. ">križce"< in ">krožce"<). Njun cilj 
-je, da v vrsto postavita $k$ kamenčkov svoje barve. Vrsta je lahko v vrstici, stolpcu ali diagonali.
-Kdor prvi uspe, zmaga.
-
-Možna in enostavna prilagoditev igre je dodatek \textit{gravitacije}. To pomeni, da se v vsakem
-stolpcu kamenček lahko postavi le v najnižjo vrstico.
+je, da v vrsto postavita $k$ kamenčkov svoje barve. Vrsta kamenčkov je lahko v vrstici, stolpcu 
+ali diagonali. Kdor prvi uspe, zmaga. 
 
 Zaradi naravne simetrije igre ima praviloma prvi igralec prednost, saj naredi prvo potezo. Ker nobena 
 poteza igralca ne škoduje sama sebi, po argumentu kraje strategije ne obstaja strategija, ki bi 
 zagotovila zmago drugemu igralcu \cite{SSA}. To pomeni, da se $m$,$n$,$k$,-igre ob predpostavki 
-popolne igre končajo bodisi z zmago prvega igralca, bodisi z izenačenjem (odvisno od $m$, $n$ in $k$).
+popolne igre s strani obeh igralcev končajo bodisi z zmago prvega igralca, bodisi z izenačenjem 
+(odvisno od $m$, $n$ in $k$).
+
+Možna in enostavna prilagoditev igre je dodatek \textit{gravitacije}. To pomeni, da se v vsakem
+stolpcu kamenček lahko postavi le v najnižjo vrstico.
 
 \begin{zgled}
-    Igra Križci in krožci bi tako bila $3$,$3$,$3$-igra. Popularna japonska igra Gomoku je 
-    $15$,$15$,$5$-igra. Ob dodatku gravitacije je igra Štiri v vrsto (angl. \textit{Connect four}) 
+    Igra križci in krožci so $3$,$3$,$3$-igra. Popularna japonska igra gomoku je 
+    $15$,$15$,$5$-igra. Ob dodatku gravitacije je igra štiri v vrsto (angl. \textit{Connect four}) 
     $6$,$7$,$4$-igra.
 \end{zgled}
 
 \subsubsection{Kompleksnost $m$,$n$,$k$,-igre}
-Merjenje kompleksnosti iger je kompleksen problem, mi se ga bomo samo dotaknili, saj nam lahko da idejo 
+Merjenje kompleksnosti iger je globok problem, mi se ga bomo samo dotaknili, saj nam lahko da idejo 
 o velikostnih razredih problemov, ki jih rešujemo. Kompleksnost bomo merili izključno v smislu števila 
-stanj, to pa seveda ni edini način. Točno število stanj za $m$,$n$,$k$,-igro je težko izračunljivo, lahko 
-ga pa enostavno ocenimo kot $zgornja~meja = 3 ^ {(m \times n)}$. Logika v ozadju je, da ima vsako polje 
-lahko eno izmed treh vrednosti: križec, krožec ali pa je prazno.
+stanj, to pa seveda ni edini način. Točno število stanj za $m$,$n$,$k$,-igro je v splošnem težko 
+izračunljivo, lahko ga pa enostavno ocenimo kot $zgornja~meja = 3 ^ {(m \times n)}$. Logika v ozadju je, 
+da ima vsako polje lahko eno izmed treh vrednosti: križec, krožec ali pa je prazno. Ta metoda upošteva 
+mnogo nedovoljenih stanj (npr. celotna plošča prekrita s križci), služi nam samo kot orientacija.
 
 \subsection{Metoda}
 
 \subsubsection{Algoritmi}
-Ogledali smo si tabelarnega agenta in agenta, ki je vrednsotno funkcijo aproksimiral z nevronsko mrežo. 
-Za samo učenje smo uporabili algoritma TD($0$) in TD($\lambda$). Pod drobnogled smo vzeli $3$,$3$,$3$-igro,
-$5$,$5$,$4$-igro in $6$,$7$,$4$-igro z dodatkom gravitacije.
+Ogledali smo si tabelarnega agenta in agenta, kjer je vrednostna funkcija aproksimirana z nevronsko mrežo. 
+Za samo učenje smo uporabili algoritme TD($0$) in TD($\lambda$) in MC. Pod drobnogled smo vzeli 
+$3$,$3$,$3$-igro in $5$,$5$,$4$-igro. % in $6$,$7$,$4$-igro z dodatkom gravitacije.
 
 Tabelarni agent vrednostno funkcijo hrani v obliki slovarja, kjer so ključi vsa obiskana stanja. 
-Pri agentu s funkcijsko aproksimacijo pa moramo določiti nekaj stvari, ki niso direktno povezane z 
-uporabljenimi algoritmi. Izbira velikosti in globine nevronske mreže je pogosto arbitrarna izbira, 
-mi smo izbrali mrežo z dvema skritima slojema. Velikost vhodnega sloja je določena z velikostjo igre. 
-Ploščo smo predstavili z binarnim vektorjem stanja in na koncu dodali še nevron pristranskosti (angl. 
-\textit{bias neuron}). Tako je formula za velikost $ m \times n \times 3 + 1$. Velikost obeh skritih 
-slojev je dvakratnik velikosti vhodnega sloja. Izhodni sloj pa ima enostavno velikost $1$, saj nas 
-zanima samo ocena stanja, ki ga podamo mreži. 
+Parameter hitrosti učenja $\alpha$ in parameter raziskovanja $\epsilon$ sta bila prek poskušanja 
+nastavljena na učinkoviti vrednosti -- to sta $\alpha = 0,2$ in $\epsilon = 0,3$. Parameter $\lambda$
+pri algoritmu TD($\lambda$) smo nastavili na $0,9$.
+
+Pri agentu s funkcijsko aproksimacijo sta se učinkovita parametra nekoliko razlikovala, $\alpha = 1$ 
+in $\epsilon = 0,05$. Spet smo ju pridobili s pomočjo poskušanja. Za uporabo nevronskih mrež pa moramo 
+določiti nekaj stvari, ki niso direktno povezane z uporabljenimi algoritmi. Izbira velikosti in globine 
+nevronske mreže je pogosto arbitrarna izbira, mi smo izbrali mrežo z dvema skritima slojema. Velikost 
+vhodnega sloja je določena z velikostjo igre. Ploščo smo predstavili z binarnim vektorjem stanja in na 
+koncu dodali še nevron pristranskosti (angl. \textit{bias neuron}). Tako je formula za velikost 
+$ m \times n \times 3 + 1$. Velikost obeh skritih slojev je dvakratnik velikosti vhodnega sloja. Izhodni 
+sloj pa ima enostavno velikost $1$, saj nas zanima samo ocena stanja, ki ga podamo mreži. 
 
 Pomembna izbira je tudi aktivacijska funkcija. S pomočjo eksperimentiranja smo ugotovili, da nam 
 najbolje služi funkcija ReLU oz. $f(x) = \max(0, x)$.
+
+Poslužili smo se tudi standardnega diskontnega faktorja za namizne igre, to je $\gamma = 1$. Struktura 
+nagrad je tudi enaka, kot je opisana zgoraj. To pomeni $1$ za zmago, $-1$ za poraz in $0$ sicer.
 
 \subsubsection{Pripomočki}
 Uporabili smo programski jezik \textit{Python}. Nekatere numerične operacije so pospešene s pomočjo 
@@ -1793,20 +1803,24 @@ knjižnice za numerično računanje \textit{NumPy}. Nevronskih mrež nismo imple
 smo uporabili knjižnico \textit{PyTorch}.
 
 \subsubsection{Postopek}
-Za vse kombinacije iger in algoritmov smo izvedli enakovreden poskus. Uporabili smo metodo samoigre, 
+Za kombinacije iger in algoritmov smo izvedli enakovreden poskus. Uporabili smo metodo samoigre, 
 s pomočjo katere so agenti igrali vnaprej določeno količino iger. Na vsake $500$ iger smo učenje 
-ustavili, pridobljeno strategijo za prvega igralca pa uporabili za $1000$ iger proti naključnemu 
-igralcu. Zmage, izenačenja in poraze smo potem narisali na graf. 
-
-Za nekatere igre oz. algoritme smo izvedli eksperiment tudi na način, da je igro začel naključni igralec
-in je agent igral vlogo drugega igralca. Oznake so vseeno vedno pripravljene tako, da npr. ">zmage"< 
-govorijo o zmagah agenta (ne glede na to, ali je agent prvi ali drugi igralec). 
+ustavili, pridobljeno strategijo agenta pa uporabili za $1000$ iger proti naključnemu igralcu. To smo 
+ponovili za agenta v vlogi začetnega in drugega igralca. Zmage, izenačenja in poraze smo potem narisali 
+na graf. Oznake grafov so vedno napisane z vidika agenta. Npr. ">zmage"< pomenijo zmage agenta (ne glede 
+na to, ali je agent prvi ali drugi igralec). Naslov grafa pa je napisan tako, da je na prvem mestu 
+omenjen igralec, ki je začel in na drugem nasprotnik (ponovno ne glede na to, kater igralec je agent 
+in kater je naključni).
 
 \subsection{$3$,$3$,$3$-igra}
-Igra križci in krožci je znana otroška igra in prav tako je splošno znano, da se ob predpostavki 
-popolne igre s strani obeh igralcev, konča z izenačenjem. Ker so v našem primeru testi izvedeni proti 
-naključnemu igralcu, bo ob predpostavki uspešnega učenja večino iger zmagal agent. Stanje pred učenjem
-naših agentov si lahko ogledamo v spodnji tabeli.
+Igra križci in krožci je znana otroška igra. Okvirna zgornja meja za količino stanj je $19683$. 
+Splošno je znano, da se ob predpostavki popolne igre s strani obeh igralcev konča z izenačenjem. 
+Ker so v našem primeru testi izvedeni proti naključnemu igralcu, bo ob predpostavki uspešnega 
+učenja večino iger zmagal agent. Za nas pomembnejši pokazatelj kvalitete strategije pa je količina 
+porazov. Teh pri uporabi popolne strategije ni. Stanje agentov pred učenjem je prikazano v spodnji 
+tabeli. Agenti so poimenovanu po algoritmu ki je v ozadju, če je dodana funkcijska aproksimacija, 
+se imenu doda ">NM"<, kar pomeni \textit{nevronska mreža}. Številka pri imenu pa nam pove, ali je 
+agent prvi ali drugi igralec.
 
 \begin{center}
     \begin{table}[H]
@@ -1827,16 +1841,15 @@ naših agentov si lahko ogledamo v spodnji tabeli.
     \end{tabular}
     \caption{Rezultati igranja proti naključnemu igralcu pred učenjem agenta}
     \end{table}
-    \end{center}
+\end{center}
 
-Za večjo nazornost grafov smo se odločili, da bomo agenta pri tej igri vedno postavili v vlogo 
-drugega igralca, to pa pomeni, da tudi dobi težjo nalogo -- v naših eksperimentih se je izkazalo, 
-da za učenje dobre strategije v tej vlogi agent potrebuje občutno več iger, kot če je v vlogi 
-prvega igralca.
+Stanje v tabeli je praktično igra med dvema naključnima igralcema. Tu lahko empirično vidimo, da ima 
+prvi igralec res prednost, saj zmaga večino iger. Izjema je agent z nevronsko mrežo, kjer naključna 
+nastavitev njenih uteži privede do nekoliko drugačne igre.
 
 Spodaj lahko vidimo še tabelo količine potrebnih iger, da algoritem v testu proti naključnemu igralcu 
-prvič nikoli ni izgubil. To seveda ni idealen pokazatelj, saj je lahko to samo naključna sreča, a vseeno
-nam da idejo o kvaliteti posameznih algoritmov. 
+v testu $1000$ iger prvič nikoli ni izgubil. To seveda ni popoln pokazatelj kvalitete igre, saj je 
+lahko to samo naključna sreča, a vseeno nam da okvirno idejo in pa primerjavo med algoritmi. 
 
 \begin{center}
     \begin{table}[H]
@@ -1845,7 +1858,7 @@ nam da idejo o kvaliteti posameznih algoritmov.
             IGRALEC & KOLIČINA IGER\\
             \hline
             TD($0$) 1. & $1500$\\
-            TD($\lambda$) 1. & $2000$\\
+            TD($\lambda$) 1. & $1500$\\
             MC 1. & $3000$\\
             TD($0$)-NM 1. & $8500$\\
             \hline
@@ -1856,69 +1869,106 @@ nam da idejo o kvaliteti posameznih algoritmov.
         IGRALEC & KOLIČINA IGER\\
         \hline
         TD($0$) 2. & $17500$\\
-        TD($\lambda$) 2. & $26500$\\
+        TD($\lambda$) 2. & $21500$\\
         MC 2. & $23000$\\
         TD($0$)-NM 2. & $133500$\\
         \hline
-\end{tabular}
+    \end{tabular}
     \caption{Količina potrebnih iger, da algoritem prvič doseže $0$ porazov}
     \end{table}
-    \end{center}
+\end{center}
+
+Tabela nam pokaže, da vsaj za ta problem ni bistvene razlike med obravnavanimi tabelarnimi algoritmi. 
+To dejstvo je bilo tudi vodilo, da smo za nevronske mreže prilagodili samo algoritem TD($0$). Ta pa 
+je za doseg optimalne igre potreboval občutno več časa kot tabelarna verzija.
+
+Za večjo nazornost grafov smo se odločili, da bomo agenta pri tej igri vedno postavili v vlogo 
+drugega igralca, to pa pomeni, da tudi dobi težjo nalogo -- v naših eksperimentih se je izkazalo, 
+da za učenje dobre strategije v tej vlogi agent potrebuje občutno več iger, kot če je v vlogi 
+prvega igralca. Grafi zamenjanih vlog izgledajo podobno, le da je porazov že pred učenjem manj.
 
 \subsubsection{Tabelarni agent}
-Najprej smo se problema lotili na bolj osnoven način - s pomočjo vrednostnih funkcij v obliki tabel. 
+Najprej smo se problema lotili na bolj osnoven način -- s pomočjo vrednostnih funkcij v obliki tabel. 
 Uporabili smo prej omenjeno vrednostno funkcijo po-stanj in jo predstavili kot slovar v Pythonu, ki 
-se je polnil z vsakim novim odkritim stanjem. Parameter hitrosti učenja $\alpha$ in parameter 
-raziskovanja $\epsilon$ sta bila prek poskušanja nastavljena na učinkoviti vrednosti -- to sta 
-$\alpha = 0.2$ in $\epsilon = 0.3$.
+se je polnil z vsakim novim odkritim stanjem.
 
 Na spodnjem grafu lahko vidimo primer procesa učenja enega izmed naših agentov, to je algoritem 
-TD($\lambda$) v vlogi drugega igralca:
+TD($\lambda$) v vlogi drugega igralca. Ključen element grafa je število porazov. Želimo, da pada 
+proti $0$ in to tukaj tudi dosežemo. Ker pa smo se odločili za uporabo konstantnega $\epsilon$ in 
+$\alpha$, pa tudi ob veliki količini iger občasno dobimo neoptimalno igro -- pri posodabljanju 
+vrednosti je narejen prevelik korak oz. premik, to pa privede agenta do tega, da zgreši optimum.
 
 \begin{figure}[H]
-    \includegraphics[scale=0.8]{../rezultati/tdl-333-40000-2.png}
+    \includegraphics[scale=0.72]{../rezultati/tdl-333-40000-2.png}
     \caption{Proces učenja TD($\lambda$) v vlogi drugega igralca tekom 40000 iger}
 \end{figure}
 
-Ključen element grafa je število porazov. Želimo, da pada proti $0$ in to tukaj tudi dosežemo. Ker pa 
-smo se odločili za uporabo konstantnega $\epsilon$ in $\alpha$, pa tudi ob veliki količini iger, 
-občasno dobimo neoptimalno igro -- pri posodabljanju vrednosti naredi prevelik korak in zgreši optimalno.
-
-\subsubsection{Agent s funkcijsko aproksimacijo - nevronske mreže}
+\subsubsection{Agent s funkcijsko aproksimacijo -- nevronske mreže}
 Zaradi relativno majhnega števila stanj v tej igri je tabelarni agent tu hitreje uspešen, saj hitro 
-odkrije dovolj stanj. Agent z nevronsko mrežo pa ne more beležiti vrednosti dejanskih stanj, zato 
-se moran zanesti na svoje sposobnosti posploševanja, ki so, kot bomo videli, manj uspešne kot beleženje 
-stanj.
+odkrije večino stanj. Agent z nevronsko mrežo pa ne more beležiti vrednosti dejanskih stanj, kar pomeni, 
+da dobro strategijo lahko odkrije šele, ko se večina parametrov nevronske mreže nastavi na smiselne 
+vrednosti. To pa zaradi velike količine parametrov traja dlje, kot traja samo učenje tabelarnega agenta.
+Vseeno pa na koncu tudi ta agent pride do strategije, ki proti naključnemu igralcu ne izgubi nobene igre.
 
 \begin{figure}[H]
-    \includegraphics[scale=0.8]{../rezultati/tdnn-333-40000-2.png}
+    \includegraphics[scale=0.72]{../rezultati/tdnn-333-40000-2.png}
     \caption{Proces učenja TD($0$) z nevronsko mrežo v vlogi drugega igralca tekom 40000 iger}
 \end{figure}
 
 \subsection{$5$,$5$,$4$-igra}
 Če povečamo velikost igre, tabelarne metode hitro odpovedo (kot bomo videli v nadaljevanju). V tem 
-primeru lahko grobo ocenimo zgornjo mejo za količino stanj kot $3 ^ {(5 \times 5)}$, kar je $43$ 
-milijonkrat več, kot zgornja meja za križce in krožce. 
+primeru lahko grobo ocenimo zgornjo mejo za količino stanj kot $3 ^ {(5 \times 5)} \approx 8 \times 
+10^{11}$, kar je $43$ milijonkrat več, kot zgornja meja za križce in krožce. Tabelarni agent bi 
+moral igrati zelo veliko iger, da bi uspel raziskati tako velik prostor stanj. V tem primeru zelo 
+pride prav sposobnost generalizacije agenta z nevronsko mrežo. Generalizacija za nas pomeni, da tudi 
+neobiskanim stanjem določi neko vrednost, ki je smiselna, če je problem pravilno zastavljen.
+
+$5$,$5$,$4$-igra se pri predpostavki popolne igre obeh igralcev konča z izenačenjem. Na grafih, ki 
+prikazujejo igre proti naključnemu igralcu zato pričakujemo, da bi naučeni agent zmagal večino iger. 
+Ponovno je naš dejanski cilj doseči čim manj porazov. Glede na relativno velikost igre pričakujemo, 
+da bo izenačenj manj, kot pri križcih in krožcih. Tam je možnih stanj tako malo, da se pogosto zgodi, 
+da naključni igralec ponesreči prepreči zmago agenta. V $5$,$5$,$4$-igri je stanj veliko več in 
+posledično manj verjetno, da opazimo tako vedenje naključnega igralca.
 
 \subsubsection{Tabelarni agent}
 Pri tako velikem prostoru stanj tabelarni agent popolnoma odpove. To je razvidno tudi v spodnjem grafu, 
-kjer vidimo, da se tudi po $40000$ igrah agentova strategija ne izboljša.
+kjer vidimo, da se tudi po $150000$ igrah agentova strategija ne izboljša. 
 
 \begin{figure}[H]
-    \includegraphics[scale=0.8]{../rezultati/tdl-554-40000-2.png}
+    \includegraphics[scale=0.72]{../rezultati/tdl-554-150000-2.png}
     \caption{Neuspeh učenja tabelarnega TD($\lambda$) agenta}
 \end{figure}
 
-\subsubsection{Agent s funkcijsko aproksimacijo - nevronske mreže}
-Funkcijska aproksimacija se v tem primeru izkaže za bolj uspešno. Rezultat je zelo podoben 
-$3$,$3$,$3$-igri. To morda nakazuje na dobro sposobnost generalizacije nevronske mreže. 
+Na grafu opazimo tudi, da je bila naša hipoteza o manjši količini izenačenih iger pravilna. Do izenečenja 
+ni prišlo praktično nikoli.
+
+\subsubsection{Agent s funkcijsko aproksimacijo -- nevronske mreže}
+Funkcijska aproksimacija se v tem primeru izkaže za bolj uspešno. Na grafu vidimo, da je ta agent 
+neprimerljivo uspešnejši od tabelarnega. Dobljeni rezultat se sklada z našimi pričakovanji, dobimo 
+strategijo, ki uspešno premaga vsaj naključnega igralca.
 
 \begin{figure}[H]
-    \includegraphics[scale=0.8]{../rezultati/tdnn-554-150000-2.png}
+    \includegraphics[scale=0.72]{../rezultati/tdnn-554-150000-2.png}
     \caption{Proces učenja TD($0$) z nevronsko mrežo v vlogi drugega igralca tekom 150000 iger}
 \end{figure}
 
-Proti človeku??
+\subsection{Razprava}
+Zgornja primera iger dobro prikažeta razlike med algortimi, ki uporabljajo funkcijsko aproksimacijo 
+in algoritmi, ki shranjujejo vrednosti v tabelah. Pri manjših in manj zahtevnih problemih se izkaže, 
+da je uporaba nevronskih mrež nepotrebna in nam celo škoduje. Za zahtevnejše probleme pa aproksimacija
+postane nepogrešljiva izboljšava, ki nam dovoli, da se problem sploh začne reševati. 
+
+Pri popularnih resnih namiznih igrah je navada, da se dobljeni algoritem primerja s človeškimi igralci. 
+To se naredi s pomočjo t. i. Elo sistema točkovanja. Tovrstno točkovanje za naša primera ne obstaja, zato 
+je primerjava s človeškimi igralci nemogoča. 
+
+Algoritem smo poskusili aplicirati tudi na še večjem problemu, to je igri štiri v vrsto. Naše metode so 
+se izkazale za neuspešne, nevronska mreža je divergirala po določeni količini iger pri vseh poskušenih 
+vrednostih parametrov. Težave se lahko vseeno skrivajo v parametrih, velikosti mreže ali pa so te metode 
+brez izboljšav enostavno nezadostne za reševanje tako velikih problemov. Odgovor je verjetno kombinacija 
+vseh treh razlogov, vemo pa vsaj, da so bile metode spodbujevalnega učenja s tovrstnimi izboljšavami 
+odgovorne za računalniški program, ki je v igri go prvi premagal svetovnega prvaka \cite{go}.
+
 
 % slovar
 \section*{Slovar strokovnih izrazov}

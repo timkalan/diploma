@@ -4,30 +4,30 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 igre = []
-igralec1 = agent.AgentNN
-igralec2 = agent.AgentNN
+igralec1 = agent.TD
+igralec2 = agent.TD
 # format: algo-igralec-igra-stevilo
 
-m = 6
-n = 7
+m = 5
+n = 5
 k = 4
-grav = True
+grav = False
 
 # epsilon za navadnega
-#epsilon = 0.3
+epsilon = 0.3
 # epsilon za nn
-epsilon = 0.05
+#epsilon = 0.05
 
 # alfa za navadnega
-#alfa = 0.2
+alfa = 0.2
 # alfa za nn (0.01)
-alfa = 1
+#alfa = 1
 
-zacne = False
-algo = 'tdnn'
+zacne = True
+algo = 'test'
 # 'λ'
-kdo_igra = 'TD(0)-NM'
-igra = algo + '-674g-200000'
+kdo_igra = 'TD(λ)'
+igra = algo + ''
 g = 'g' if grav else ''
 turn = '1' if zacne else '2'
 
@@ -48,7 +48,7 @@ a = igraj.main(p1=igralec1('p1', epsilon=epsilon, alfa=alfa),
                zacne=zacne)
 igre.append(a)
 
-for i in range(400):
+for i in range(3):
     #epsilon = 1 / (2 * i + 1)
     #alfa = 1 / (i + 1)
 

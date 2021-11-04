@@ -267,7 +267,7 @@ class TD(Agent):
 
 
     
-    def nagradi(self, nagrada):
+    def nagradi2(self, nagrada):
         """
         ti. forward-view TD(lambda), ki omogoča tudi online učenje, v tej funkciji pa je implementiran 
         kot offline algoritem.
@@ -284,6 +284,37 @@ class TD(Agent):
 
             sledi[stanje] = multiplikator
             multiplikator = self.gama * self.lamb
+
+            self.vrednosti_stanj[stanje] += self.alfa * (
+                nagrada - self.vrednosti_stanj[stanje]) * sledi[stanje]
+
+            nagrada = self.gama * self.vrednosti_stanj[stanje]
+        
+        # začasni placeholder loss
+        return 0
+
+
+    def nagradi(self, nagrada):
+        """
+        ti. forward-view TD(lambda), ki omogoča tudi online učenje, v tej funkciji pa je implementiran 
+        kot offline algoritem.
+        """
+        # nastavimo sledi upravičenosti na 0
+        sledi = {stanje: 1 for stanje in self.stanja}
+
+        n = len(self.stanja)
+        i = 1
+        for stanje in self.stanja:
+            sledi[stanje] *= self.gama * self.lamb ** (n-i)
+            i += 1
+            #print(sledi[stanje], stanje)
+            
+
+        for stanje in reversed(self.stanja):
+            # poskrbimo za primer, ko stanja še nismo videli
+            if self.vrednosti_stanj.get(stanje) is None:
+                self.vrednosti_stanj[stanje] = 0
+                #self.vrednosti_stanj[stanje] = np.random.uniform(-1, 1)
 
             self.vrednosti_stanj[stanje] += self.alfa * (
                 nagrada - self.vrednosti_stanj[stanje]) * sledi[stanje]
