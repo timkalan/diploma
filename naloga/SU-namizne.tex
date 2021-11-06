@@ -10,6 +10,7 @@
 \usepackage[dvipsnames,usenames]{color}
 \usepackage{pgf}
 \usepackage{tikz}
+\usepackage{multicol}
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \usepackage{graphicx}
@@ -127,13 +128,14 @@ Motivacija za nalogo je bila razumeti algoritme, ki se učijo prek poskušanja i
 postavimo teoretični okvir v obliki Markovskih procesov odločanja. V nadaljevanju se posvetimo izpeljavi 
 in opisu metod za njihovo reševanje, ki temeljijo na konceptu dinamičnega programiranja. Te metode potem 
 posplošimo in predstavimo tri glavne iterativne algoritme: Monte Carlo, TD($0$) in TD($\lambda$). 
-Ker pa smo želeli ustvariti kompetentnega igralca namiznih iger, ki imajo pogosto veliko količino stanj, 
+Ker pa smo želeli ustvariti kompetentnega igralca namiznih iger, te pa imajo pogosto veliko količino stanj, 
 se nato posvetimo funkcijski aproksimaciji in kombinaciji nevronskih mrež s spoznanimi algoritmi.
 
 V drugem delu naloge si bolj natančno ogledamo kombinatorne igre; to je teoretični model za namizne igre.
-Nato opišemo nekaj pomembnih razlik, do katerih pride pri spodbujevalnem učenju v tem konteksu.
+Nato opišemo nekaj pomembnih razlik, do katerih pride pri spodbujevalnem učenju v tem konteksu in si 
+ogledamo kako se prilagodi koncept optimalne strategije in vrednostne funkcije.
 
-V zadnjem delu si ogledamo teorijo še na praktičnem primeru. Na $m$,$n$,$k$-igrah uporabimo opisane 
+V zadnjem delu apliciramo teorijo še na praktičnem primeru. Na $m$,$n$,$k$-igrah uporabimo opisane 
 algoritme in komentiramo njihovo učinkovitost.
 
 \vfill
@@ -141,11 +143,24 @@ algoritme in komentiramo njihovo učinkovitost.
 {\bf Reinforcement learning in board games}\\[3mm] % prevod slovenskega naslova dela 
 {\sc Abstract}
 \end{center}
-% tekst povzetka v anglescini
-Prevod zgornjega povzetka v angle"s"cino.
+
+The motivation for this work was trying to undertand algorithms that learn through trial and error. 
+In the beginning we lay the theoretical foundation by examining Markov decision processes. We then 
+move on to derive and describe methods for solving them, which are based on dynamic programming. We
+then generalize these methods and present three iterative algorithms: Monte Carlo, TD($0$) and
+TD($\lambda$). Because we wanted to create a competent board game player, and board games often have 
+a large number of states, we then look at function approximation and combining neural networks with 
+the described algorithms.
+
+In the second part we examine combinatorial games more closely. This is our theoretical model for board 
+games. We then describe some important differences which have to be made to reinforcement learning in 
+this context and look at how we have to adjust the concept of optimal strategies and value functions.
+
+In the last part we apply this theory to a practical example. We use these algorithms to solve some 
+$m$,$n$,$k$-games and comment on their efficiency.
 
 \vfill\noindent
-{\bf Math. Subj. Class. (2010):} 62L20, 68T05, 90C40 \url{www.ams.org/mathscinet/msc/msc2010.html}  \\[1mm]  
+{\bf Math. Subj. Class. (2010):} 62L20, 68T05, 90C40  \\[1mm]  %\url{www.ams.org/mathscinet/msc/msc2010.html} 
 {\bf Ključne besede:} spodbujevalno učenje, Markovski proces odločanja, učenje s časovno razliko, 
                       po-stanja, samoigra \\[1mm]  
 {\bf Keywords:} reinforcement learning, Markov decision process, temporal-difference learning,  
@@ -189,7 +204,7 @@ pride do nagrade.
 
 Koncept, ki je opisan v zgornjem odstavku, se imenuje instrumentalno pogojevanje. Z njim se 
 srečamo tudi ljudje; tako se namreč učijo otroci, odrasli ljudje pa se bolj zanesejo na 
-logično razmišljanje. Vseeno pa je to motiviralo utemeljitelje spodbujevanega učenja.
+logično razmišljanje. Vseeno pa je to motiviralo utemeljitelje spodbujevalnega učenja.
 
 \subsection{Strojno učenje}
 To relativno novo raziskovalno področje se deli na tri glavne veje:
@@ -229,20 +244,20 @@ modelirati zvezno, je za naše namene dovolj, da ga opazujemo kot diskretne toč
 \{1, \dots, T\} $, kjer $T$ označuje nek končni čas (v splošnem je lahko seveda $T = \infty$).
 
 \subsubsection{Nagrada}
-Prvi pomemben koncept pri spodbujevanem učenju je nagrada. Kot smo že zgoraj omenili, to za nas 
+Prvi pomemben koncept pri spodbujevalnem učenju je nagrada. Kot smo že zgoraj omenili, to za nas 
 pomeni neko numerično vrednost, kjer pozitivno število indicira ">pozitivno nagrado"<, negativno pa 
 ">kazen"<. S pomočjo tega koncepta formaliziramo \textit{cilj} učenja. Edini cilj agenta je 
 maksimizacija te nagrade, pri čemer je vredno omeniti, da na nagrado agent lahko vpliva samo 
 s svojimi akcijami (ne more recimo spremeniti načina, na katerega dobi nagrado). 
 
-Posebej pomembno je na tem mestu poudariti, da akcije nimajo nujno neposredne nagrade. Le-te 
+Posebej pomembno je na tem mestu poudariti, da akcije nimajo nujno neposredne nagrade. Te 
 lahko pridejo v poljubnem kasnejšem časovnem obdobju. To je smiselno, če gledamo z vidika 
 namiznih iger: pri šahu ne razmišljamo samo o neposrednih akcijah, temveč razvijamo neko 
 dolgoročno strategijo, ki nas na koncu nagradi z zmago. 
 
 \begin{zgled}[Križci in krožci]
     Pri tej znani otroški igri (in pri mnogo drugih namiznih igrah) premik v času pomeni 
-    igranje poteze enega od igralcev, zato je diskreten čas popolnoma zadosten. Nagrado 
+    igranje poteze enega od igralcev, zato je diskreten čas popolnoma zadosten. Nagrado lahko
     modeliramo na preprost način: če zmagamo, prejmemo nagrado $1$, če izgubimo pa $-1$. 
     V vseh ostalih situacijah, torej za izenačenje in po vsaki potezi, prejmemo nagrado $0$.
 \end{zgled}
@@ -269,13 +284,13 @@ Zavedati se moramo tudi potencialnih omejitev oz. pomanjkljivosti takega modela 
 Okolje predstavlja del našega sistema, na katerega agent nima nobenega vpliva. Funkcija okolja
 je, da agentu pokaže \textbf{stanje} (angl. \textit{state}) in mu da nagrado glede na 
 \textbf{akcijo}, ki jo prejme od njega. Če se ponovno osredotočimo na namizne igre, bi lahko rekli, 
-da je okolje igralna plošča \textit{in} nasprotnik  - tudi nanj namreč nimamo vpliva. Okolje nam 
+da je okolje igralna plošča \textit{in} nasprotnik  -- tudi nanj namreč nimamo vpliva. Okolje nam 
 služi tudi kot sodnik akcij oz. stanj. V kontekstu programa za igranje iger torej okolje izbira 
 nasprotnikove akcije, odloča katero stanje pomeni zmago in dodeljuje nagrade.
 
 \begin{zgled}[Križci in krožci]
     Okolje za nas pomeni $3\times3$ igralno polje \textbf{in} našega nasprotnika - to je torej človek 
-    ali nek algoritem.
+    ali nek algoritem (ki je lahko tudi kopija agenta).
 \end{zgled}
 
 \subsubsection{Agent}
@@ -304,34 +319,34 @@ Zapišimo zgoraj opisane pojme bolj formalno:
                 katero akcijo naj izbere v katerem stanju. Strategije delimo v dve skupini:
                 \begin{itemize}
                     \item \textbf{Deterministična strategija} je preslikava $\pi: \mathcal{S} 
-                    \rightarrow \mathcal{A}$, ki za vsako stanje pove, katero akcijo agent v njem 
-                    izbere
+                    \rightarrow \mathcal{A}$, ki za vsako stanje $s$ pove, katero akcijo $a$ agent v njem 
+                    izbere oz.
                     $$
                     a = \pi(s).
                     $$
                     \item \textbf{Stohastična strategija} je preslikava $\pi: \mathcal{A} \times 
-                    \mathcal{S} \rightarrow [0, 1]$ ki za vsako stanje pove verjetnost, da se igra 
-                    določena akcija. To označimo 
+                    \mathcal{S} \rightarrow [0, 1]$ ki za vsako stanje $s$ pove verjetnost, da se igra 
+                    določena akcija $a$. To označimo 
                     $$
                     \pi(a | s) = P(A_t = a~|~S_t = s).
                     $$
                 \end{itemize}
                 Seveda lahko vsako deterministično strategijo predstavimo kot stohastično, kjer je 
-                verjetnost akcije $a$ $1$, verjetnosti ostalih akcij pa so enake $0$.
+                verjetnost ene akcije $1$, verjetnosti ostalih akcij pa so enake $0$.
         
         \item Naj bodo $R_{t+1}, ...,R_T$ nagrade, ji jih bomo prejeli od trenutka 
-                $t$ do končnega časa $T$. \textbf{Povračilo} (angl. \textit{return}) $G_t$ v splošnem
-                definiramo za $T=\infty$,
+                $t$ do končnega časa $T$. \textbf{Povračilo} (angl. \textit{return}) ob času $t$ $G_t$ 
+                v splošnem definiramo za $T=\infty$,
                 $$
                 G_t = R_{t+1} + \gamma R_{t+2} + ... = \sum_{k=0}^\infty \gamma^k R_{t + k + 1} ,
                 $$
                 kjer je $\gamma \in [0,1]$ \textbf{diskontni faktor}. Predstavlja dejstvo, da 
-                imamo raje nagrade, ki bodo prišle prej. Formalno gledano, je cilj učenja 
+                imamo raje nagrade, ki bodo prišle prej. Formalno gledano je cilj učenja 
                 maksimizacija pričakovanega povračila.
 
          \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
                 stanja} (angl. \textit{state-value function}) glede na strategijo $\pi$ je 
-                pogojno matematično upanje glede na stanje
+                pogojno matematično upanje povračila glede na to stanje, 
                 $$
                 v_\pi(s) = \mathrm{E} [G_t~|~S_t = s].
                 $$
@@ -350,7 +365,7 @@ Zapišimo zgoraj opisane pojme bolj formalno:
 
 \begin{zgled}[Križci in krožci]
     Agent je v tem primeru računalniški program, ki prejme igralno ploščo, nasprotnikove 
-    poteze in nagrade, nato pa prek poskušanja in učenja vrne optimalno strategijo, t.j. 
+    poteze in nagrade, nato pa prek poskušanja in učenja vrne optimalno strategijo, tj. 
     za vsako stanje najboljšo možno akcijo.
 
     Deterministična strategija bi pomenila preslikavo, ki prejme reprezentacijo igralne plošče
@@ -375,7 +390,7 @@ okolja.
 
 \subsection{Korak spodbujevalnega učenja}
 Spodbujevalno učenje se pogosto ukvarja s procesi, ki naravno razpadejo v t. i. \textbf{epizode}. 
-Tak proces so recimo namizne igre, kjer so epizode precej naravno posamezne igre. Če bi probavali 
+Tak proces so recimo namizne igre, kjer so epizode precej naravno posamezne igre. Če bi poskušali 
 robota naučiti hoje, bi lahko za epizode vzeli neko časovno okno ali pa morda hojo do prvega padca.
 Ni pa nujno, da je delitev tako naravna (ali pa sploh možna oz. smiselna). Za namene te diplomske 
 naloge lahko privzamemo, da delitev na epizode obstaja.
@@ -450,15 +465,15 @@ da si natančno pogledamo nekaj lastnosti, ki jih lahko pričakujemo.
     $\mathcal{F}$) $(\Omega, \mathcal{F}, P)$ je \textbf{Markovska veriga} oz. \textbf{Markovski proces} 
     (angl. \textit{Markov chain}), če zanj velja Markovska lastnost. To je lastnost, ki govori o 
     pogojnih verjetnostih doseganja nekega stanja $s_{t+1}$ ob času $t + 1$ glede na celotno zgodovino
-    procesa $S_{t} = s_{t}, \dots, S_0 = s_0$. Natančneje, Markovska lastnost zahteva, da je ta 
-    pogojna verjetnost enaka pogojni verjetnosti glede samo na trenutno stanje $S_{t} = s_{t}$ oz.
+    procesa $S_0, \dots, S_{t}$. Natančneje, Markovska lastnost zahteva, da je ta pogojna verjetnost 
+    enaka pogojni verjetnosti glede samo na trenutno stanje $S_{t} = s_{t}$ oz.
     $$
     P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}, \dots, S_0 = s_0) = P(S_{t+1} = s_{t+1}~|~S_{t} = s_{t}).
     $$
-    To verjetnost imenujemo \textit{prehodno verjetnost} in jo označimo $p_{ss'} := P(S_{t+1} = 
+    To verjetnost imenujemo \textit{prehodna verjetnost} in jo označimo $p_{ss'} := P(S_{t+1} = 
     s'~|~S_{t} = s)$. Če se ukvarjamo s končnim procesom, torej procesom, ki ima končno mnogo 
     različnih stanj, lahko število stanj označimo z $n$. Potem lahko brez škode za splošnost 
-    vsa stanja označimo kar $1 \dots n$. To nam potem dovoljuje, da prehodne verjetnosti zložimo v 
+    vsa stanja označimo kar $1, \dots, n$. To nam potem dovoljuje, da prehodne verjetnosti zložimo v 
     matriko $\mathcal{P} := [p_{ss'}]_{s,s'\in \mathcal{S} }$, ki ji pravimo \textit{prehodna matrika}.
 
     Zdaj Markovsko verigo predstavimo še na alternativni način: kot dvojico $(\mathcal{S}, 
@@ -474,7 +489,8 @@ izvemo enako o trenutnem stanju, kot če bi opazovali igro od začetka.
 \subsubsection{Markovski proces nagrajevanja}
 Podoben koncept, ki se malo bolj približa dejanski situaciji v spodbujevalnem učenju, je
 \textit{Markovski proces nagrajevanja}. Kot že ime morda namigne, je precej podoben Markovski 
-verigi, le da v njem nastopajo \textit{nagrade}. 
+verigi, le da v njem nastopajo \textit{nagrade}. V tem modelu so tako kot stanja, tudi nagrade 
+slučajni proces $(R_t)_{t=1}^T$ na verjetnostnem prostoru $(\Omega, \mathcal{F}, P)$.
 
 \begin{definicija}[Markovski proces nagrajevanja]
     Pričakovani nagradi glede na stanje $s$ pravimo \textbf{nagradna funkcija} (angl. \textit{reward 
@@ -525,14 +541,14 @@ Dobili smo torej
 $$
 v(s) = \mathrm{E} [R_{t+1} + \gamma v(S_{t+1})~|~S_t = s]
 $$
-oziroma 
+oziroma (če označimo $S_{t+1} = s'$)
 \begin{equation}\label{beMRP}
     v(s) = \mathcal{R}_s + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'} v(s'),
 \end{equation} 
 kjer smo upoštevali aditivnost in idempotentnost pogojnega matematičnega upanja. Enačba \eqref{beMRP}
 je \textbf{Bellmanova enačba za Markovkse procese nagrajevanja}.
 
-Ker so namizne igre primer, ko je stanj končno mnogo, torej $n$, stanja kot v definiciji \ref{MarkovChain}
+Ker so namizne igre primer, ko je stanj končno mnogo, torej $n$, jih kot v definiciji \ref{MarkovChain}
 označimo $1, \dots, n$. Bellmanovo enačbo nato lahko prepišemo v matrični obliki
 \begin{align*}
     \begin{bmatrix}
@@ -560,7 +576,7 @@ označimo $1, \dots, n$. Bellmanovo enačbo nato lahko prepišemo v matrični ob
     \intertext{ali krajše}
     v &= \mathcal{R} + \gamma \mathcal{P}v.
 \end{align*}
-Opazimo, da je to \textit{linearna} enačba, ki jo lahko eksplicitno rešimo: 
+Opazimo, da je to \textit{linearni sistem} enačb, ki ima eksplicitno rešitev: 
 \begin{align*}
     v &= \mathcal{R} + \gamma \mathcal{P}v \\
     (I - \gamma \mathcal{P}) v &= \mathcal{R} \\
@@ -568,12 +584,12 @@ Opazimo, da je to \textit{linearna} enačba, ki jo lahko eksplicitno rešimo:
 \end{align*}
 Ta rešitev predpostavlja obrnljivost matrike $(I - \gamma \mathcal{P})$ in računanje njenega 
 inverza, kar zahteva $O(n^3)$ operacij, zato je smiselna samo za majhne procese. Dobra stran pa je, 
-da nam enoličnost inverza primeru njegovega obstoja zagotavlja enolično rešitev enačbe. Za večje 
+da nam enoličnost inverza primeru njegovega obstoja zagotavlja enolično rešitev sistema. Za večje procese
 obstajajo iterativni algoritmi in metode, nekatere izmed njih bomo spoznali v naslednjem odseku.
 
 \subsubsection{Markovski proces odločanja}
 Kot ime že nakazuje, \textbf{Markovski proces odločanja} (angl. \textit{Markov decision process (MDP)}) 
-razširja koncept procesa nagrajevanja z dodatkom odločanja - akcij. S tem dodatkom imamo v popolnosti 
+razširja koncept procesa nagrajevanja z dodatkom odločanja -- akcij. S tem dodatkom imamo v popolnosti 
 opisan problem spodbujevalnega učenja: proučujemo torej nek proces, kjer ima agent možnost odločanja, 
 izid pa je vsaj delno slučajen in odvisen od okolja. 
 
@@ -606,9 +622,9 @@ Definiramo tudi vrednostno funkcijo stanja $v_{\pi}(s)$ in vrednostno funkcijo a
 Njihove definicije se ne spremenijo, so pa sedaj formalno vmeščene v model.
 
 Opazimo, da je v MDP-ju pri fiksni strategiji $\pi$ zaporedje oz. proces stanj $S_1, S_2, \dots$ 
-Markovska veriga $(\mathcal{S}, \mathcal{P}^\pi)$. Če v zaporedje stanj pomešamo še nagrade, 
+Markovska veriga $(\mathcal{S}, \mathcal{P}_\pi)$. Če v zaporedje stanj pomešamo še nagrade, 
 torej $S_1, R_2, S_2, R_3, \dots$, dobimo Markovski proces nagrajevanja $(\mathcal{S}, 
-\mathcal{P}^\pi, \mathcal{R}^\pi, \gamma)$, kjer smo označili
+\mathcal{P}_\pi, \mathcal{R}_\pi, \gamma)$, kjer smo označili
 
 \begin{align*}
     \mathcal{P}_\pi &= \sum_{a \in \mathcal{A}} \pi(a|s) \mathcal{P}_{ss'}^a \\
@@ -625,8 +641,8 @@ MDP-ji so splošna orodja za obravnavo stohastičnih procesov, ki vključujejo o
 času. Njihov utemeljitelj je Richard Bellman, ki je znan predvsem po izumu dinamičnega 
 programiranja, zato morda ni presenetljivo, da nam prav dinamično programiranje poda osnovo za 
 njihovo reševanje.
-Kot pri procesih nagrajevanja, lahko tudi tu izpeljemo Bellmanovo enačbo. Na popolnoma enak način 
-kot pri procesih nagrajevanja lahko izpeljemo rekurzivni zvezi
+Kot pri procesih nagrajevanja, lahko tudi tu izpeljemo Bellmanovo enačbo. Najprej analogno izpeljemo 
+zvezi
 \begin{align*}
     v_\pi(s) &= \mathrm{E} [R_{t+1} + \gamma v_\pi(S_{t+1})~|~S_t = s], \\
     q_\pi(s, a) &= \mathrm{E} [R_{t+1} + \gamma q_\pi(S_{t+1}, A_{t+1})~|~S_t = s, A_t = a].
@@ -647,7 +663,7 @@ $\gamma$. Ta razmislek zapišemo kot
     q_\pi(s, a) = \mathcal{R}_s^a + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s').
 \end{equation}
 
-Če enačbi \eqref{zveza1} in \eqref{zveza2} vstavimo prvo v drugo in nato drugo v prvo, dobim0
+Če enačbi \eqref{zveza1} in \eqref{zveza2} vstavimo prvo v drugo in nato drugo v prvo, dobimo
 \begin{align}
     v_\pi(s) &= \sum_{a \in \mathcal{A}} \pi(a|s) \left[\mathcal{R}_s^a + 
     \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_\pi(s') \right], \label{bepMDP} \\
@@ -663,7 +679,8 @@ eksplicitno ter enolično rešitev:
 \end{align*}
 
 Ta enačba je sicer pomembna, a določi samo prave vrednosti glede na neko strategijo. Nas pa zanima 
-">rešitev"< MDP-ja. To pomeni, da želimo najti strategijo, ki nam bo prinesla največjo nagrado.
+">rešitev"< MDP-ja. To pomeni, da želimo najti strategijo, ki nam bo prinesla največjo nagrado, tj. 
+optimalno strategijo.
 
 \subsubsection{Optimalne vrednostne funkcije}
 \begin{definicija}
@@ -743,7 +760,7 @@ $q_*(s, a)$, poznamo tudi optimalno deterministično strategijo, ki jo dobimo ko
 
 Podobno kot za poljubne vrednostne funkcije, lahko tudi za optimalne vrednostne funkcije 
 izpeljemo Bellmanovo enačbo, ki jo sedaj imenujemo \textbf{Bellmanova enačba optimalnosti} (angl. 
-\textit{Bellman optimality equation}). Natančna izpeljava je stvar zgornjega dokaza, a bistvo je, 
+\textit{Bellman optimality equation}). Natančna izpeljava je stvar dokaza zgornjega izreka, a bistvo je, 
 da dobimo spodnji zvezi:
 \begin{align*}
     v_*(s) &= \max_a q_*(s, a), \\
@@ -782,7 +799,7 @@ pravimo \textbf{načrtovanje} (angl. \textit{planning}), le-ta pa se deli na dve
             optimalno vrednostno funkcijo in pripadajočo optimalno strategijo.
 \end{itemize}
 
-\subsection{Dinamično programiranje - reševanje poznanih MDP-jev}
+\subsection{Dinamično programiranje -- reševanje poznanih MDP-jev}
 Dinamično programiranje je optimizacijska metoda, ki deluje na principu deljenja velikega problema 
 na manjše prekrivajoče podprobleme. V jedru reševanja je \textbf{Bellmanova enačba}, ki opisuje 
 odnos med vrednostmi podproblemov in vrednostjo glavnega problema. Ker je idejo dinamičnega 
@@ -803,9 +820,9 @@ tovrstnih procesov. Nam je seveda v interesu reševati MDP-je, zato se bomo posv
 \subsubsection{Iterativno ocenjevanje strategije}
 Algoritem deluje na MDP-ju, katerega prehodna matrika je znan podatek. Poleg tega potrebuje tudi 
 fiksno strategijo $\pi$. Algoritem torej rešuje zgorlj parcialni problem, to je problem 
-napovedovanja. V ozadju je glavna ideja Bellmanova enačba pričakovanja, z njo na vsakem koraku 
-posodobimo $v_k(s)$ v $v_{k+1}(s)$ s pomočjo $v(s')$, kjer je $s'$
-naslednje stanje od $s$. Enačba iteracije se potem glasi 
+napovedovanja. V ozadju je glavna ideja Bellmanova enačba pričakovanja \eqref{bepMDP}, z njo na 
+vsakem koraku posodobimo $v_k(s)$ v $v_{k+1}(s)$ s pomočjo $v(s')$, kjer je $s'$ naslednje stanje od 
+$s$. Enačba iteracije se potem glasi 
 \begin{align*}
     v_{k+1}(s) &= \sum_{a \in \mathcal{A}} \pi(a|s) \left[ \mathcal{R}_s^a + 
         \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] \text{ ali na kratko}\\
@@ -933,7 +950,7 @@ tako, da prištejemo dejansko opaženo empirično povračilo $G_t$, ki pripada p
 Po koncu učenja enostavno za vsako stanje delimo $S(s)$ z $N(s)$ in tako dobimo vzorčno povprečje za 
 dejanski $v(s)$.
 \begin{itemize}
-    \item Ob vsakem obisku stanja $s$: 
+    \item Ob vsakem času $t$, ko je obiskano stanje $s$ ($S_t = s$): 
         \begin{align*}
             N(s) &\leftarrow N(s) + 1 \\
             S(s) &\leftarrow S(s) + G_t.
@@ -954,7 +971,7 @@ Opazimo, da metoda deluje samo za probleme, ki imajo končne epizode, saj šele 
 \mathcal{S}$.
 
 Ker je v ozadju našega problema računanje približka pričakovane vrednosti s pomočjo povprečja nekega 
-vzorca, nam skoraj gotovo konvergenco $V(s)$ proti $v_\pi(s)$, ko gre $N(s) \rightarrow \infty$ 
+vzorca, nam skoraj gotovo konvergenco $V(s)$ proti $v_\pi(s)$, ko gre $N(s)$ proti neskončno,
 zagotavlja krepki zakon velikih števil. To je res, ker je vsako opaženo povračilo dobljeno na podlagi 
 enakih pogojev (strategije in okolja), torej je vzorec enako porazdeljen. Prav tako so vzorčna povračila 
 med seboj neodvisna (ena epizoda ne vpliva na drugo) in imajo končno varianco (zaradi končnih nagrad). 
@@ -969,9 +986,9 @@ slučajnih spremenljivk $X_1, X_2, \dots$ izračunamo inkrementalno:
         &= \frac{1}{k} \left[X_k + (k-1) \mu_{k-1} \right] \\
         &= \mu_{k-1} + \frac{1}{k} \left(X_k - \mu_{k-1} \right).
 \end{align*}
-Na podlagi te zveze lahko implementiramo inkrementalni Monte Carlo, tako da po končani epizodi 
-za vsako stanje $S_t$ s povračilom $G_t$ posodobimo (ODLOČI SE ZA $S_t$ ALI s): 
-
+Na podlagi te zveze lahko implementiramo \textbf{inkrementalni Monte Carlo}. Upoštevamo, da je naše 
+opazovano zaporedje $S_1, S_2, \dots$, naše povprečje pa potem $V(S_t)$. Do algoritma potem pridemo tako, 
+da po končani epizodi za vsako časovno točko $t$ posodobimo 
 \begin{align*}
     N(S_t) &\leftarrow N(S_t) + 1, \\
     V(S_t) &\leftarrow V(S_t) + \frac{1}{N(S_t)} (G_t - V(S_t)).
@@ -997,7 +1014,7 @@ Monte Carlo in tudi dosegajo enak cilj. Pomembna razlika je, da ne potrebujejo e
 pri posodobitvi. Zaradi tega lahko delujejo tudi v sistemih, ki se ne delijo na epizode oz. ne 
 potrebujejo končanih epizod za svoje delovanje.
 
-Najpreprostejši algoritem učenja s časovno razliko je TD($0$). Ideja je, da v stanju ocenimo
+Najpreprostejši algoritem učenja s časovno razliko je TD($0$). Ideja je, da za vse čase $t$ ocenimo
 povračilo kot $G_t \approx R_{t+1} + \gamma V(S_{t+1}).$ To potem uporabimo za \textit{tarčo}
 v pravilu \eqref{osnova}. To nam da pravilo
 \begin{equation}
@@ -1057,12 +1074,12 @@ algoritmi med sabo podobni, zadošča navesti zgled algoritma za TD($0$).
     $$
     torej se najbolje prilega opazovanim povračilom. TD($0$) pa konvergira k rešitvi modela največjega 
     verjetja Markova; to je rešitev MDP-ja, ki se najbolje prilega podatkom. Dobimo torej naslednji 
-    cenilki:
+    cenilki, kjer $N(s, a)$ šteje, kolikokrat je bila izvedena katera akcija v stanju:
     \begin{align*}
         \hat{\mathcal{P}}_{ss'}^a &= \frac{1}{N(s, a)} \sum_{k=1}^K \sum_{t=1}^{T_k} 
-                \mathbbm{1}(s_t^k, a_t^k, s_{t+1}^k = s, a, s') \\
+                \mathbbm{1}(s_t^k, a_t^k, s_{t+1}^k = s, a, s'), \\
         \hat{\mathcal{R}}_{s}^a &= \frac{1}{N(s, a)} \sum_{k=1}^K \sum_{t=1}^{T_k} 
-                \mathbbm{1}(s_t^k, a_t^k = s, a)r_t^k
+                \mathbbm{1}(s_t^k, a_t^k = s, a)r_t^k.
     \end{align*}
 
     \item Zadnja pomembna razlika je, da TD izrabi Markovsko lastnost, medtem ko je MC ne. Zato je 
@@ -1070,21 +1087,25 @@ algoritmi med sabo podobni, zadošča navesti zgled algoritma za TD($0$).
 \end{itemize}
 
 \begin{zgled}[Razlike med MC in TD -- ">ti si sodnik"< \cite{RLintro}]
-    Recimo, da imamo na voljo za učenje naslednjih 8 epizod (vejice ločijo stanja in nagrade v epizodi, 
-    podpičja pa dejanske epizode): 
-    A, $0$, B, $0$;
-    B, $1$;
-    B, $1$;
-    B, $1$;
-    B, $1$;
-    B, $1$;
-    B, $1$;
-    B, $0$.
+    Recimo, da imamo na voljo za učenje naslednjih 8 epizod:
+
+    \begin{multicols}{2}
+    \begin{itemize}
+        \item $A \rightarrow 0 \rightarrow B \rightarrow 0$,
+        \item $B \rightarrow 1$,
+        \item $B \rightarrow 1$,
+        \item $B \rightarrow 1$,
+        \item $B \rightarrow 1$,
+        \item $B \rightarrow 1$,
+        \item $B \rightarrow 1$,
+        \item $B \rightarrow 0$.
+    \end{itemize}
+    \end{multicols}
 
     To pomeni recimo, da smo prvo epizodo začeli v stanju A, nato dobili nagrado $0$ in prešli v 
     stanje B, kjer smo ponovno dobili nagrado $0$, tu pa se je epizoda končala. Če bi se učili 
-    samo iz teh osmih epizod, bi se verjetno vsi strinjali, da je $V(B) = 3/4$, saj je v šestih
-    opažanjih B zavzel vrednost $1$, v dveh pa $0$. Z nami se strinjata tudi TD($0$) in MC. 
+    samo iz teh osmih epizod, bi tako MC kot TD($0$) ocenila $V(B) = 3/4$, saj je v šestih
+    opažanjih B dobil nagrado $1$, v dveh pa $0$.
 
     Razlike se začenjo pri stanju A. MC minimizira povprečno kvadratno napako, po opaženem stanju 
     A pa je bila vedno (torej enkrat) nagrada $0$, zato dodeli $V(A) = 0$.
@@ -1097,8 +1118,8 @@ algoritmi med sabo podobni, zadošča navesti zgled algoritma za TD($0$).
 
 \subsection{Algoritem TD($\lambda$)}
 V osnovi obeh alogritmov, ki smo ju spoznali je pravilo \eqref{osnova}. Izkaže pa se, da sta oba 
-samo ekstremna primera algoritma, ki ga bomo spoznali. V ta namen si poglejmo povračila, ki gledajo 
-$n$-korakov v prihodnost. Tarča se primerno prilagodi v: 
+samo ekstremna primera algoritma, ki ga bomo spoznali sedaj. V ta namen si poglejmo povračila, 
+ki gledajo $n$-korakov v prihodnost. Tarča se primerno prilagodi v: 
 $$
 G_t^{(n)} = R_{t+1} + \dots + \gamma^{n-1} R_{t+n} + \gamma^n V(S_{t+1}).
 $$
@@ -1107,12 +1128,11 @@ To tarčo lahko seveda uporabimo v pravilu \eqref{osnova}. S tem dobimo algorite
 pridemo do že znanega MC pravila. Hitro tudi vidimo, da to pravilo sicer res poveže TD($0$) in 
 MC, a ne predstavlja nobene bistvene izboljšave. Pojavi pa se še dodaten problem. Če smo v času, ki
 je manj kot $n$ korakov stran od konca epizode, ne moremo porabiti celotnega $G_t^{(n)}$. V tem 
-primeru enostavno vzamemo toliko korakov naprej, kot nam čas dopušča. To pomeni, da se vedemo enako 
-kot pri MC algoritmu.
+primeru enostavno vzamemo toliko korakov naprej, kot nam čas dopušča. 
 
-Nadgradnjo algoritma nam da dejstvo, da lahko skupaj združujemo podatke iz različnih časov prek 
-tega, da povprečimo $G_t^{(n)}$ za različne $n$. V nadaljevanju bomo pogledali, kako združimo 
-podatke iz vseh časov, ki nastopijo. Najti moramo ustrezne uteži, ki se seštejejo v ena in so 
+Dejansko nadgradnjo algoritma nam da dejstvo, da lahko skupaj združujemo podatke iz različnih časov 
+prek tega, da povprečimo $G_t^{(n)}$ za različne $n$. V nadaljevanju bomo pogledali, kako združimo 
+podatke iz \textit{vseh} časov, ki nastopijo. Najti moramo ustrezne uteži, ki se seštejejo v ena in so 
 smiselne glede na obravnavan problem. Primernega kandidata je leta $1988$ našel Richard S. Sutton
 \cite{TDlambda}, in sicer:
 $$
@@ -1129,14 +1149,14 @@ mogoče popraviti in ga spremeniti v bolj praktično verzijo.
 
 \subsubsection{Sledi upravičenosti (angl. \textit{Eligibility traces})}
 Prek tega koncepta lahko spremenimo algoritem tako, da se lahko uči po vsaki potezi sproti. Ideja 
-je, da za vsako stanje hranimo njegovo sled upravičenosti. Konceptualno to za nas pomeni, da sproti 
+je, da za vsako stanje hranimo njegovo sled upravičenosti. Konceptualno to pomeni, da sproti 
 ugotavljamo, kako zasluženo je stanje za morebitno nagrado -- koliko je pripomoglo k njeni 
 pridobitvi.
 
 Praktično pa je sled upravičenosti slučajna spremenljivka $E_t: \mathcal{S} \rightarrow \mathbb{R}^+$. 
 Pri sledeh sta pomembni dve stvari: \textbf{čas}, ki je pretekel od obiska in \textbf{pogostost} 
-obiska stanja. Sledi upravičenosti združijo oboje. Za stanje tako lahko napišemo enostavno enačbo, 
-kjer je z $E_t(s)$ označena sled v času $t$ za stanje $s$:
+obiska stanja. Sledi upravičenosti združijo oboje. Za neko stanje $s$ tako lahko napišemo enostavno 
+enačbo, kjer je z $E_t(s)$ označena sled v času $t$ za stanje $s$:
 \begin{align*}
     E_0(s) &= 0 \\
     E_t(s) &= \gamma \lambda E_{t-1}(s) + \mathbbm{1}(S_t = s),
@@ -1146,8 +1166,8 @@ od obiska $s$, v primeru, da je $s$ ponovno obiskan, pa skoči za $1$. S tem lah
 nagrade oz. kazni samo tistim stanjem, ki to zaslužijo. Hkrati pa tudi ne vrednotimo enako vseh 
 obiskanih stanj -- pomemben je čas.
 
-S tem novim konceptom lahko posodobimo naš algoritem. Če označimo napako kot $\delta_t = R_{t+1} + 
-\gamma V(S_{t+1}) - V(S_t)$, potem zapišemo: 
+S tem novim konceptom lahko posodobimo naš algoritem. Če označimo napako TD($0$) algoritma kot 
+$\delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)$, potem zapišemo: 
 \begin{equation}\label{TDlambda}
     V(s) \leftarrow V(s) + \alpha \delta_t E_t(s).
 \end{equation}
@@ -1167,7 +1187,7 @@ Z zgornjo formulacijo pravila TD($\lambda$) postane očitno, zakaj ta algoritem 
 
 \begin{itemize}
     \item Če je $\lambda = 0$, potem velja $E_t(s) = \mathbbm{1}(S_t = s)$, torej se posodobi samo
-            trenutno stanje: $V(S_t) \leftarrow V(s_t) + \alpha \delta_t$, kar pa je natančno 
+            trenutno stanje: $V(S_t) \leftarrow V(S_t) + \alpha \delta_t$, kar pa je natančno 
             posodobitev pri TD($0$).
     \item Za $TD(1)$ pa je za nagrado zaslužno vsako stanje, tako kot pri MC. 
 \end{itemize}
@@ -1232,7 +1252,7 @@ ki ima najvišjo $q$ vrednost, oz.
 \begin{equation}\label{PIS}
     \pi'(s) = \text{arg}\max_{a \in \mathcal{A}} q(s, a).
 \end{equation}
-To nas privede do ideje, da v do sedaj spoznanih algoritmih uporabimo funkcijo $q$ namesto $v$, 
+To nas privede do ideje, da v do sedaj spoznanih algoritmih ocenjujemo funkcijo $q$ namesto $v$, 
 uporabimo požrešno izboljšavo in tako rešimo celoten problem upravljanja, torej problem spodbujevalnega
 učenja. Naletimo pa na novo težavo. Za razliko od dinamičnega programiranja, v tem primeru ne poznamo 
 okolja a priori, pač pa imamo do njega dostop le prek naključnih epizod. Če se vedemo požrešno ni nujno, 
@@ -1315,7 +1335,7 @@ jih spoznali, je seveda uporaben samo, če konvergira. K sreči so konvergenco d
         \item Vsi pari stanj in akcij so obiskani oz. uporbljeni neskončnokrat.
         \item Zaporedje konvergira proti požrešni strategiji, torej 
             $$
-            \lim_{k \rightarrow \infty} \pi_k(a|s) = \mathbbm{1} (\text{arg}\max_{a \in \mathcal{A}} 
+            \lim_{k \rightarrow \infty} \pi_k(a|s) = \mathbbm{1} (a = \text{arg}\max_{a \in \mathcal{A}} 
                 q(s, a)).
             $$
     \end{itemize}
@@ -1347,13 +1367,13 @@ mi v praktičnem delu.
 Glavni problem zgornjih algoritmov je shranjevanje v tabele. Vsi delujejo na principu grajenja 
 velihih tabel; en vnos za vsako stanje (oz. en vnos za vsako kombinacijo stanja in akcije). To pri 
 velikih MDP-jih ne pride v poštev, saj učenje postane zelo prostorsko zahtevno in pa tudi 
-dolgotrajno - stanje, ki ni obiskano, nima dodeljene vrednosti, torej o njem ne vemo nič. Tabelarne 
-rešitve zato potrebujejo veliko kolino podatkov, t.j. veliko količino epizod.  
+dolgotrajno -- stanje, ki še ni bilo obiskano, nima dodeljene vrednosti, torej o njem ne vemo nič. 
+Tabelarne rešitve zato potrebujejo veliko količino podatkov, torej veliko količino epizod.  
 
 \begin{zgled}[Število stanj pri nekaterih namiznih igrah]
     Igra križci in krožci je zelo enostavna igra in to je odraženo tudi v številu stanj v igri. 
     Grobo oceno lahko dobimo, če upoštevamo da lahko vsako od devetih polj vsebuje enega od znakov 
-    ali pa je prazno. To nam da oceno $3^9 = 19683$. To številko hitro zmanjšamo, če ne upoštevamo 
+    ali pa je prazno. To nam da oceno $3^9 = 19683$. Številko hitro zmanjšamo, če ne upoštevamo 
     ilegalnih stanj. Tako dobimo $5478$ legalnih stanj. Ob upoštevanju rotacij in zrcaljenj pa 
     prispemo do $765$ dejansko razliučnih stanj. To lahko enostavno shranimo v tabelo. 
 
@@ -1385,17 +1405,17 @@ $$
 $$
 kjer je $\alpha$ parameter hitrosti učenja (oz. velikost koraka). Ker gradient pove, v katero smer 
 funkcija narašča, bo premik v negativni smeri povročil, da bomo to vrednost zmanjšali. Parameter 
-$\alpha$ je tu pomemben, saj prek njega lahko dosežemo, da se ne premaknemo predaleč in s tem zgrešimo
-naš minimum. Uporaba gradienta pa je tudi kriva za to, da v splošnem tako lahko doežemo le lokalni 
+$\alpha$ je tu pomemben, saj prek njega lahko dosežemo, da se ne premaknemo predaleč in s tem ne zgrešimo
+našega minimuma. Uporaba gradienta pa je tudi kriva za to, da v splošnem tako lahko doežemo le lokalni 
 minimum. 
 
 Za uporabo gradientnega spusta seveda potrebujemo neko kriterijsko funkcijo, ki jo želimo minimizirati. 
 V našem primeru je smiselna izbira \textit{srednja kvadratična napaka} med pravo vrednostjo stanja in 
 ocenjeno vrednostjo oz. 
 $$
-J(w) = E_\pi [(v_\pi(s) - \hat{v}(s, w))^2]
+J(w) = E_\pi [(v_\pi(s) - \hat{v}(s, w))^2].
 $$
-in tako premikati uteži v skladu z 
+Uteži se potem prilagodijo v skladu z 
 $$
 \Delta w = \alpha E_\pi [(v_\pi(s) - \hat{v}(s, w)) \nabla_w \hat{v}(s, w)], 
 $$
@@ -1422,12 +1442,11 @@ $$
     E_t &= \gamma \lambda E_{t-1} + \nabla_w \hat{v}(S_t, w) \\
     \Delta w &= \alpha \delta_t E_t
 \end{align*}
-če uporabljamo pogled nazaj.
+če uporabljamo pogled nazaj. Do ostalih verzij algoritma pridemo na analogen način.
 
-Z drugačnimi tarčami dobimo analogne rezultate. Problem upravljanja v primeru funkcijske aproksimacije 
-rešujemo analogno osnovnemu primeru, kjer seveda uporabimo $\hat{q}(s, a, w)$ in ne $\hat{v}(s, w)$. 
-Naletimo pa na nov problem; konvergenca namreč ni več nujno zagotovljena, vendar je vseeno lahko dosežena 
-v posebnih primerih.
+Problem upravljanja v primeru funkcijske aproksimacije rešujemo analogno osnovnemu primeru, kjer seveda 
+uporabimo $\hat{q}(s, a, w)$ in ne $\hat{v}(s, w)$. Naletimo pa na nov problem; konvergenca namreč ni 
+več nujno zagotovljena, vendar je vseeno lahko dosežena v posebnih primerih.
 
 \subsubsection{Linearna aproksimacija}
 Najbolj enostaven način aproksimacije funkcij je seveda linerana aproksimacija. Ideja je, da stanje 
@@ -1455,7 +1474,7 @@ Sedaj lahko predstavimo vrednost stanja kot linearno kombinacijo komponent vekto
 $$
 \hat{v}(s, w) = x(s)^T w = \sum_{i=1}^n x_i(s) w_i.
 $$
-V tej situaciji stohastični gradientni spust konvergira k globalnemu minimumu \cite{RLintro}. Dobimo 
+V tej situaciji stohastični gradientni spust konvergira h globalnemu minimumu \cite{RLintro}. Dobimo 
 tudi zelo enostavno pravilo posodabljanja, saj velja $\nabla_w \hat{v}(s, w) = x(s)$. To zelo 
 poenostavi računanje in razmislek o teoriji v ozadju. Zato je tudi linearna aproksimacija najbolj 
 teoretično obdelana -- konvergenčni dokazi za funkcijske aproksimacije so večinoma narejeni samo 
@@ -1479,7 +1498,7 @@ naredimo tako veliko, kot imamo na voljo akcij in za vsako stanje ocenimo vse ak
 Prehod med posameznimi sloji lahko seveda zapišemo malo bolj matematično. Naj $a_n$ označuje 
 \textit{aktivacijo} $n$-tega sloja. To je torej vektor, ki predstavlja kakšne vrednosti je dosegel
 vhodni podatek, ko je prišel do $n$-tega sloja. Vsak nevron ima svoj vektor uteži $w$, tako lahko 
-uteži sloja zložimo v matriko velikosti $W$ velikosti $velikost~sloja~n~\times~velikost~sloja~n + 1$.
+uteži sloja zložimo v matriko velikosti $W$ velikosti $(velikost~sloja~n)~\times~(velikost~sloja~n + 1)$.
 Vsak nevron ima načeloma tudi svojo pristranskost (angl. \textit{bias}), ki jo za posamezen sloj 
 označimo z vektorjem $b$. Sedaj lahko končno napišemo, kako se spremeni vrednost pri prehodu med 
 slojema:
@@ -1498,11 +1517,11 @@ nje so nevronske mreže tako uporabne in univerzalne.
     \end{itemize}
 \end{zgled}
 
-Kljub velikim uspehom v zadnjem času, imajo nevronske mreže vseeno veliko težav. Veliko parametrov je 
-potrebno nastaviti ročno, še več pa jih je potrebno prilagoditi prek učenja, lahko naletimo na 
+Kljub velikim uspehom v zadnjem času, imajo nevronske mreže vseeno mnogo težav. Veliko parametrov je 
+potrebno nastaviti ročno, še več pa jih je potrebno prilagoditi prek učenja. Naletimo lahko na 
 prekomerno prilagajanje podatkom ali pa dobimo konvergenco k lokalnemu minimumu.
 Poseben problem spodbujevalnega učenja pa je dokaz, da z uporabo nevronskih mrež kot aproksimatorja 
-v primeru algoritmov TD($0$) in TD($\lambda$) dobimo divergenco \cite{RLintro}.
+v primeru algoritmov TD($0$) in TD($\lambda$) konvergenca ni zagotovljena \cite{RLintro}.
 
 \subsubsection{Serijsko učenje (angl. \textit{Batch reinforcement learning})}
 Ena izmed nadgradenj, ki v praksi izboljša konvergenco algoritmov, je serijsko učenje. Veliko uspeha 
@@ -1516,28 +1535,16 @@ Namizne igre (npr. šah, go, križci in krožci, \dots) so proces, ki se zelo le
 Markovskim procesom odločanja. Množico stanj $\mathcal{S}$ enostavno zapolnimo z vsemi možnimi 
 konfiguracijami igralne plošče. Množico akcij $\mathcal{A}$ sestavljajo vse legalne poteze, ki jih 
 definirajo pravila igre in trenutno stanje. Prehodno matriko definirajo akcije našega nasprotnika oz. 
-okolja, če je igra stohastične narave (npr. Backgammon - met kocke). Torej vidimo, da so namizne igre
-okolje, kjer je prehodna matrika neznana in zato učenje prek dinamičnega programiranja ne pride v 
-poštev. Prav tako samo delno poznamo nagradno funkcijo, saj je tudi ta odvisna od dinamike okolja.  
+okolja, če je igra stohastične narave (npr. Backgammon - met kocke). Ker ne poznamo nasprotnika vidimo, 
+da so namizne igre okolje, kjer je prehodna matrika neznana in zato učenje prek dinamičnega programiranja 
+ne pride v poštev. Prav tako samo delno poznamo nagradno funkcijo, saj je tudi ta odvisna od dinamike 
+okolja.  
 
 \subsection{Formalna definicija namizne igre} Namizne igre , s katerimi se ukvarjamo tukaj, sodijo 
 v skupino \textit{kombinatornih iger}. To so igre za dva igralca s popolno informacijo (noben aspekt 
 igre igralcem ni skrit), kjer igralca izmenično igrata poteze. Tovrstnim igram se odlično poda 
 reprezentacija z drevesom, kjer je vsako vozlišče možno stanje (možna stanja določajo pravila igre), 
 povezave pa predstavljajo poteze igralcev.
-
-\subsection{Nagrajevanje}
-Pri namiznih igrah je najpogosteje uporabljena zelo enostavna struktura nagrad. Zmagi in porazu sta 
-dodeljeni vrednosti $1$ oz. $-1$, za izenačenje se vzame vrednost $0$. Vsem ostalim ne-končnim stanjem
-se prav tako dodeli vrednost $0$ in tako se doseže, da imamo opravka z igro z vsoto nič tudi znotraj 
-MDP-ja. Občasne spremembe te strukture nagrad so možne, najpogosteje se dodeli neko negativno nagrado 
-vsem stanjem (npr. $-0,1$). Konceptualno naj bi to pomenilo pritisk na agenta da naj čim prej pride do 
-konca igre, t.j. naj čim prej zmaga. Glede na posamezno igro se lahko prilagodi tudi nagrada za 
-izenačenje (če je to želen rezultat, potem ima lahko pozitivno nagrado).
-
-Posebnost pri namiznih igrah je tudi v diskontnem faktorju. Čeprav so vseeno zaželene nagrade, ki 
-pridejo prej, torej krajše igre, se zaradi pojavitve neničelnih nagrad samo ob koncu igre pogosto 
-uporablja diskontni faktor $\gamma = 1$.
 %\begin{center}
 %    \begin{figure}[h]
 %        \begin{forest}
@@ -1614,30 +1621,44 @@ uporablja diskontni faktor $\gamma = 1$.
     \caption{Del drevesa igre križci in krožci}
     \end{figure}
 \end{center}
+
+\subsection{Nagrajevanje}
+Pri namiznih igrah je najpogosteje uporabljena zelo enostavna struktura nagrad. Zmagi in porazu sta 
+dodeljeni vrednosti $1$ oz. $-1$, za izenačenje se vzame vrednost $0$. Vsem ostalim ne-končnim stanjem
+se prav tako dodeli vrednost $0$ in tako se doseže, da imamo opravka z igro z vsoto nič tudi znotraj 
+MDP-ja. Občasne spremembe te strukture nagrad so možne, najpogosteje se dodeli neko negativno nagrado 
+vsem stanjem (npr. $-0,1$). Konceptualno naj bi to pomenilo pritisk na agenta da naj čim prej pride do 
+konca igre, tj. naj čim prej zmaga. Možna je tudi neničelna agrada za izenačenje, njen predznak pa je 
+odvisen od tega, ali je izenačenje želen izid. 
+
+Posebnost pri namiznih igrah je tudi v diskontnem faktorju. Čeprav so vseeno zaželene nagrade, ki 
+pridejo prej, torej krajše igre, se zaradi pojavitve neničelnih nagrad samo ob koncu igre pogosto 
+uporablja diskontni faktor $\gamma = 1$.
+
 Namizne igre v kontekstu te diplomske naloge so igre z vsoto nič. To pomeni, da se nagrade igralcev 
 seštejejo v $0$. Za namene spodbujevalnega učenja lahko agentove nagrade odstopijo od te konvencije
 (npr. z že omenjeno malo negativno nagrado ob vsakem koraku), a v osnovi imamo opravka s tovrstnimi 
 igrami.
 
 \subsection{Optimalna strategija}
-Če imamo opravka z okoljem za enega agenta, je definicija optimalne strategije dokaj enostavna - to
+Če imamo opravka z okoljem za enega agenta, je ideja optimalne strategije dokaj enostavna -- to
 je strategija, ki agentu dolgoročno prinese najvišjo nagrado. Namizne igre pa imajo drugačno zasnovo; 
 so igre za dva igralca oz. agenta. Sedaj je optimalna strategija enega odvisna od optimalne strategije 
 drugega. Tu nam na vprašanje optimalne strategije ponovno pomaga odgovoriti teorija iger. 
 
 Vrednostna funkcija v modelu z dvema agentoma ocenjuje njuno skupno strategijo, označeno $\pi = (\pi_1, 
-\pi_2)$. Še vedno je definirana na enak način kot v osnovnem modelu. Razlika je samo v optimalni 
+\pi_2)$. Komponenti sta še vedno definirani na enak način kot v osnovnem modelu. Razlika je v optimalni 
 vrednostni funkciji, ki ji tu pravimo \textbf{minimax vrednostna funkcija}. Ta funkcija maksimizira 
-nagrado za prvega igralca in minimizira nagrado za drugega, in je definirana kot
+nagrado za prvega igralca in minimizira nagrado za drugega in je definirana kot
 $$
-v_*(s) = \max_{\pi_1} \min_{\pi_2} v_\pi(s).
+v_*(s) = \max_{\pi_1} \min_{\pi_2} v_\pi(s), 
 $$
-\textbf{Minimax strategija} je potem skupna strategija, ki doseže vrednosti minimax vrednostne funkcije. 
-Kot posledica znanega rezultata iz teorije iger, izreka o minimaxu, je minimax vrednostna funkcija ena 
-sama, minimax strategija, ki jo določa, pa je Nashevo ravnotežje. Tu je pomembno dejstvo, da govorimo 
-o igrah z vsoto nič.
+kjer je $v_\pi(s) = \mathrm{E} [G_t~|~S_t = s]$. \textbf{Minimax strategija} je potem skupna strategija, 
+ki doseže vrednosti minimax vrednostne funkcije. Kot posledica znanega rezultata iz teorije iger, 
+izreka o minimaxu, je minimax vrednostna funkcija ena sama, minimax strategija, ki jo določa, pa je 
+Nashevo ravnotežje. Tu je pomembno dejstvo, da govorimo o igrah z vsoto nič.
 
-\subsection{Parcialni model - ">po-stanja"<}
+\subsection{Parcialni model -- ">po-stanja"<}
 V veliki večini primerov je pri spodbujevalnem učenju uporabna vrednostna funkcija akcij $q(s, a)$, 
 kar je zaradi neznane dinamike okolja in nepredvidljivosti njegovih odgovorov smiselno. Vrednostna 
 funkcija stanj $v(s)$ nam ne pomaga pri izboljšavi strategije, saj nam ena vrednost stanja ne pove 
@@ -1653,7 +1674,7 @@ določena akcija. S pomočjo tega dejstva zelo zmanjšamo velikost vrednostne fu
 \begin{zgled}
     Na začetku igre križcev in krožcev je plošča popolnoma prazna. Ko se prvi igralec odloča, kam bo 
     postavil svoj križec, nam vrednost prazne plošče ne pomaga nič, vrednosti vseh dosegljivih stanj 
-    (po-stanj) in vrednosti vseh akcij, ki jih ima na voljo, pa nosijo enako inforamcijo.
+    (po-stanj) in vrednosti vseh akcij, ki jih ima na voljo, pa nosijo enako informacijo.
 \end{zgled}
 
 \subsection{Pridobivanje iger}
@@ -1675,13 +1696,14 @@ načinov, ki jih opisuje Ghory \cite{RLboard}:
             kjer so shranjene stare igre. Te so lahko profesionalne (npr. iz kakšnih svetovnih
             prvenstev) ali pa samo naključne igre med navadnimi ljudmi. Vsekakor je to odlična 
             alternativa samoigri, saj je polovica igre samo branje iz baz, torej potrebujemo storiti 
-            samo polovico računskih operacij.
+            samo polovico računskih operacij, v primeru kvalitetnih iger pa se agent tudi hiteje uči, 
+            saj igra proti boljšemu nasprotniku.
     \item \textbf{Naključen nasprotnik.} Če podatkovno bazo zamenjamo z generatorjem naključnih potez, 
             dosežemo podobno zmanjšanje računske zahtevnosti, a povzročimo nekaj novih težav. Izkaže 
             se, da v mnogo igrah obstajajo strategije, ki zelo enostavno premagajo naključnega igralca 
             a izgubijo proti praktično kateremukoli človeku. Prav tako je naključna igra ponavadi zelo 
             različna od stila igranja človeka. Naključni igralec ima lahko težave tudi pri uporabi 
-            nekaterih pravil igre in posledično privede do nepotrebnega podaljšanja igre.
+            nekaterih pravil igre in posledično privede do nepotrebnega podaljšanja epizod.
     \item \textbf{Fiksen nasprotnik.} Najenostavnejša alternativa samoigri je uporaba fiksnega 
             nasprotnika. Ta je ponavadi računalnik, v redkih primerih pa tudi človek. Tu se pojavi 
             problem prevelikega prilagajanja strategije temu nasprotniku. Pogosto se zgodi, da se 
@@ -1690,12 +1712,12 @@ načinov, ki jih opisuje Ghory \cite{RLboard}:
 \end{itemize}
 
 \subsection{Primer algoritma za namizne igre}
-Če nasprotnik ni kopija agenta, je algoritem zelo podoben algoritmu \ref{SARSA}. Do razlik pride, če uporabimo 
-samoigro. V spodnjem primeru bomo pokazali, kako izgleda algoritem TD($0$) z učenjem ob koncu posamezne 
-epizode/igre.
+Če nasprotnik ni kopija agenta, je algoritem zelo podoben algoritmu \ref{SARSA}, saj je simulirano 
+okolje z enim agentom. Do razlik pride, če je metoda učenja samoigra. V spodnjem primeru je prikazano, 
+kako izgleda algoritem TD($0$) z učenjem ob koncu posamezne epizode/igre (">offline"<).
 
 \begin{algorithm}[H]
-    \caption{TD($0$) s samoigro - uporba po-stanj}
+    \caption{TD($0$) s samoigro -- uporba po-stanj}
 \begin{algorithmic}
     \STATE \textbf{Podatki}: parameter hitrosti učenja $\alpha$, število epizod $epizode$, diskontni 
             faktor $\gamma$, parameter požrešnosti $\epsilon$
@@ -1748,8 +1770,8 @@ je, da v vrsto postavita $k$ kamenčkov svoje barve. Vrsta kamenčkov je lahko v
 ali diagonali. Kdor prvi uspe, zmaga. 
 
 Zaradi naravne simetrije igre ima praviloma prvi igralec prednost, saj naredi prvo potezo. Ker nobena 
-poteza igralca ne škoduje sama sebi, po argumentu kraje strategije ne obstaja strategija, ki bi 
-zagotovila zmago drugemu igralcu \cite{SSA}. To pomeni, da se $m$,$n$,$k$,-igre ob predpostavki 
+poteza ni škodljiva za igralca, ki jo je igral, po argumentu kraje strategije ne obstaja strategija, 
+ki bi zagotovila zmago drugemu igralcu \cite{SSA}. To pomeni, da se $m$,$n$,$k$,-igre ob predpostavki 
 popolne igre s strani obeh igralcev končajo bodisi z zmago prvega igralca, bodisi z izenačenjem 
 (odvisno od $m$, $n$ in $k$).
 
@@ -1768,7 +1790,7 @@ o velikostnih razredih problemov, ki jih rešujemo. Kompleksnost bomo merili izk
 stanj, to pa seveda ni edini način. Točno število stanj za $m$,$n$,$k$,-igro je v splošnem težko 
 izračunljivo, lahko ga pa enostavno ocenimo kot $zgornja~meja = 3 ^ {(m \times n)}$. Logika v ozadju je, 
 da ima vsako polje lahko eno izmed treh vrednosti: križec, krožec ali pa je prazno. Ta metoda upošteva 
-mnogo nedovoljenih stanj (npr. celotna plošča prekrita s križci), služi nam samo kot orientacija.
+mnogo nedovoljenih stanj (npr. celotna plošča prekrita s križci), služi nam samo za orientacijo.
 
 \subsection{Metoda}
 
@@ -1795,7 +1817,7 @@ Pomembna izbira je tudi aktivacijska funkcija. S pomočjo eksperimentiranja smo 
 najbolje služi funkcija ReLU oz. $f(x) = \max(0, x)$.
 
 Poslužili smo se tudi standardnega diskontnega faktorja za namizne igre, to je $\gamma = 1$. Struktura 
-nagrad je tudi enaka, kot je opisana zgoraj. To pomeni $1$ za zmago, $-1$ za poraz in $0$ sicer.
+nagrad je standardna za namizne igre. To pomeni $1$ za zmago, $-1$ za poraz in $0$ sicer.
 
 \subsubsection{Pripomočki}
 Uporabili smo programski jezik \textit{Python}. Nekatere numerične operacije so pospešene s pomočjo 
@@ -1899,7 +1921,7 @@ $\alpha$, pa tudi ob veliki količini iger občasno dobimo neoptimalno igro -- p
 vrednosti je narejen prevelik korak oz. premik, to pa privede agenta do tega, da zgreši optimum.
 
 \begin{figure}[H]
-    \includegraphics[scale=0.72]{../rezultati/tdl-333-40000-2.png}
+    \includegraphics[scale=0.725]{../rezultati/tdl-333-40000-2.png}
     \caption{Proces učenja TD($\lambda$) v vlogi drugega igralca tekom 40000 iger}
 \end{figure}
 
@@ -1911,7 +1933,7 @@ vrednosti. To pa zaradi velike količine parametrov traja dlje, kot traja samo u
 Vseeno pa na koncu tudi ta agent pride do strategije, ki proti naključnemu igralcu ne izgubi nobene igre.
 
 \begin{figure}[H]
-    \includegraphics[scale=0.72]{../rezultati/tdnn-333-40000-2.png}
+    \includegraphics[scale=0.725]{../rezultati/tdnn-333-40000-2.png}
     \caption{Proces učenja TD($0$) z nevronsko mrežo v vlogi drugega igralca tekom 40000 iger}
 \end{figure}
 
@@ -1935,7 +1957,7 @@ Pri tako velikem prostoru stanj tabelarni agent popolnoma odpove. To je razvidno
 kjer vidimo, da se tudi po $150000$ igrah agentova strategija ne izboljša. 
 
 \begin{figure}[H]
-    \includegraphics[scale=0.72]{../rezultati/tdl-554-150000-2.png}
+    \includegraphics[scale=0.725]{../rezultati/tdl-554-150000-2.png}
     \caption{Neuspeh učenja tabelarnega TD($\lambda$) agenta}
 \end{figure}
 
@@ -1948,7 +1970,7 @@ neprimerljivo uspešnejši od tabelarnega. Dobljeni rezultat se sklada z našimi
 strategijo, ki uspešno premaga vsaj naključnega igralca.
 
 \begin{figure}[H]
-    \includegraphics[scale=0.72]{../rezultati/tdnn-554-150000-2.png}
+    \includegraphics[scale=0.725]{../rezultati/tdnn-554-150000-2.png}
     \caption{Proces učenja TD($0$) z nevronsko mrežo v vlogi drugega igralca tekom 150000 iger}
 \end{figure}
 
