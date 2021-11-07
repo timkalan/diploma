@@ -196,7 +196,7 @@ Edgarja Allana Poea, ki govori o mehaničnem igralcu šaha:
 \end{quotation}
 
 \subsection{Motivacija}
-Spodbujevalno učenje ima zelo lepo motivacijo, in sicer izhaja iz psihologije. Znana psihologa 
+Motivacija za spodbujevalno učenje izhaja iz psihologije. Znana psihologa 
 Thorndike in Skinner, sta na živalih izvajala eksperimente; postavila sta jih v neko novo 
 situacijo, kjer je lahko žival naredila akcijo, ki je rezultirala v neki nagradi. Ko je bila
 žival ponovno postavljena v to situacijo, je hitreje ugotovila, katero akcijo mora storiti, da
@@ -232,20 +232,20 @@ to idejo v računalniku razumljiv jezik.
 
 \subsection{Osnovni koncepti}
 V osnovi nas zanima precej preprosta stvar: kako preslikati neko opazovano situacijo v akcijo na 
-tak način, da učenec, ki mu v spodbujevalnem učenju pravimo \textbf{agent}, maksimizira neko 
-numerično nagrado. Pri tem ne obstaja opazovalec, ki bi agentu povedal ali pa namignil, katere 
-akcije so dobre, to mora ugotoviti sam, s poskušanjem in napakami. V tem dejstvu se skriva 
+tak način, da učenec maksimizira numerično nagrado. V kontekstu spodnujevalnega učenja učenca  
+imenujemo \textbf{agent}. Pri učenju ne obstaja opazovalec, ki bi agentu povedal ali pa namignil, 
+katere akcije so dobre, to mora ugotoviti sam, s poskušanjem in napakami. V tem dejstvu se skriva 
 bistvena razlika med spodbujevalnim učenjem in ostalimi vejami strojnega učenja. 
 
 Še ena razlika tiči v pomembnosti časa pri spodbujevalnem učenju. Pri drugih oblikah 
-strojnega učenja se ponavadi ukvarjamo s tabelaričnimi podatki, tu pa modeliramo nek 
+strojnega učenja se ponavadi ukvarjamo s tabelaričnimi podatki, tu pa modeliramo 
 dinamičen proces, zato je naravno, da je pomemben čas. Čeprav se ga da v tem kontekstu 
 modelirati zvezno, je za naše namene dovolj, da ga opazujemo kot diskretne točke $t \in 
-\{1, \dots, T\} $, kjer $T$ označuje nek končni čas (v splošnem je lahko seveda $T = \infty$).
+\{1, \dots, T\} $, kjer $T$ označuje končni čas (v splošnem je lahko seveda $T = \infty$).
 
 \subsubsection{Nagrada}
 Prvi pomemben koncept pri spodbujevalnem učenju je nagrada. Kot smo že zgoraj omenili, to za nas 
-pomeni neko numerično vrednost, kjer pozitivno število indicira ">pozitivno nagrado"<, negativno pa 
+pomeni numerično vrednost, kjer pozitivno število indicira ">pozitivno nagrado"<, negativno pa 
 ">kazen"<. S pomočjo tega koncepta formaliziramo \textit{cilj} učenja. Edini cilj agenta je 
 maksimizacija te nagrade, pri čemer je vredno omeniti, da na nagrado agent lahko vpliva samo 
 s svojimi akcijami (ne more recimo spremeniti načina, na katerega dobi nagrado). 
@@ -390,7 +390,7 @@ okolja.
 
 \subsection{Korak spodbujevalnega učenja}
 Spodbujevalno učenje se pogosto ukvarja s procesi, ki naravno razpadejo v t. i. \textbf{epizode}. 
-Tak proces so recimo namizne igre, kjer so epizode precej naravno posamezne igre. Če bi poskušali 
+Tak proces so recimo namizne igre, kjer so epizode posamezne igre. Če bi poskušali 
 robota naučiti hoje, bi lahko za epizode vzeli neko časovno okno ali pa morda hojo do prvega padca.
 Ni pa nujno, da je delitev tako naravna (ali pa sploh možna oz. smiselna). Za namene te diplomske 
 naloge lahko privzamemo, da delitev na epizode obstaja.
@@ -402,7 +402,7 @@ epizode) posodobi svojo strategijo (in/ali vrednostno funkcijo).
 Dejanski korak (npr. poteza enega od igralcev v namizni igri) v epizodi pa formalno gledano opredelimo
  na naslednji način.
 \begin{itemize}
-    \item Agent naredi akcijo $A_t$ ob prejetem stanju $S_t$ in prejme nagrado $R_t$.
+    \item Agent naredi akcijo $A_t$ ob prejetem stanju $S_t$ in nagradi $R_t$.
     \item Okolje prejme akcijo $A_t$, posreduje agentu stanje $S_{t+1}$ in nagrado $R_{t+1}$.
 \end{itemize}
 \begin{center}
@@ -420,11 +420,11 @@ Dejanski korak (npr. poteza enega od igralcev v namizni igri) v epizodi pa forma
 \end{center}
 \subsubsection{Raziskovanje in izkoriščanje}
 Eden izmed glavnih problemov, s katerim se srečamo pri spodbujevalnem učenju, je problem 
-raziskovanja in izkoriščanja. Ko se agent uči, začne dojemati, katere akcije ali pa kombinacije 
+raziskovanja in izkoriščanja. Ko se agent uči, začne dojemati, katere akcije ali kombinacije 
 akcij mu pripeljejo nagrado. Ko to ugotovi, seveda lahko začne te akcije \textit{izkoriščati} in 
 prejemati vso nagrado, ki akcijam pripada. Pri tem pa naletimo na problem. Če bi agent le izkoriščal 
 te akcije, ne bi nikoli ugotovil, da katera druga akcija lahko prinese še višjo nagrado. Tega ne bi 
-izvedel, ker ne bi \textit{raziskoval}. Če bi pa samo raziskoval. pa nikoli ne bi izkoristil potencialnih
+izvedel, ker ne bi \textit{raziskoval}. Če bi pa samo raziskoval, pa nikoli ne bi izkoristil potencialnih
  nagrad, ki jih sreča, torej se ne bi ničesar naučil.
 
 Uravnoteženje raziskovanja in izkoriščanja je pomemben problem, a se izkaže, da ima dokaj enostavno
@@ -649,7 +649,8 @@ zvezi
 \end{align*}
 
 Iz definicij $v_\pi(s)$ in $q_\pi(s, a)$ sledi, da če za določeno stanje $s$ pri strategiji $\pi$ 
-seštejemo vse vrednosti $q_\pi(s, a)$ in to vsoto utežimo, dobimo ravno $v_\pi(s)$ oz. 
+seštejemo vse vrednosti $q_\pi(s, a)$ in to vsoto utežimo z verjetnostmi izbire akcije, dobimo ravno 
+$v_\pi(s)$ oz. 
 \begin{equation}\label{zveza1}
     v_\pi(s) = \sum_{a \in \mathcal{A}} \pi(a|s)q_\pi(s, a).
 \end{equation}
@@ -789,7 +790,7 @@ takih problemov je tudi igranje namiznih iger -- ne poznamo strategije našega n
 poznamo verjetnosti prehodov med stanji, poleg tega pa ima lahko tudi igra sama element stohastičnosti 
 (npr. met kocke).
 
-Poleg tega naj na tem mestu omenimo, da reševanju celotnega problema spodbujevalnega učenja 
+Naj na tem mestu omenimo, da reševanju celotnega problema spodbujevalnega učenja 
 pravimo \textbf{načrtovanje} (angl. \textit{planning}), le-ta pa se deli na dve stopnji: 
 
 \begin{itemize}
@@ -1988,7 +1989,7 @@ Algoritem smo poskusili aplicirati tudi na še večjem problemu, to je igri šti
 se izkazale za neuspešne, nevronska mreža je divergirala po določeni količini iger pri vseh poskušenih 
 vrednostih parametrov. Težave se lahko vseeno skrivajo v parametrih, velikosti mreže ali pa so te metode 
 brez izboljšav enostavno nezadostne za reševanje tako velikih problemov. Odgovor je verjetno kombinacija 
-vseh treh razlogov, vemo pa vsaj, da so bile metode spodbujevalnega učenja s tovrstnimi izboljšavami 
+vseh treh razlogov, vemo pa vsaj, da so bile metode spodbujevalnega učenja z nekaterimi prilagoditvami
 odgovorne za računalniški program, ki je v igri go prvi premagal svetovnega prvaka \cite{go}.
 
 
