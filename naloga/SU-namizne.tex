@@ -313,7 +313,7 @@ Zapišimo zgoraj opisane pojme bolj formalno:
 
 \begin{definicija}
     Naj $\mathcal{S}$ označuje množico vseh stanj, $\mathcal{A}$ pa množico vseh akcij. Naj $R_t,
-    S_t, A_t$ zaporedoma označujejo nagrado, stanje in akcijo ob času $t$. Definiramo naslednje 
+    S_t, A_t$ zaporedoma označujejo slučajno nagrado, stanje in akcijo ob času $t$. Definiramo naslednje 
     pojme: 
     \begin{itemize}
         \item   Agentova \textbf{strategija} (angl. \textit{policy}) je preslikava, ki agentu pove, 
@@ -623,13 +623,14 @@ označevali z angleško krajšavo, tj. MDP.
 V kontekstu MDP-jev lahko sedaj formalno definiramo strategijo agenta $\pi$, ki je zahvaljujoč 
 Markovski lastnosti odvisna od enega (trenutnega) stanja in ne od celotne zgodovine procesa. 
 Definiramo tudi vrednostno funkcijo stanja $v_{\pi}(s)$ in vrednostno funkcijo akcije $q_{\pi}(s, a)$ 
-kot \eqref{vfs} in \eqref{vfa}. Njihove definicije setorej ne spremenijo, so pa sedaj formalno 
+kot \eqref{vfs} in \eqref{vfa}. Njihove definicije se torej ne spremenijo, so pa sedaj formalno 
 vmeščene v model.
 
 Opazimo, da je v MDP-ju pri fiksni strategiji $\pi$ zaporedje oz. proces stanj $S_1, S_2, \dots$ 
 Markovska veriga $(\mathcal{S}, \mathcal{P}_\pi)$. Če v zaporedje stanj pomešamo še nagrade, 
 torej $S_1, R_2, S_2, R_3, \dots$, dobimo Markovski proces nagrajevanja $(\mathcal{S}, 
-\mathcal{P}_\pi, \mathcal{R}_\pi, \gamma)$, kjer smo označili
+\mathcal{P}_\pi, \mathcal{R}_\pi, \gamma)$, kjer smo elemente matrike $\mathcal{P}_\pi$ in 
+vektorja $\mathcal{R}_\pi$ označili
 
 \begin{align*}
     \mathcal{P}^\pi_{ss'} &= \sum_{a \in \mathcal{A}} \pi(a|s) \mathcal{P}_{ss'}^a \\
@@ -678,13 +679,13 @@ $\gamma$. Ta razmislek zapišemo kot
 Enačbo \eqref{bepMDP} imenujemo \textbf{Bellmanova enačba pričakovanja} (angl. \textit{Bellman 
 expectation equation}), ki jo lahko zapišemo v matričnni obliki:
 $$
-v_\pi = \mathcal{R}^\pi_s + \gamma \mathcal{P}^\pi_{ss'} v_\pi.
+v_\pi = \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_\pi.
 $$
 Iz te enačbe lahko izrazimo $v_\pi$ in dobimo enačbo
 $$
-v_\pi = (I - \gamma \mathcal{P}^\pi_{ss'})^{-1} \mathcal{R}^\pi_{s},
+v_\pi = (I - \gamma \mathcal{P}^\pi)^{-1} \mathcal{R}^\pi,
 $$
-ki ima v primeru obstoja inverza matrike $I - \gamma \mathcal{P}^\pi_s$ enolično rešitev.
+ki ima v primeru obstoja inverza matrike $I - \gamma \mathcal{P}^\pi$ enolično rešitev.
 
 Ta enačba je sicer pomembna, a določi samo prave vrednosti glede na neko strategijo. Nas pa zanima 
 ">rešitev"< MDP-ja. To pomeni, da želimo najti strategijo, ki nam bo prinesla največjo nagrado, tj. 
@@ -807,7 +808,7 @@ potem glasi
 \begin{align*}
     v_{k+1}(s) &= \sum_{a \in \mathcal{A}} \pi(a|s) \left[ \mathcal{R}_s^a + 
         \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] \text{ ali na kratko}\\
-    v_{k+1} &= \mathcal{R}^\pi_s + \gamma \mathcal{P}^\pi_{ss'} v_k.
+    v_{k+1} &= \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_k.
 \end{align*}
 
 \begin{izrek}\label{ios}
@@ -859,7 +860,7 @@ ime \textit{požrešno}.
 \subsubsection{Iteracija strategije}
 Algoritem, ki ga dobimo s tem, da združimo iterativno ocenjevanje strategije in požrešno izboljšavo 
 strategije, imenujemo iteracija strategije (angl. \textit{policy iteration}). S tem algoritmom 
-lahko sedaj rešimo problem upravljanja in s tem celoten problem poznanega MDP-ja. V praksi to pomeni, 
+lahko sedaj rešimo problem upravljanja in s tem celoten problem določitve rešitve MDP-ja. V praksi to pomeni, 
 da začnemo z naključno strategijo, jo iterativno ocenimo, nato na podlagi rezultata požrešno izboljšamo 
 strategijo in ta dva koraka ponavljamo.
 
@@ -904,8 +905,8 @@ K problemu lahko pristopimo tudi neposredno prek Bellmanove enačbe optimalnosti
 izognemo neposredni uporabi strategije, vseeno pa rešimo problem upravljanja. Ideja je podobna kot 
 pri iterativnem ocenjevanju strategije, le da imamo drugačno enačbo za iteracijo: 
 \begin{align*}
-    v_{k+1}(s) &= \max_{a \in \mathcal{A}} \left[ \mathcal{R}_s^a + 
-        \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] \\
+    v_{k+1}(s) &= \max_{a \in \mathcal{A}} ( \mathcal{R}_s^a + 
+        \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') ) \\
     \intertext{oziroma}
     v_{k+1} &= \max_{a \in \mathcal{A}} (\mathcal{R}^a + \gamma \mathcal{P}^a v_k).
 \end{align*}
@@ -1120,7 +1121,6 @@ Sutton \cite{TDlambda}, in sicer:
 $$
 G_t^\lambda = (1 - \lambda) \sum_{n=1}^\infty \lambda^{(n-1)} G_t^{(n)},
 $$
-
 kjer je $\lambda \in [0, 1]$ poljubna. Od tu takoj sledi algoritem \textbf{TD($\lambda$) s pogledom 
 naprej} (angl. \textit{forward-view TD($\lambda$)}), v njegovi osnovi je pravilo 
 $$
@@ -1248,7 +1248,7 @@ okolja, pač pa imamo do njega dostop le prek naključnih epizod. Če se vedemo 
 da raziščemo celoten prostor stanj $\mathcal{S}$. Prišli smo do problema \textit{raziskovanja in 
 izkoriščanja}. Na srečo pa ima problem enostavno rešitev.
 
-Če se agent ne vede popolnoma požrešno, pač pa z verjetnostjo $\epsilon$ izbere naključno akcijo, 
+Če se agent ne vede popolnoma požrešno, pač pa z verjetnostjo $\epsilon \in [0, 1]$ izbere naključno akcijo, 
 je zagotovljeno, da bo z neničelno verjetnostjo obiskal vsa stanja, hkrati pa se bo strategija 
 vseeno izboljševala, če bo le $\epsilon$ dovolj majhen. To nas pripelje do koncepta \textbf{
 $\epsilon$-požrešnega raziskovanja}, ki deterministično strategijo spremeni v stohastično. Pri tem 
@@ -1988,66 +1988,6 @@ odgovorne za računalniški program, ki je v igri go prvi premagal svetovnega pr
 \geslo{(artificial) neural network}{(umetna) nevronska mreža}
 
 
-%Pri navajanju literature si pomagajte s spodnjimi primeri; najprej je opisano pravilo za vsak tip vira, nato so podani primeri. Posebej opozarjam, da spletni viri uporabljajo paket url, ki je vklju"cen v preambuli. Polje ``ogled'' pri spletnih virih je obvezno; "ce je kak podatek neznan, ustrezno ``polje'' seveda izpustimo. Literaturo je potrebno urediti po abecednem vrstnem redu; najprej navedemo vse vire z znanimi avtorji po abecednem redu avtorjev (po priimkih, nato imenih), nato pa spletne vire, urejene po naslovih strani. "Ce isti vir citiramo v dveh oblikah, kot tiskani in spletni vir, najprej navedemo tiskani vir, nato pa "se podatek o tem, kje je dostopen v elektronski obliki.
-%
-%% seznam uporabljene literature
-%%\begin{thebibliography}{99}
-%%
-%%\bibitem{referenca-clanek}
-%%I.~Priimek, \emph{Naslov "clanka}, okraj"sano ime revije \textbf{letnik revije} (leto izida) strani od--do.
-%%
-%%\bibitem{navodilaOMF}
-%%C.~Velkovrh, \emph{Nekaj navodil avtorjem za pripravo rokopisa}, Obzornik mat.\ fiz.\ \textbf{21} (1974) 62--64.
-%%
-%%\bibitem{vec-avtorjev}
-%%P.~Angelini, F.~Frati in M.~Kaufmann, \emph{Straight-line rectangular drawings of clustered graphs}, Discrete Comput.\ Geom.\ \textbf{45} (2011) 88--140.
-%%
-%%
-%%
-%%\bibitem{referenca-knjiga}
-%%I.~Priimek, \emph{Naslov knjige}, morebitni naslov zbirke  \textbf{zaporedna "stevilka}, zalo"zba, kraj, leto izdaje.
-%%
-%%\bibitem{glob}
-%%J.~Globevnik in M.~Brojan, \emph{Analiza I}, Matemati"cni rokopisi \textbf{25}, DMFA -- zalo"zni"stvo, Ljubljana, 2010.
-%%
-%%\bibitem{glob-vse}
-%%J.~Globevnik in M.~Brojan, \emph{Analiza I}, Matemati"cni rokopisi \textbf{25}, DMFA -- zalo"zni"stvo, Ljubljana, 2010; dostopno tudi na
-%%\url{http://www.fmf.uni-lj.si/~globevnik/skripta.pdf}.
-%%
-%%\bibitem{lang}
-%%S.~Lang, \emph{Fundamentals of differential geometry}, Graduate Texts in Mathematics {\bf 191}, Springer-Verlag, New York, 1999.
-%%
-%%
-%%
-%%\bibitem{referenca-clanek-v-zborniku}
-%%I.~Priimek, \emph{Naslov "clanka}, v: naslov zbornika (ur.\ ime urednika), morebitni naslov zbirke  \textbf{zaporedna "stevilka}, zalo"zba, kraj, leto izdaje, str.\ od--do.
-%%
-%%\bibitem{zbornik}
-%%S.~Cappell in J.~Shaneson, \emph{An introduction to embeddings, immersions and singularities in codimension two}, v: Algebraic and geometric topology, Part 2 (ur.\ R.~Milgram), Proc.\ Sympos.\ Pure Math.\ \textbf{XXXII}, Amer.\ Math.\ Soc., Providence, 1978, str.\ 129--149.
-%%
-%%
-%%
-%%\bibitem{diploma-magisterij}
-%%I.~Priimek, \emph{Naslov dela}, diplomsko/magistrsko delo, ime fakultete, ime univerze, leto.
-%%
-%%\bibitem{kalisnik}
-%%J.~Kali"snik, \emph{Upodobitev orbiterosti}, diplomsko delo, Fakulteta za matematiko in fiziko, Univerza v Ljubljani, 2004.
-%%
-%%
-%%
-%%\bibitem{referenca-spletni-vir}
-%%I.~Priimek, \emph{Naslov spletnega vira}, v: ime morebitne zbirke/zbornika, ki vsebuje vir, verzija "stevilka/datum, [ogled datum], dostopno na \url{spletni.naslov}.
-%%
-%%\bibitem{glob-splet}
-%%J.~Globevnik in M.~Brojan, \emph{Analiza 1}, verzija 15.~9.~2010, [ogled 12.~5.~2011], dostopno na \url{http://www.fmf.uni-lj.si/~globevnik/skripta.pdf}.
-%%
-%%\bibitem{wiki}
-%%\emph{Matrix (mathematics)}, v: Wikipedia: The Free Encyclopedia, [ogled 12.~5.~2011], dostopno na \url{http://en.wikipedia.org/wiki/Matrix_(mathematics)}.
-%%
-%%
-%%
-%%
-%%\end{thebibliography}
 
 \nocite{*}
 \bibliographystyle{plain}
