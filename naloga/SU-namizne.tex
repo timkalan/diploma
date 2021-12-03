@@ -5,7 +5,6 @@
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb,amsfonts}
-\usepackage{cancel}
 \usepackage{url}
 %\usepackage[normalem]{ulem}
 \usepackage[dvipsnames,usenames]{color}
@@ -127,10 +126,10 @@ Ljubljana, \letnica}
 
 Motivacija za nalogo je bila razumeti algoritme, ki se učijo prek poskušanja in napak. Na začetku 
 postavimo teoretični okvir v obliki Markovskih procesov odločanja. V nadaljevanju se posvetimo izpeljavi 
-in opisu metod za njihovo reševanje, ki temeljijo na konceptu dinamičnega programiranja. Te metode potem 
+in opisu metod, ki temeljijo na konceptu dinamičnega programiranja. Te metode potem 
 posplošimo in predstavimo tri glavne iterativne algoritme: Monte Carlo, TD($0$) in TD($\lambda$). 
 Ker pa smo želeli ustvariti kompetentnega igralca namiznih iger, te pa imajo pogosto veliko količino stanj, 
-se posvetimo še funkcijski aproksimaciji in kombinaciji nevronskih mrež s spoznanimi algoritmi.
+se posvetimo še funkcijski aproksimaciji in kombinaciji nevronskih mrež s predstavljenimi algoritmi.
 
 V drugem delu naloge si bolj natančno ogledamo kombinatorne igre; to je teoretični model za namizne igre.
 Nato opišemo nekaj pomembnih razlik, do katerih pride pri spodbujevalnem učenju v tem konteksu in si 
@@ -145,9 +144,9 @@ algoritme in komentiramo njihovo učinkovitost.
 {\sc Abstract}
 \end{center}
 
-The motivation for this work is trying to undertand algorithms that learn through trial and error. 
+The motivation for this work is trying to understand algorithms that learn through trial and error. 
 At the beginning we set the theoretical foundation by examining Markov decision processes. We then 
-derive and describe methods for solving them, which are based on dynamic programming. Further we
+derive and describe methods, which are based on dynamic programming. Further we
 generalize these methods and present three iterative algorithms: Monte Carlo, TD($0$) and
 TD($\lambda$). Since we want to create a competent board game player, and board games often have 
 a large number of states, we observe also the function approximation and combine neural networks with 
@@ -177,7 +176,7 @@ izmed štirih umetnosti kitajskega učenjaka poleg igranja inštrumenta s struna
 in slikanja. Spremljajo nas že zelo dolgo časa, zato je naravno, da jih želimo ljudje čim
 bolje igrati.
 
-S prihodom računalnika in računalništva je bil ta problem postavljen v novi luči. Vprašanje
+Z razvojem računalnika in računalništva je bil ta problem postavljen v novi luči. Vprašanje
 ni bilo več samo, kako dobro lahko človek igra igro sam, temveč tudi do kakšnega nivoja 
 lahko spravi računalnik. Izkazalo se je, da nam pri tem problemu (in mnogih drugih) zelo dobro
 koristi ">umetna inteligenca"< oz. metode strojnega učenja (SU). Eno izmed vej SU bomo 
@@ -326,8 +325,8 @@ Zapišimo zgoraj opisane pojme bolj formalno:
                     a = \pi(s).
                     $$
                     \item \textbf{Stohastična strategija} je preslikava $\pi: \mathcal{A} \times 
-                    \mathcal{S} \rightarrow [0, 1]$ ki za vsako stanje $s$ pove verjetnost, da se igra 
-                    določena akcija $a$. To označimo 
+                    \mathcal{S} \rightarrow [0, 1]$, ki za vsako stanje $s$ pove verjetnost, da se igra 
+                    določena akcija $a$. To označimo z
                     $$
                     \pi(a | s) = P(A_t = a~|~S_t = s),
                     $$
@@ -363,6 +362,7 @@ Zapišimo zgoraj opisane pojme bolj formalno:
                 Pove nam pričakovani izplen, če ob času $t$ naredimo akcijo $a$, nato pa se 
                 vedemo skladno s strategijo $\pi$.
     \end{itemize}
+    Tako v \eqref{vfs} kot tudi v \eqref{vfa} nam $t$ označuje čas, v katerem je dosegljivo stanje $s$.
 \end{definicija}
 
 \begin{zgled}[Križci in krožci]
@@ -491,7 +491,7 @@ izvemo enako o trenutnem stanju, kot če bi opazovali igro od začetka.
 \subsubsection{Markovski proces nagrajevanja}
 Podoben koncept, ki se malo bolj približa dejanski situaciji v spodbujevalnem učenju, je
 \textit{Markovski proces nagrajevanja}. Kot že ime morda namigne, je precej podoben Markovski 
-verigi, le da v njem nastopajo \textit{nagrade}. V tem modelu so tako kot stanja, tudi nagrade 
+verigi, le da v njem nastopajo \textit{nagrade}. V tem modelu so tako kot stanja tudi nagrade 
 slučajni proces $(R_t)_{t=1}^T$ na verjetnostnem prostoru $(\Omega, \mathcal{F}, P)$ z Markovsko 
 lastnostjo.
 
@@ -623,14 +623,14 @@ označevali z angleško krajšavo, tj. MDP.
 V kontekstu MDP-jev lahko sedaj formalno definiramo strategijo agenta $\pi$, ki je zahvaljujoč 
 Markovski lastnosti odvisna od enega (trenutnega) stanja in ne od celotne zgodovine procesa. 
 Definiramo tudi vrednostno funkcijo stanja $v_{\pi}(s)$ in vrednostno funkcijo akcije $q_{\pi}(s, a)$ 
-kot \eqref{vfs} in \eqref{vfa}. Njihove definicije se torej ne spremenijo, so pa sedaj formalno 
-vmeščene v model.
+kot v \eqref{vfs} in \eqref{vfa}. Njihove definicije se torej ne spremenijo, so pa sedaj formalno 
+umeščene v model.
 
 Opazimo, da je v MDP-ju pri fiksni strategiji $\pi$ zaporedje oz. proces stanj $S_1, S_2, \dots$ 
-Markovska veriga $(\mathcal{S}, \mathcal{P}_\pi)$. Če v zaporedje stanj pomešamo še nagrade, 
+Markovska veriga $(\mathcal{S}, \mathcal{P}^\pi)$. Če v zaporedje stanj pomešamo še nagrade, 
 torej $S_1, R_2, S_2, R_3, \dots$, dobimo Markovski proces nagrajevanja $(\mathcal{S}, 
-\mathcal{P}_\pi, \mathcal{R}_\pi, \gamma)$, kjer smo elemente matrike $\mathcal{P}_\pi$ in 
-vektorja $\mathcal{R}_\pi$ označili
+\mathcal{P}^\pi, \mathcal{R}^\pi, \gamma)$, kjer so elementi matrike $\mathcal{P}^\pi$ in 
+vektorja $\mathcal{R}^\pi$ enaki
 
 \begin{align*}
     \mathcal{P}^\pi_{ss'} &= \sum_{a \in \mathcal{A}} \pi(a|s) \mathcal{P}_{ss'}^a \\
@@ -677,13 +677,13 @@ $\gamma$. Ta razmislek zapišemo kot
     \mathcal{P}_{ss'}^a \left[\sum_{a' \in \mathcal{A}} \pi(a'|s')q_\pi(s', a') \right].
 \end{align}
 Enačbo \eqref{bepMDP} imenujemo \textbf{Bellmanova enačba pričakovanja} (angl. \textit{Bellman 
-expectation equation}), ki jo lahko zapišemo v matričnni obliki:
+expectation equation}), ki jo lahko zapišemo v matrični obliki:
 $$
 v_\pi = \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_\pi.
 $$
 Iz te enačbe lahko izrazimo $v_\pi$ in dobimo enačbo
 $$
-v_\pi = (I - \gamma \mathcal{P}^\pi)^{-1} \mathcal{R}^\pi,
+(I - \gamma \mathcal{P}^\pi) v_\pi = \mathcal{R}^\pi,
 $$
 ki ima v primeru obstoja inverza matrike $I - \gamma \mathcal{P}^\pi$ enolično rešitev.
 
@@ -728,7 +728,7 @@ Sedaj lahko uporabimo naslednji izrek.
                 $\pi_*: \mathcal{S} \rightarrow \mathcal{A}$, $s \mapsto \pi_*(s) = a$.
 
         \item Vse optimalne strategije določajo enako optimalno vrednostno funkcijo stanja in 
-                optimalno vrednostno funkcijo akcije; 
+                optimalno vrednostno funkcijo akcije:
                 \begin{align*}
                     v_{\pi*}(s) &= v_*(s), \\
                     q_{\pi*}(s, a) &= q_*(s, a).
@@ -805,11 +805,14 @@ fiksno strategijo $\pi$. Algoritem torej rešuje zgolj problem napovedovanja. Gl
 Bellmanove enačbe pričakovanja \eqref{bepMDP}. Z njo na vsakem koraku posodobimo $v_k(s)$ v 
 $v_{k+1}(s)$ s pomočjo podatka $v(s')$ za vsa stanja $s'$, ki sledijo stanju $s$. Enačba iteracije se 
 potem glasi 
-\begin{align*}
-    v_{k+1}(s) &= \sum_{a \in \mathcal{A}} \pi(a|s) \left[ \mathcal{R}_s^a + 
-        \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] \text{ ali na kratko}\\
-    v_{k+1} &= \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_k.
-\end{align*}
+$$
+v_{k+1}(s) = \sum_{a \in \mathcal{A}} \pi(a|s) \left[ \mathcal{R}_s^a + 
+    \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'}^a v_k(s') \right] 
+$$
+ali na kratko
+$$
+v_{k+1} = \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v_k.
+$$
 
 \begin{izrek}\label{ios}
     Iterativno ocenjevanje strategije konvergira proti vrednostni funkciji, ki jo določa strategija 
@@ -833,19 +836,19 @@ vektorski prostor. Vsaka točka v njem korespondira z eno vrednostno funkcijo $s
     potem sledi naš rezultat.
     Definiramo \textbf{Bellmanov operator pričakovanja} kot 
     $$
-    T_\pi(v) = \mathcal{R}_\pi + \gamma \mathcal{P}_\pi v.
+    T_\pi(v) = \mathcal{R}^\pi + \gamma \mathcal{P}^\pi v.
     $$
     Naj bosta $u$ in $v$ vrednostni funkciji. Potem je zgornji operator skrčitev glede na neskončno 
     normo: 
     \begin{align*}
-        ||T_\pi(v) - T_\pi(u)||_\infty &= ||\mathcal{R}_\pi + \gamma \mathcal{P}_\pi v - 
-                                            \mathcal{R}_\pi + \gamma \mathcal{P}_\pi u||_\infty \\  
-        &= ||\gamma \mathcal{P}_\pi (v - u)||_\infty \\
-        &\leq ||\gamma \mathcal{P}_\pi||_\infty ||v - u||_\infty \\
+        ||T_\pi(v) - T_\pi(u)||_\infty &= ||\mathcal{R}^\pi + \gamma \mathcal{P}^\pi v - 
+                                            \mathcal{R}^\pi + \gamma \mathcal{P}^\pi u||_\infty \\  
+        &= ||\gamma \mathcal{P}^\pi (v - u)||_\infty \\
+        &\leq ||\gamma \mathcal{P}^\pi||_\infty ||v - u||_\infty \\
         &\leq \gamma ||v - u||_\infty,
     \end{align*}
-    kjer smo upoštevali, da velja $||\mathcal{P}_\pi||_\infty \leq 1$, saj so elementi 
-    $\mathcal{P}_\pi$ verjetnosti. Po Bellmanovi enačbi pričakovanja je $v_\pi$ fiksna točka 
+    kjer smo upoštevali, da velja $||\mathcal{P}^\pi||_\infty \leq 1$, saj so elementi 
+    $\mathcal{P}^\pi$ verjetnosti. Po Bellmanovi enačbi pričakovanja je $v_\pi$ fiksna točka 
     za $T_\pi$, rezultat nato sledi iz Banachovega skrčitvenega izreka.
 \end{proof}
 
@@ -894,7 +897,7 @@ strategijo in ta dva koraka ponavljamo.
 $$
 q_\pi(s, \pi'(s)) = \max_{a \in \mathcal{A}} q_\pi(s, a) = q_\pi(s, \pi(s)) = v_\pi(s).
 $$
-To se zgodi, saj zaradi končnih vrednosti nagrad tudi vrednostne funkcije zavzemajo končne vrednosti. 
+To se zgodi, saj zaradi končnih vrednosti nagrad tudi vrednostne funkcije zavzemajo omejene vrednosti. 
 Potem opazimo, da je zaradi $v_\pi(s) = \max_{a \in \mathcal{A}} q_\pi(s, a)$ zadoščeno Bellmanovi 
 enačbi optimalnosti in zato po izreku \ref{optim} velja $v_\pi(s) = 
 v_*(s) \text{ } \text{ za vse } s \in \mathcal{S}$, torej je $\pi$ optimalna strategija.
@@ -1017,12 +1020,12 @@ algoritmi med sabo podobni, zadošča navesti zgled algoritma za TD($0$).
     \caption{TD($0$) - ocenjevanje  $V \approx v_\pi$}
 \begin{algorithmic}
     
-    \STATE \textbf{Podatki}: strategija $\pi$, parameter hitrosti učenja $\alpha$, število epizod $st\_epizod$, 
+    \STATE \textbf{Podatki}: strategija $\pi$, parameter hitrosti učenja $\alpha$, število epizod $stEpizod$, 
             diskontni faktor $\gamma$
     \STATE 
     \STATE Poljubno nastavimo vrednosti $V(s)$ za vsak $s \in \mathcal{S}$ (npr. $V(s) = 0$ za vsak $s \in \mathcal{S}$)
     \STATE
-    \FOR{$k = 1, 2, \dots, st\_epizod$}
+    \FOR{$k = 1, 2, \dots, stEpizod$}
         \STATE Generiraj epizodo prek strategije $\pi$
         \STATE $stanja \leftarrow$ seznam vseh opaženih stanj
         \STATE $nagrade \leftarrow$ seznam vseh opaženih nagrad
@@ -1090,7 +1093,7 @@ algoritmi med sabo podobni, zadošča navesti zgled algoritma za TD($0$).
     saj je v šestih opažanjih B dobil nagrado $1$, v dveh pa $0$.
 
     Razlike se vidijo pri stanju A. Ker MC algoritem minimizira povprečno kvadratno napako, po opaženem 
-    stanju A pa je bila nagrada vedno (torej enkrat) nagrada $0$, zato ta algoritem dodeli vrednost 
+    stanju A pa je bila nagrada vedno (torej enkrat) enaka $0$, zato ta algoritem dodeli vrednost 
     $V(A) = 0$.
 
     TD($0$) pa pristopi nekoliko drugače. Vedno, ko je bilo opaženo stanje A, je bilo potem takoj 
@@ -1122,7 +1125,7 @@ $$
 G_t^\lambda = (1 - \lambda) \sum_{n=1}^\infty \lambda^{(n-1)} G_t^{(n)},
 $$
 kjer je $\lambda \in [0, 1]$ poljubna. Od tu takoj sledi algoritem \textbf{TD($\lambda$) s pogledom 
-naprej} (angl. \textit{forward-view TD($\lambda$)}), v njegovi osnovi je pravilo 
+naprej} (angl. \textit{forward-view TD($\lambda$)}). V njegovi osnovi je pravilo 
 $$
 V(S_t) \leftarrow V(S_t) + \alpha (G_t^\lambda - V(S_t)).
 $$ 
@@ -1172,7 +1175,7 @@ popravek pomnožen še s sledjo upravičenosti.
                 pomnožene z $(1 - \alpha)$. Ideja je, da s tem dodatnim členom dobimo sled, ki je med 
                 akumulativno in nadomeščujočo.
     \end{itemize}
-    Mi bomo uporabljalii prvotno definicijo sledi upravičenosti. 
+    Mi bomo uporabljali prvotno definicijo sledi upravičenosti. 
 \end{opomba}
 
 V formulaciji pravila TD($\lambda$) s pogledom nazaj postane očitno, zakaj ta algoritem poveže TD($0$) 
@@ -1188,7 +1191,7 @@ Pravo ekvivalenco nam pomaga videti naslednji izrek.
 
 \begin{izrek}
     Vsota posodobitev vrednosti ob koncu epizode je enaka za TD($\lambda$) s pogledom nazaj in 
-    pogledom naprej,
+    pogledom naprej:
     $$
     \sum_{t=1}^T \alpha \delta_t E_t(s) = \sum_{t=1}^T \alpha \left( G_t^\lambda - V(S_t) \right) 
     \mathbbm{1}(S_t = s).
@@ -1199,15 +1202,16 @@ Pravo ekvivalenco nam pomaga videti naslednji izrek.
     Oglejmo si napako pri TD($\lambda$) s pogledom naprej:
     \begin{align*}
     G_t^\lambda - V(S_t) &= - V(S_t)  + (1 - \lambda) \sum_{n=1}^\infty \lambda^{(n-1)} G_t^{(n)} \\
+                         &= - V(S_t) \\
                          &+ (1 - \lambda) \lambda^0 (R_{t+1} + \gamma V(S_{t+1})) \\
                          &+ (1 - \lambda) \lambda^1 (R_{t+1} + \gamma R_{t+2} + \gamma^2 V(S_{t+2})) \\
                          &+ (1 - \lambda) \lambda^2 (R_{t+1} + \gamma R_{t+2} + \gamma^2 R_{t+3} + \gamma^3 V(S_{t+3})) \\
                          &+ \dots \\
                          &= - V(S_t) \\
-                         &+ R_{t+1} + \gamma V(S_{t+1}) - \cancel{\lambda R_{t+1}} - \gamma \lambda V(S_{t+1}) \\
-                         &+ \cancel{\lambda R_{t+1}} + \gamma \lambda R_{t+2} + \gamma^2 \lambda V(S_{t+2}) - 
-                                \bcancel{\lambda^2 R_{t+1}} - \bcancel{\gamma \lambda^2 R_{t+2}} - \gamma^2 \lambda^2 V(S_{t+2}) \\
-                         &+ [\bcancel{\lambda^2 R_{t+1}} + \bcancel{\gamma \lambda^2 R_{t+2}} + \gamma^2 \lambda^2 R_{t+3} + \gamma^3 \lambda^2 V(S_{t+3}) \\
+                         &+ R_{t+1} + \gamma V(S_{t+1}) - \lambda R_{t+1} - \gamma \lambda V(S_{t+1}) \\
+                         &+ \lambda R_{t+1} + \gamma \lambda R_{t+2} + \gamma^2 \lambda V(S_{t+2}) - 
+                                \lambda^2 R_{t+1} - \gamma \lambda^2 R_{t+2} - \gamma^2 \lambda^2 V(S_{t+2}) \\
+                         &+ [\lambda^2 R_{t+1} + \gamma \lambda^2 R_{t+2} + \gamma^2 \lambda^2 R_{t+3} + \gamma^3 \lambda^2 V(S_{t+3}) \\
                          &- \lambda^3 R_{t+1} - \gamma \lambda^3 R_{t+2} - \gamma^2 \lambda^3 R_{t+3} - \gamma^3 \lambda^3 V(S_{t+3})] \\
                          &+ \dots \\
                          &= (\gamma \lambda)^0 (R_{t+1} + \gamma V(S_{t+1}) - V(S_t)) \\
@@ -1216,7 +1220,6 @@ Pravo ekvivalenco nam pomaga videti naslednji izrek.
                          &+ \dots \\
                          &= \delta_t + \gamma \lambda \delta_{t+1} + (\gamma \lambda)^2 \delta_{t+2} + \dots
     \end{align*}
-
     Oglejmo si sedaj epizodo, kjer je stanje $s$ obiskano natanko enkrat, in sicer ob času $k$. 
     Sled upravičenosti je potem enaka 
     $$
@@ -1269,11 +1272,11 @@ pri čemer $m$ označuje število akcij, ki so na voljo v stanju $s$.
 \end{izrek}
 
 \begin{proof}
-    Če nam uspe pokazati, da $q_\pi(s, \textbf{e}) \geq v_\pi(s)$, kjer je $\textbf{e}$ akcija pridobljena 
+    Če nam uspe pokazati, da $q_\pi(s, e) \geq v_\pi(s)$, kjer je $e$ akcija pridobljena 
     z $\epsilon$-požrešno strategijo $\pi'$, potem lahko analogno kot v dokazu izreka 
     \ref{iterKonv} pokažemo, da velja $v_{\pi'}(s) \geq v_\pi(s)$. Prva neenakost sledi iz
     \begin{align*}
-        q_\pi(s, \textbf{e}) &= \sum_{a \in \mathcal{A}} \pi'(a|s) q_\pi(s, a) \\
+        q_\pi(s, e) &= \sum_{a \in \mathcal{A}} \pi'(a|s) q_\pi(s, a) \\
         &= \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} q_\pi(s, a) + (1 - \epsilon) \max_{a \in 
             \mathcal{A}} q_\pi(s, a) \\
         &\geq \frac{\epsilon}{m} \sum_{a \in \mathcal{A}} q_\pi(s, a) + (1 - \epsilon) \sum_{a \in \mathcal{A}} 
@@ -1289,13 +1292,13 @@ TD($0$) rešili celoten problem spodbujevalnega učenja. Postopek je podan v alg
     \caption{TD($0$) - ocenjevanje  $Q \approx q_*$ (t. i. $SARSA$ algoritem)}
 \begin{algorithmic}\label{SARSA}
     
-    \STATE \textbf{Podatki}: parameter hitrosti učenja $\alpha$, število epizod $st\_epizod$, diskontni 
+    \STATE \textbf{Podatki}: parameter hitrosti učenja $\alpha$, število epizod $stEpizod$, diskontni 
             faktor $\gamma$, parameter požrešnosti $\epsilon$
     \STATE 
     \STATE Poljubno nastavimo vrednosti $Q(s, a)$ za vsak $s \in \mathcal{S}$ in $a \in \mathcal{A}$ 
             (npr. $Q(s, a) = 0$)
     \STATE
-    \FOR{$k = 1, 2, \dots, st\_epizod$}
+    \FOR{$k = 1, 2, \dots, stEpizod$}
         \STATE Generiraj epizodo prek funkcije $Q$ $\epsilon$-požrešno
         \STATE $stanja \leftarrow$ seznam vseh opaženih stanj
         \STATE $nagrade \leftarrow$ seznam vseh opaženih nagrad
@@ -1391,11 +1394,12 @@ Ideja je, da imamo neko funkcijo $J(w)$, ki je odvedljiva po vektorju parametrov
 (lokalni) minimum. To storimo tako, da izračunamo njen gradient $\nabla_wJ(w)$ in nato premaknemo $w$
 v negativni smeri tega gradienta
 $$
-\Delta w = - \beta \nabla_wJ(w),
+\Delta w = - \alpha \nabla_wJ(w),
 $$
-kjer je $\beta$ parameter hitrosti učenja (oz. velikost koraka). Ker gradient pove, v katero smer 
+kjer je $\alpha$ parameter hitrosti učenja (oz. velikost koraka). Čeprav ima ta parameter tu drugačen izvor 
+kot pri algoritmih v tabelarični obliki, igra podobno vlogo, zato ima tudi enako oznako. Ker gradient pove, v katero smer 
 funkcija narašča, bo premik v negativni smeri povročil, da bomo to vrednost zmanjšali. Parameter 
-$\beta$ je tu pomemben, saj prek njega lahko dosežemo, da se ne premaknemo predaleč in s tem ne zgrešimo
+$\alpha$ je tu pomemben, saj prek njega lahko dosežemo, da se ne premaknemo predaleč in s tem ne zgrešimo
 iskanega minimuma. Ker spust začnemo z nekim naključnim začetnim približkom, lahko v splošnem 
 dosežemo le lokalni minimum.
 
@@ -1410,7 +1414,7 @@ Uteži se potem prilagodijo v skladu z
 $$
 \Delta w = \alpha E_\pi [(v_\pi(s) - \hat{v}(s, w)) \nabla_w \hat{v}(s, w)], 
 $$
-kjer smo pri odvajanju pridobljen faktor $2$ skrili v parameter $\alpha$ in označili $2\beta = \alpha$.
+kjer smo pri odvajanju pridobljen faktor $2$ skrili v parameter $\alpha$.
 
 Seveda pa tu pridemo do dveh težav. Prva je uporaba pričakovane vrednosti, ki bi spet pomenila polno 
 znanje o sistemu. To odpravimo z uporabo \textbf{stohastičnega gradientnega spusta}, kjer 
@@ -1430,10 +1434,13 @@ $$
 \Delta w = \alpha (G_t^\lambda - \hat{v}(s, w)) \nabla_w \hat{v}(s, w), 
 $$
 če uporabljamo algoritem s pogledom naprej oz. 
+$$
+\Delta w = \alpha \delta_t E_t
+$$
+za
 \begin{align*}
-    \delta_t &= R_{t+1} + \gamma \hat{v}(S_{t+1}, w) - \hat{v}(S_t, w) \\
+    \delta_t &= R_{t+1} + \gamma \hat{v}(S_{t+1}, w) - \hat{v}(S_t, w), \\
     E_t &= \gamma \lambda E_{t-1} + \nabla_w \hat{v}(S_t, w) \\
-    \Delta w &= \alpha \delta_t E_t
 \end{align*}
 če uporabljamo pogled nazaj. Do ostalih verzij algoritma pridemo na analogen način.
 
@@ -1496,10 +1503,10 @@ $n$-tega sloja zložimo v matriko $W_n$ velikosti $(velikost~sloja~n)~\times~(ve
 nevron ima načeloma tudi svojo pristranskost (angl. \textit{bias}), ki jo za posamezen sloj označimo z 
 vektorjem $b_n$. Sedaj lahko končno napišemo, kako se spremeni vrednost pri prehodu med slojema:
 $$
-a_{n+1} = f(W_n a_n + b_n)
+a_{n+1} = f(W_n a_n + b_n).
 $$
-$f$ je tu \textit{nelinearna monotona} funkcija, ki ji pravimo \textbf{aktivacijska funkcija}. V model 
-vnese nelinearnost, kar naredi nevronske mreže tako uporabne in univerzalne. 
+Pri tem je $f$ \textit{nelinearna monotona} funkcija, ki ji pravimo \textbf{aktivacijska funkcija}. 
+V model vnese nelinearnost, kar naredi nevronske mreže tako uporabne in univerzalne. 
 
 \begin{zgled}[Zgledi aktivacijskih funkcij]
     Aktivacijske funkcije, ki so uporabljene najpogosteje, so:
@@ -1619,7 +1626,7 @@ nagrado za prvega igralca in minimizira nagrado za drugega in je definirana kot
 $$
 v_*(s) = \max_{\pi_1} \min_{\pi_2} v_\pi(s), 
 $$
-kjer je $v_\pi(s) = \mathrm{E} [G_t~|~S_t = s]$. Ta funkcija opisuje vrednost stanja z vidika prvega 
+kjer je $v_\pi(s) = \mathrm{E} [G_t~|~S_t = s]$. $v_*$ opisuje vrednost stanja z vidika prvega 
 igralca. Ker pa imajo preučevane igre vsoto nič, dobimo vrednost z vidika drugega igralca tako, da 
 pomnožimo $v_*(s)$ z $-1$. \textbf{Minimax strategija} je potem skupna strategija, 
 ki doseže vrednosti minimax vrednostne funkcije. Kot posledica znanega rezultata iz teorije iger, 
@@ -1688,15 +1695,15 @@ okolje z enim agentom. Do razlik pride, če je metoda učenja samoigra. V algori
 prikazano, kako izgleda algoritem TD($0$) z učenjem ob koncu posamezne epizode/igre (">offline"<).
 
 \begin{algorithm}[H]
-    \caption{TD($0$) s samoigro -- uporba po-stanj}
+    \caption{TD($0$) s samoigro -- uporaba po-stanj}
 \begin{algorithmic}\label{samoigra}
-    \STATE \textbf{Podatki}: parameter hitrosti učenja $\alpha$, število epizod $st\_epizod$, diskontni 
+    \STATE \textbf{Podatki}: parameter hitrosti učenja $\alpha$, število epizod $stEpizod$, diskontni 
             faktor $\gamma$, parameter požrešnosti $\epsilon$
     \STATE 
     \STATE Poljubno nastavimo vrednosti $V(s)$ za vsak $s \in \mathcal{S}$ (npr. $V(s) = 0$ za vsak $s \in 
             \mathcal{S}$)
     \STATE
-    \FOR{$k = 1, 2, \dots, st\_epizod$}
+    \FOR{$k = 1, 2, \dots, stEpizod$}
         \STATE Generiraj epizodo prek funkcije po-stanj $V$ $\epsilon$-požrešno
         \STATE $stanja1 \leftarrow$ seznam vseh opaženih stanj po potezi prvega igrlaca
         \STATE $stanja2 \leftarrow$ seznam vseh opaženih stanj po potezi drugega igralca
@@ -1704,7 +1711,7 @@ prikazano, kako izgleda algoritem TD($0$) z učenjem ob koncu posamezne epizode/
         \STATE $nagrade2 \leftarrow$ seznam vseh opaženih nagrad po potezi drugega igralca
         \STATE
         \FOR{$t = 1, 2, \dots, length(stanja1) + length(stanja2)$}
-            \IF{jeLih(korak)}
+            \IF{jeLih(t)}
                 \STATE $s1 = stanja1[t]$
                 \STATE $s1' = stanja1[t + 1]$
                 \STATE $V(s1) \leftarrow V(s1) + \alpha (nagrade1[s1'] + \gamma V(s1') - V(s1))$ 
@@ -1989,9 +1996,76 @@ odgovorne za računalniški program, ki je v igri go prvi premagal svetovnega pr
 
 
 
-\nocite{*}
-\bibliographystyle{plain}
-\bibliography{literatura}
+%\nocite{*}
+%\bibliographystyle{plain}
+%\bibliography{literatura}
+
+\begin{thebibliography}{10}
+
+    \bibitem{DP}
+    R.~E. Bellman.
+    \newblock {\em Dynamic Programming}.
+    \newblock Princeton University Press, Princeton, 1957.
+    
+    \bibitem{MDP}
+    R.~E. Bellman.
+    \newblock A markov decision process.
+    \newblock {\em Journal of Mathematical Mechanics}, 6, 1957.
+    
+    \bibitem{RLboard}
+    I.~Ghory.
+    \newblock Reinforcement learning in board games,
+    \newblock 2004.
+    
+    \bibitem{SSA}
+    A.~W. Hales in R.~I. Jewett.
+    \newblock Regularity and positional games.
+    \newblock {\em Transactions of the American Mathematical Society}, 106, 1963.
+    
+    \bibitem{NN}
+    K.~Hornik, M.~Stinchcombe in H.~White.
+    \newblock Multilayer feedforward networks are universal approximators.
+    \newblock {\em Neural networks}, 2, 1989.
+    
+    \bibitem{LecNotesSilver}
+    D.~Silver.
+    \newblock Introduction to reinforcement learning.
+    \newblock
+      \url{https://deepmind.com/learning-resources/-introduction-reinforcement-learning-david-silver},
+      2015.
+    
+    \bibitem{go}
+    D.~Silver~idr.
+    \newblock Mastering the game of go with deep neural networks and tree search.
+    \newblock {\em Nature}, 529, 2016.
+    
+    \bibitem{dokaz}
+    S.~Singh, T.~Jaakkola, M.~L. Littmanm in C.~Szepesvari.
+    \newblock Convergence results for single-step on-policy reinforcement-learning
+      algorithms.
+    \newblock {\em Machine Learning}, 39, 2000.
+    
+    \bibitem{MCdokaz}
+    S.~Singh in R.~S. Sutton.
+    \newblock Reinforcement learning with replacing eligibility traces.
+    \newblock {\em Machine Learning}, 22, 1996.
+    
+    \bibitem{TDlambda}
+    R.~S. Sutton.
+    \newblock Learning to predict by the methods of temporal differences.
+    \newblock {\em Machine Learning}, 3, 1988.
+    
+    \bibitem{RLintro}
+    R.~S. Sutton in A.~G. Barto.
+    \newblock {\em Reinforcement Learning: An introduction}.
+    \newblock The MIT Press, Cambridge, Massachusetts, 2 edition, 2015.
+    
+    \bibitem{RLalgo}
+    C.~Szepesvari.
+    \newblock {\em Algorithms for Reinforcement Learning}.
+    \newblock Morgan \& Claypool Publishers, Alberta, Canada, 2009.
+    
+    \end{thebibliography}
 
 
 \end{document}
