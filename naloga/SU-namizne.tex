@@ -6,7 +6,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{url}
-%\usepackage[normalem]{ulem}
+%\usepackage[a-1b]{pdfx}
 \usepackage[dvipsnames,usenames]{color}
 \usepackage{pgf}
 \usepackage{tikz}
@@ -179,7 +179,7 @@ bolje igrati.
 Z razvojem računalnika in računalništva je bil ta problem postavljen v novi luči. Vprašanje
 ni bilo več samo, kako dobro lahko človek igra igro sam, temveč tudi do kakšnega nivoja 
 lahko spravi računalnik. Izkazalo se je, da nam pri tem problemu (in mnogih drugih) zelo dobro
-koristi ">umetna inteligenca"< oz. metode strojnega učenja (SU). Eno izmed vej SU bomo 
+koristi ">umetna inteligenca"< oz. metode strojnega učenja. Eno izmed vej strojnega učenja bomo 
 predstavili v tem delu in pogledali, kako nam lahko pomaga pri igranju namiznih iger.
 
 Ideja, da bi nek stroj igral igre, ni nova, in kompleksnosti takega stroja so se zavedali ljudje
@@ -248,7 +248,7 @@ Prvi pomemben koncept pri spodbujevalnem učenju je nagrada. Kot smo že omenili
 pomeni numerično vrednost, kjer pozitivno število indicira ">pozitivno nagrado"<, negativno pa 
 ">kazen"<. S pomočjo tega koncepta formaliziramo \textit{cilj} učenja. Edini cilj agenta je 
 maksimizacija te nagrade, pri čemer je vredno omeniti, da na nagrado agent lahko vpliva samo 
-s svojimi akcijami (ne more recimo spremeniti načina, npoa katerem dobi nagrado). 
+s svojimi akcijami (ne more recimo spremeniti načina, po katerem dobi nagrado). 
 
 Posebej pomembno je na tem mestu poudariti, da akcije nimajo nujno neposredne nagrade. Te 
 lahko pridejo v poljubnem kasnejšem časovnem obdobju. To je smiselno, če gledamo z vidika 
@@ -322,7 +322,7 @@ Zapišimo zgoraj opisane pojme bolj formalno:
                     \rightarrow \mathcal{A}$, ki za vsako stanje $s$ pove, katero akcijo $a$ agent v njem 
                     izbere oz.
                     $$
-                    a = \pi(s).
+                    \pi(s) = a.
                     $$
                     \item \textbf{Stohastična strategija} je preslikava $\pi: \mathcal{A} \times 
                     \mathcal{S} \rightarrow [0, 1]$, ki za vsako stanje $s$ pove verjetnost, da se igra 
@@ -347,7 +347,8 @@ Zapišimo zgoraj opisane pojme bolj formalno:
 
          \item Naj bo $\pi$ dana strategija agenta. \textbf{Vrednostna funkcija 
                 stanja} (angl. \textit{state-value function}) glede na strategijo $\pi$ je 
-                pogojno matematično upanje povračila glede na to stanje, 
+                pogojno matematično upanje povračila, če začnemo v stanju $s$ in se potem vedemo 
+                v skladu s strategijo $\pi$, 
                 \begin{equation}\label{vfs}
                 v_\pi(s) = \mathrm{E} [G_t~|~S_t = s].
                 \end{equation}
@@ -435,7 +436,7 @@ rešitev (ki deluje dovolj dobro). Spoznali jo bomo v nadaljevanju.
 \begin{zgled}[Raziskovanje v namiznih igrah]
     Pri namiznih igrah agent lahko odkrije strategijo, ki premaga določenega nasprotnika. To strategijo
     lahko potem izrablja in nasprotnika vedno premaga, ko pa naleti na drugega nasprotnika se lahko izkaže, 
-    da je bila strategija učinkovita samo proti prvemu - naša strategija ni bila optimalna. Zato je 
+    da je bila strategija učinkovita samo proti prvemu -- naša strategija ni bila optimalna. Zato je 
     pomembno, da tudi ob odkritju dobre strategije agent še vedno raziskuje prostor strategij. To 
     najenostavneje dosežemo tako, da agenta prisilimo, da občasno igra naključne poteze.
 \end{zgled}
@@ -543,7 +544,7 @@ Dobili smo torej
 $$
 v(s) = \mathrm{E} [R_{t+1} + \gamma v(S_{t+1})~|~S_t = s]
 $$
-oziroma (če označimo $S_{t+1} = s'$)
+oziroma %(če označimo $S_{t+1} = s'$)
 \begin{equation}\label{beMRP}
     v(s) = \mathcal{R}_s + \gamma \sum_{s' \in \mathcal{S}} \mathcal{P}_{ss'} v(s'),
 \end{equation} 
@@ -1142,7 +1143,7 @@ je, da za vsako stanje hranimo njegovo sled upravičenosti. Konceptualno to pome
 ugotavljamo, kako zasluženo je stanje za morebitno nagrado -- koliko je pripomoglo k njeni 
 pridobitvi.
 
-Praktično pa je sled upravičenosti slučajna spremenljivka $E_t: \mathcal{S} \rightarrow \mathbb{R}^+$. 
+Praktično pa je sled upravičenosti preslikava $E_t: \mathcal{S} \rightarrow \mathbb{R}^+$. 
 Pri sledeh sta pomembni dve stvari: \textbf{čas}, ki je pretekel od obiska, in \textbf{pogostost} 
 obiska stanja. Sledi upravičenosti združijo oboje. Za neko stanje $s$ tako lahko napišemo enostavno 
 enačbo, kjer je z $E_t(s)$ označena sled v času $t$ za stanje $s$:
@@ -1175,7 +1176,7 @@ popravek pomnožen še s sledjo upravičenosti.
                 pomnožene z $(1 - \alpha)$. Ideja je, da s tem dodatnim členom dobimo sled, ki je med 
                 akumulativno in nadomeščujočo.
     \end{itemize}
-    Mi bomo uporabljali prvotno definicijo sledi upravičenosti. 
+    Mi bomo uporabljali prvotno definicijo sledi upravičenosti, torej akumulativne sledi. 
 \end{opomba}
 
 V formulaciji pravila TD($\lambda$) s pogledom nazaj postane očitno, zakaj ta algoritem poveže TD($0$) 
@@ -1364,7 +1365,7 @@ ki še ni bilo obiskano, nima dodeljene vrednosti, torej o njem ne vemo nič. Ta
 potrebujejo veliko količino podatkov, torej veliko količino epizod.  
 
 \begin{zgled}[Število stanj pri nekaterih namiznih igrah]
-    Igra križci in krožci je zelo enostavna igra in to se odraža tudi v številu stanj v igri. 
+    Igra križci in krožci je zelo enostavna in to se odraža tudi v številu stanj v igri. 
     Grobo oceno lahko dobimo, če upoštevamo, da lahko vsako od devetih polj vsebuje enega od znakov 
     ali pa je prazno. To nam da oceno $3^9 = 19683$. Številko hitro zmanjšamo, če ne upoštevamo 
     ilegalnih stanj. Tako dobimo $5478$ legalnih stanj. Ob upoštevanju rotacij in zrcaljenj pa 
@@ -1440,7 +1441,7 @@ $$
 za
 \begin{align*}
     \delta_t &= R_{t+1} + \gamma \hat{v}(S_{t+1}, w) - \hat{v}(S_t, w), \\
-    E_t &= \gamma \lambda E_{t-1} + \nabla_w \hat{v}(S_t, w) \\
+    E_t &= \gamma \lambda E_{t-1} + \nabla_w \hat{v}(S_t, w), \\
 \end{align*}
 če uporabljamo pogled nazaj. Do ostalih verzij algoritma pridemo na analogen način.
 
@@ -1536,8 +1537,8 @@ Namizne igre (npr. šah, go, križci in krožci, \dots) so proces, ki se zelo le
 Markovskim procesom odločanja. Množico stanj $\mathcal{S}$ enostavno zapolnimo z vsemi možnimi 
 konfiguracijami igralne plošče. Množico akcij $\mathcal{A}$ sestavljajo vse legalne poteze, ki jih 
 definirajo pravila igre in trenutno stanje. Prehodno matriko definirajo akcije našega nasprotnika oz. 
-okolja, če je igra stohastične narave (npr. Backgammon - met kocke). Ker ne poznamo nasprotnika vidimo, 
-da so namizne igre okolje, kjer je prehodna matrika neznana in zato učenje prek dinamičnega programiranja 
+okolja, če je igra stohastične narave (npr. Backgammon - met kocke). Ker ne poznamo nasprotnika, so 
+namizne igre okolje, kjer je prehodna matrika neznana in zato učenje prek dinamičnega programiranja 
 ne pride v poštev. Prav tako samo delno poznamo nagradno funkcijo, saj je tudi ta odvisna od dinamike 
 okolja.  
 
@@ -1590,7 +1591,7 @@ povezave pa predstavljajo poteze igralcev. Primer takega drevesa vidimo na sliki
                 ]
             ]
         \end{forest}
-    \caption{Del drevesa igre križci in krožci}
+    \caption{Del drevesa igre križci in krožci.}
     \label{drevo}
     \end{figure}
 \end{center}
@@ -1733,7 +1734,7 @@ funkcije akcij.
 Za reševanje namiznih iger je najbolj znan \textbf{minimax algoritem}. V osnovi je to iskanje po drevesu 
 igre. Zaradi eksponentne rasti drevesa se algoritem naredi uporaben tako, da se išče do fiksne globine, 
 nato pa se vrednosti stanj oceni z neko funkcijo. Izkaže se, da lahko tako iskanje združimo s 
-spodbujevalnim učenjem in to funkcijo spremenimo v poznano $v(s)$. To nekoliko izboljša učinkovitost 
+spodbujevalnim učenjem in to funkcijo spremenimo v poznano $v$. To nekoliko izboljša učinkovitost 
 algoritmov, a presega obseg te naloge. Metode natančneje opisujeta Silver \cite{LecNotesSilver} in 
 Ghory \cite{RLboard}.
 
