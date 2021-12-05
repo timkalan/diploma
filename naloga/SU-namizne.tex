@@ -1897,7 +1897,7 @@ Najprej smo se problema lotili na bolj osnoven način -- s pomočjo vrednostnih 
 Uporabili smo prej omenjeno vrednostno funkcijo po-stanj in jo predstavili kot slovar v Pythonu, ki 
 se je polnil z vsakim novim odkritim stanjem.
 
-Na grafu \ref{graf:1} lahko vidimo primer procesa učenja enega izmed naših agentov, to je algoritem 
+Na sliki \ref{graf:1} lahko vidimo primer procesa učenja enega izmed naših agentov, to je algoritem 
 TD($\lambda$) v vlogi drugega igralca. Ključen element grafa je število porazov. Želimo, da pada 
 proti $0$ in to tukaj tudi dosežemo. Ker pa smo se odločili za uporabo konstantnega $\epsilon$ in 
 $\alpha$, pa tudi ob veliki količini iger občasno dobimo neoptimalno igro -- pri posodabljanju 
@@ -1937,7 +1937,7 @@ da naključni igralec ponesreči prepreči zmago agenta. V $5$,$5$,$4$-igri je s
 posledično manj verjetno, da opazimo tako vedenje naključnega igralca.
 
 \subsubsection{Tabelarni agent}
-Pri tako velikem prostoru stanj tabelarni agent popolnoma odpove. To je razvidno tudi v grafu \ref{graf:2}, 
+Pri tako velikem prostoru stanj tabelarni agent popolnoma odpove. To je razvidno tudi na sliki \ref{graf:2}, 
 kjer vidimo, da se tudi po $150000$ igrah agentova strategija ne izboljša. 
 
 \begin{figure}[H]
@@ -1946,11 +1946,11 @@ kjer vidimo, da se tudi po $150000$ igrah agentova strategija ne izboljša.
     \label{graf:2}
 \end{figure}
 
-Na grafu \ref{graf:2} opazimo tudi, da je bila naša hipoteza o manjši količini izenačenih iger pravilna. Do izenečenja 
+Na sliki \ref{graf:2} opazimo tudi, da je bila naša hipoteza o manjši količini izenačenih iger pravilna. Do izenečenja 
 ni prišlo praktično nikoli.
 
 \subsubsection{Agent s funkcijsko aproksimacijo -- nevronske mreže}
-Funkcijska aproksimacija se v tem primeru izkaže za bolj uspešno. Na grafu \ref{graf:3} vidimo, da je ta agent 
+Funkcijska aproksimacija se v tem primeru izkaže za bolj uspešno. Na sliki \ref{graf:3} vidimo, da je ta agent 
 neprimerljivo uspešnejši od tabelarnega. Dobljeni rezultat se sklada z našimi pričakovanji. Dobimo 
 strategijo, ki uspešno premaga vsaj naključnega igralca.
 
